@@ -1,0 +1,89 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { CustomThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import UserDashboard from "./pages/UserDashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
+import ManagerDashboard from "./pages/ManagerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Employees from "./pages/Employees";
+
+function App() {
+  return (
+    <CustomThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Default route */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+
+            {/* Authentication Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Unified & Role-specific Dashboard Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Admin"]}>
+                  <UserDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employee-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "Admin"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/manager-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["Manager", "Admin"]}>
+                  <ManagerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["Admin"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Employee Management Route (Restricted to Admin & Manager) */}
+            <Route
+              path="/employees"
+              element={
+                <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+                  <Employees />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fallback Catch-all Route */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </CustomThemeProvider>
+  );
+}
+
+export default App;

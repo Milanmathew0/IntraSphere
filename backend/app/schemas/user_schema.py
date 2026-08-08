@@ -16,4 +16,11 @@ class UserResponse(BaseModel):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: str
+
+class UserGoogleLogin(BaseModel):
+    email: EmailStr
+    name: Optional[str] = ""
+    picture: Optional[str] = ""
+    google_id: Optional[str] = ""
+    token: Optional[str] = ""

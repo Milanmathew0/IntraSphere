@@ -64,3 +64,46 @@ async def get_user_by_email(email: str):
     )
 
     return user
+
+async def get_or_create_google_user(email: str, name: str = "", picture: str = ""):
+    users_collection = db["users"]
+    employees_collection = db["employees"]
+
+    existing_user = await users_collection.find_one({"email": email})
+
+    if existing_user:
+        return existing_user
+
+    username = name or email.split("@")[0]
+    name_parts = username.strip().split(" ", 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1] if len(name_parts) > 1 else ""
+
+    new_user = {
+        "username": username,
+        "email": email,
+        "password": "",
+        "role": "User",
+        "picture": picture,
+        "auth_provider": "google",
+        "is_active": True
+    }
+
+    result = await users_collection.insert_one(new_user)
+    user_id = result.inserted_id
+    user_id_str = str(user_id)
+
+    emp_code = f"EMP-{user_id_str[-6:].upper()}"
+    existing_emp = await employees_collection.find_one({"email": email})
+    if not existing_emp:
+        await employees_collection.insert_one({
+            "employee_id": emp_code,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "user_id": user_id,
+            "is_active": True
+        })
+
+    new_user["_id"] = user_id
+    return new_user

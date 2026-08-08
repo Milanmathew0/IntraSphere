@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
+  Divider,
   IconButton,
   InputAdornment,
   Link,
@@ -21,13 +22,15 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../api/axios";
-
+import { useAuth } from "../context/AuthContext";
 import { AuthLayout } from "../components/AuthLayout";
 import { PasswordStrengthIndicator } from "../components/PasswordStrengthIndicator";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -44,6 +47,22 @@ export default function Register() {
     message: "",
     severity: "info",
   });
+
+  const parseJwt = (token) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return {};
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -105,6 +124,49 @@ export default function Register() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      const decoded = parseJwt(credentialResponse.credential);
+
+      const response = await api.post("/api/v1/auth/google", {
+        email: decoded.email,
+        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.strip(),
+        picture: decoded.picture || "",
+        google_id: decoded.sub,
+        token: credentialResponse.credential,
+      });
+
+      const assignedRole = response.data.role || "User";
+
+      authLogin({
+        access_token: response.data.access_token,
+        role: assignedRole,
+        email: response.data.email || decoded.email,
+        username: response.data.username || decoded.name || decoded.email.split("@")[0],
+        user_id: response.data.user_id,
+        picture: response.data.picture,
+      });
+
+      setSnackbar({
+        open: true,
+        message: "Google Sign-Up successful! Redirecting...",
+        severity: "success",
+      });
+
+      setTimeout(() => navigate("/dashboard"), 700);
+    } catch (err) {
+      console.error("Google registration error:", err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.detail || "Google authentication failed.",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout>
       <Card
@@ -123,7 +185,7 @@ export default function Register() {
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           {/* Header Avatar & Title */}
-          <Box display="flex" flexDirection="column" alignItems="center" mb={2.5}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2.5 }}>
             <Avatar
               sx={{
                 bgcolor: "#2E7D32",
@@ -140,7 +202,7 @@ export default function Register() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 0.5 }}>
-              Join IntraSphere Smart Office System
+              Join IntraSphere Smart Office Portal
             </Typography>
           </Box>
 
@@ -154,12 +216,14 @@ export default function Register() {
               onChange={(e) => setUsername(e.target.value)}
               error={!!errors.username}
               helperText={errors.username}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -171,12 +235,14 @@ export default function Register() {
               onChange={(e) => setEmail(e.target.value)}
               error={!!errors.email}
               helperText={errors.email}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -189,28 +255,29 @@ export default function Register() {
               onChange={(e) => setPassword(e.target.value)}
               error={!!errors.password}
               helperText={errors.password}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      size="small"
-                    >
-                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
-            {/* Password Strength Indicator */}
             <PasswordStrengthIndicator password={password} />
 
             <TextField
@@ -222,24 +289,26 @@ export default function Register() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle confirm password visibility"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      edge="end"
-                      size="small"
-                    >
-                      {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle confirm password visibility"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -251,7 +320,7 @@ export default function Register() {
               disabled={loading}
               size="large"
               sx={{
-                mt: 3,
+                mt: 2.5,
                 py: 1.3,
                 fontSize: "1rem",
                 fontWeight: 600,
@@ -262,8 +331,34 @@ export default function Register() {
               {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
             </Button>
 
+            {/* Divider */}
+            <Divider sx={{ my: 2.5 }}>
+              <Typography variant="caption" color="text.secondary" sx={{ px: 1, fontWeight: 600 }}>
+                OR SIGN UP WITH
+              </Typography>
+            </Divider>
+
+            {/* Google Sign-In Button */}
+            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", my: 1 }}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setSnackbar({
+                    open: true,
+                    message: "Google Sign-Up failed or was cancelled.",
+                    severity: "error",
+                  });
+                }}
+                theme="outline"
+                size="large"
+                shape="pill"
+                width="100%"
+                text="signup_with"
+              />
+            </Box>
+
             {/* Login Link */}
-            <Box textAlign="center" mt={3}>
+            <Box textAlign="center" mt={2}>
               <Typography variant="body2" color="text.secondary">
                 Already have an account?{" "}
                 <Link

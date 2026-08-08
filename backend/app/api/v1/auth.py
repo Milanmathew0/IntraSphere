@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 
-from app.schemas.user_schema import UserRegister, UserLogin
-from app.services.user_service import create_user, get_user_by_email
+from app.schemas.user_schema import UserRegister, UserLogin, UserGoogleLogin
+from app.services.user_service import create_user, get_user_by_email, get_or_create_google_user
 from app.utils.security import verify_password
 from app.utils.jwt_handler import create_access_token
 from app.utils.dependencies import get_current_user
@@ -72,6 +72,41 @@ async def login(user: UserLogin):
         "user_id": user_id_str,
         "employee_code": emp_code
     }
+
+
+@router.post("/google")
+async def google_login(payload: UserGoogleLogin):
+    db_user = await get_or_create_google_user(
+        email=payload.email,
+        name=payload.name,
+        picture=payload.picture
+    )
+
+    user_role = db_user.get("role", "User")
+    username = db_user.get("username", db_user["email"].split("@")[0])
+
+    access_token = create_access_token(
+        {
+            "sub": db_user["email"],
+            "role": user_role,
+            "username": username
+        }
+    )
+
+    user_id_str = str(db_user["_id"])
+    emp_code = f"EMP-{user_id_str[-6:].upper()}"
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "role": user_role,
+        "email": db_user["email"],
+        "username": username,
+        "user_id": user_id_str,
+        "employee_code": emp_code,
+        "picture": db_user.get("picture", "")
+    }
+
 
 @router.get("/me")
 async def get_logged_in_user(

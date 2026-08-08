@@ -23,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { AuthLayout } from "../components/AuthLayout";
@@ -44,6 +45,22 @@ export default function Login() {
     message: "",
     severity: "info",
   });
+
+  const parseJwt = (token) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return {};
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -103,6 +120,49 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      const decoded = parseJwt(credentialResponse.credential);
+
+      const response = await api.post("/api/v1/auth/google", {
+        email: decoded.email,
+        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.strip(),
+        picture: decoded.picture || "",
+        google_id: decoded.sub,
+        token: credentialResponse.credential,
+      });
+
+      const assignedRole = response.data.role || "User";
+
+      authLogin({
+        access_token: response.data.access_token,
+        role: assignedRole,
+        email: response.data.email || decoded.email,
+        username: response.data.username || decoded.name || decoded.email.split("@")[0],
+        user_id: response.data.user_id,
+        picture: response.data.picture,
+      });
+
+      setSnackbar({
+        open: true,
+        message: "Google Sign-In successful! Redirecting...",
+        severity: "success",
+      });
+
+      setTimeout(() => navigate("/dashboard"), 700);
+    } catch (err) {
+      console.error("Google authentication error:", err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.detail || "Google authentication failed.",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthLayout>
       <Card
@@ -121,7 +181,7 @@ export default function Login() {
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           {/* Header Avatar & Title */}
-          <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
             <Avatar
               sx={{
                 bgcolor: "#1976D2",
@@ -162,12 +222,14 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               error={!!errors.email}
               helperText={errors.email}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -180,28 +242,30 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               error={!!errors.password}
               helperText={errors.password}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      size="small"
-                    >
-                      {showPassword ? (
-                        <VisibilityOff fontSize="small" />
-                      ) : (
-                        <Visibility fontSize="small" />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlinedIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        size="small"
+                      >
+                        {showPassword ? (
+                          <VisibilityOff fontSize="small" />
+                        ) : (
+                          <Visibility fontSize="small" />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -274,18 +338,37 @@ export default function Login() {
             </Button>
 
             {/* Divider */}
-            <Divider sx={{ my: 3 }}>
+            <Divider sx={{ my: 2.5 }}>
               <Typography
                 variant="caption"
                 color="text.secondary"
-                sx={{ px: 1 }}
+                sx={{ px: 1, fontWeight: 600 }}
               >
-                OR
+                OR SIGN IN WITH
               </Typography>
             </Divider>
 
+            {/* Google Sign-In Button */}
+            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", my: 1 }}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setSnackbar({
+                    open: true,
+                    message: "Google Sign-In failed or was cancelled.",
+                    severity: "error",
+                  });
+                }}
+                theme="outline"
+                size="large"
+                shape="pill"
+                width="100%"
+                text="signin_with"
+              />
+            </Box>
+
             {/* Register Link */}
-            <Box textAlign="center">
+            <Box textAlign="center" mt={2.5}>
               <Typography variant="body2" color="text.secondary">
                 Don't have an account?{" "}
                 <Link

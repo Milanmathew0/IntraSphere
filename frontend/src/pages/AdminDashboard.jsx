@@ -35,7 +35,7 @@ import WorkspaceReservationCard from "../components/dashboard/WorkspaceReservati
 import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
 import BookingHistoryTable from "../components/dashboard/BookingHistoryTable";
 import EmployeeProfileSection from "../components/dashboard/EmployeeProfileSection";
-import OnboardingRequestsWidget from "../components/dashboard/OnboardingRequestsWidget";
+
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -65,36 +65,76 @@ export default function AdminDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#F5F7FA",
+        backgroundColor: "#FAFAFA",
         display: "flex",
         flexDirection: "column",
+        fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Navbar */}
-      <AppBar
-        position="static"
-        elevation={0}
+      {/* Top Header Banner */}
+      <Box
         sx={{
-          backgroundColor: "#FFFFFF",
-          borderBottom: "1px solid #E2E8F0",
-          color: "text.primary",
+          bgcolor: "#09090B",
+          color: "#FFFFFF",
+          pt: 1.5,
+          pb: 4,
+          px: { xs: 2, sm: 4, md: 6 },
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
-            <BrandLogo size="medium" />
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, cursor: "pointer" }} onClick={() => navigate("/")}>
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: "12px",
+                  bgcolor: "#18181B",
+                  border: "1px solid #27272A",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <AdminPanelSettingsIcon style={{ color: "#FFFFFF" }} />
+              </Box>
+              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF">
+                IntraSphere
+              </Typography>
+            </Box>
 
             <Stack direction="row" spacing={2} alignItems="center">
+              <Button
+                variant="contained"
+                startIcon={<MeetingRoomIcon />}
+                onClick={() => navigate("/meeting-rooms")}
+                sx={{
+                  bgcolor: "#18181B",
+                  color: "#FFFFFF",
+                  border: "1px solid #27272A",
+                  "&:hover": { bgcolor: "#27272A" },
+                  fontWeight: 800,
+                  borderRadius: "50px",
+                  textTransform: "none",
+                  px: 2.5,
+                }}
+              >
+                Meeting Rooms
+              </Button>
+
               <Button
                 variant="contained"
                 startIcon={<PeopleIcon />}
                 onClick={() => navigate("/employees")}
                 sx={{
-                  bgcolor: "#7B1FA2",
-                  "&:hover": { bgcolor: "#6A1B9A" },
-                  fontWeight: 700,
-                  borderRadius: "12px",
+                  bgcolor: "#FFFFFF",
+                  color: "#09090B",
+                  "&:hover": { bgcolor: "#F4F4F5" },
+                  fontWeight: 800,
+                  borderRadius: "50px",
                   textTransform: "none",
+                  px: 2.5,
                 }}
               >
                 Employee Management
@@ -102,28 +142,27 @@ export default function AdminDashboard() {
 
               <UserProfileHeader user={{ ...user, role: "Admin" }} onLogout={handleLogout} />
             </Stack>
-          </Toolbar>
+          </Box>
         </Container>
-      </AppBar>
+      </Box>
 
       {/* Main Content Container */}
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 6, flexGrow: 1 }}>
+      <Container maxWidth="xl" sx={{ mt: 3, mb: 6, flexGrow: 1 }}>
         {/* Welcome Header */}
         <Paper
           elevation={0}
           sx={{
             p: 4,
             borderRadius: 4,
-            border: "1px solid #E2E8F0",
+            border: "1px solid #E4E4E7",
             backgroundColor: "#FFFFFF",
-            background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)",
             mb: 4,
           }}
         >
           <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="center" spacing={2}>
             <Box>
               <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
-                <Typography variant="h4" fontWeight="bold" color="#1E293B">
+                <Typography variant="h4" fontWeight="900" color="#09090B">
                   Welcome, {username} 👋
                 </Typography>
                 <Chip
@@ -195,7 +234,7 @@ export default function AdminDashboard() {
         {activeTab === 0 && (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
-              <OnboardingRequestsWidget showToast={showToast} />
+
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
               <AttendanceWidget />
@@ -227,13 +266,18 @@ export default function AdminDashboard() {
           </Grid>
         )}
 
-        {/* Tab 2: Leave Applications */}
+        {/* Tab 2: Leave Applications & Management */}
         {activeTab === 2 && (
-          <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} md={8} lg={6}>
-              <LeaveApplicationCard />
-            </Grid>
-          </Grid>
+          <Box textAlign="center" py={4}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate("/leave")}
+              sx={{ borderRadius: "50px", px: 4, py: 1.5, bgcolor: "#064E3B", color: "#FFFFFF", fontWeight: 800 }}
+            >
+              Open Full Organization Leave Portal
+            </Button>
+          </Box>
         )}
 
         {/* Tab 3: History */}

@@ -49,26 +49,12 @@ export default function NotificationsCard({ notifications = [] }) {
 
   const list = notifications.length > 0 ? notifications : defaultNotifications;
 
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case "success":
-        return <CheckCircle2 size={16} color="#16A34A" />;
-      case "warning":
-        return <AlertTriangle size={16} color="#D97706" />;
-      default:
-        return <Info size={16} color="#2563EB" />;
-    }
+  const getNotificationIcon = () => {
+    return <Info size={16} color="#09090B" />;
   };
 
-  const getNotificationBg = (type) => {
-    switch (type) {
-      case "success":
-        return "#DCFCE7";
-      case "warning":
-        return "#FFFBEB";
-      default:
-        return "#EFF6FF";
-    }
+  const getNotificationBg = () => {
+    return "#F4F4F5";
   };
 
   return (
@@ -76,7 +62,7 @@ export default function NotificationsCard({ notifications = [] }) {
       elevation={0}
       sx={{
         borderRadius: "16px",
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         backgroundColor: "#FFFFFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
         height: "100%",
@@ -91,8 +77,8 @@ export default function NotificationsCard({ notifications = [] }) {
               sx={{
                 p: 1.2,
                 borderRadius: "12px",
-                bgcolor: "#FFFBEB",
-                color: "#D97706",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -101,10 +87,10 @@ export default function NotificationsCard({ notifications = [] }) {
               <Bell size={22} />
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={700} color="#0F172A">
+              <Typography variant="h6" fontWeight={700} color="#09090B">
                 Notifications & Activity
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#71717A">
                 Recent updates, reminders & office announcements
               </Typography>
             </Box>
@@ -114,7 +100,7 @@ export default function NotificationsCard({ notifications = [] }) {
             label={`${list.filter((n) => !n.read).length} New`}
             size="small"
             sx={{
-              bgcolor: "#D97706",
+              bgcolor: "#09090B",
               color: "#FFFFFF",
               fontWeight: 700,
               fontSize: "0.72rem",
@@ -131,9 +117,8 @@ export default function NotificationsCard({ notifications = [] }) {
               sx={{
                 p: 2,
                 borderRadius: "12px",
-                border: "1px solid",
-                borderColor: !item.read ? "#FCD34D" : "#E2E8F0",
-                bgcolor: !item.read ? "#FFFDF5" : "#FFFFFF",
+                border: "1px solid #E4E4E7",
+                bgcolor: !item.read ? "#FAFAFA" : "#FFFFFF",
                 transition: "all 0.2s ease",
                 "&:hover": {
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
@@ -145,19 +130,20 @@ export default function NotificationsCard({ notifications = [] }) {
                   sx={{
                     p: 1,
                     borderRadius: "10px",
-                    bgcolor: getNotificationBg(item.type),
+                    bgcolor: getNotificationBg(),
+                    border: "1px solid #E4E4E7",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     mt: 0.2,
                   }}
                 >
-                  {getNotificationIcon(item.type)}
+                  {getNotificationIcon()}
                 </Box>
 
                 <Box flexGrow={1}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
+                    <Typography variant="subtitle2" fontWeight={700} color="#09090B">
                       {item.title}
                     </Typography>
                     {!item.read && (
@@ -168,19 +154,20 @@ export default function NotificationsCard({ notifications = [] }) {
                           height: 18,
                           fontSize: "0.62rem",
                           fontWeight: 700,
-                          bgcolor: "#FEF3C7",
-                          color: "#D97706",
+                          bgcolor: "#F4F4F5",
+                          color: "#09090B",
+                          border: "1px solid #E4E4E7"
                         }}
                       />
                     )}
                   </Stack>
-                  <Typography variant="body2" color="text.secondary" mt={0.3} lineHeight={1.4}>
+                  <Typography variant="body2" color="#71717A" mt={0.3} lineHeight={1.4}>
                     {item.description}
                   </Typography>
 
                   <Typography
                     variant="caption"
-                    color="text.secondary"
+                    color="#71717A"
                     display="flex"
                     alignItems="center"
                     gap={0.5}

@@ -54,32 +54,36 @@ export function WorkspaceReservationCard() {
     <Card
       elevation={0}
       sx={{
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         borderRadius: 4,
-        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+        background: "#FFFFFF",
         height: "100%",
       }}
     >
       <CardContent sx={{ p: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Box display="flex" alignItems="center" gap={1.5}>
-            <Avatar sx={{ bgcolor: "#E0F7FA", color: "#00ACC1", width: 42, height: 42 }}>
+            <Avatar sx={{ bgcolor: "#09090B", color: "#FFFFFF", width: 42, height: 42 }}>
               <PhoneInTalkIcon />
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight="bold" color="#1E293B">
+              <Typography variant="h6" fontWeight="900" color="#09090B">
                 Workspace & Desk Reservation
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#71717A">
                 Book Private Call Booths & Focus Rooms
               </Typography>
             </Box>
           </Box>
           <Chip
-            icon={<VolumeOffIcon fontSize="small" />}
+            icon={<VolumeOffIcon fontSize="small" style={{ color: "#FFFFFF" }} />}
             label="Quiet Zone"
-            color="secondary"
-            sx={{ fontWeight: 600 }}
+            sx={{
+              fontWeight: 700,
+              bgcolor: "#09090B",
+              color: "#FFFFFF",
+              "& .MuiChip-icon": { color: "#FFFFFF" }
+            }}
           />
         </Stack>
 
@@ -127,21 +131,30 @@ export function WorkspaceReservationCard() {
               sx={{
                 p: 2.5,
                 borderRadius: 3,
-                bgcolor: "#F8FAFC",
-                border: "1px solid #E2E8F0",
+                bgcolor: "#FAFAFA",
+                border: "1px solid #E4E4E7",
                 mb: 3,
               }}
             >
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="subtitle1" fontWeight="bold" color="#0F172A">
+                <Typography variant="subtitle1" fontWeight="800" color="#09090B">
                   {booth.name}
                 </Typography>
-                <Chip size="small" label={booth.soundproof} color="info" variant="outlined" />
+                <Chip
+                  size="small"
+                  label={booth.soundproof}
+                  sx={{
+                    fontWeight: 700,
+                    bgcolor: "#F4F4F5",
+                    color: "#09090B",
+                    border: "1px solid #E4E4E7"
+                  }}
+                />
               </Stack>
-              <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+              <Typography variant="caption" color="#71717A" display="block" mb={1}>
                 📍 Location: {booth.location} • Type: {booth.type}
               </Typography>
-              <Typography variant="body2" color="#334155" fontWeight="500">
+              <Typography variant="body2" color="#09090B" fontWeight="600">
                 ✨ Amenities: {booth.equipment}
               </Typography>
             </Paper>
@@ -149,11 +162,16 @@ export function WorkspaceReservationCard() {
 
         <Button
           variant="contained"
-          color="secondary"
           fullWidth
           size="large"
           startIcon={<HeadsetMicIcon />}
-          sx={{ py: 1.3, fontWeight: 700 }}
+          sx={{
+            py: 1.3,
+            fontWeight: 800,
+            bgcolor: "#09090B",
+            color: "#FFFFFF",
+            "&:hover": { bgcolor: "#27272A" }
+          }}
         >
           Reserve Private Workspace
         </Button>

@@ -24,17 +24,13 @@ import {
 
 export default function UserProfileHeader({
   user,
-  requestStatus,
   onLogout,
-  onOpenHRModal,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const email = user?.email || localStorage.getItem("email") || "michael@gmail.com";
   const username = user?.username || email.split("@")[0] || "michael";
   const role = user?.role || localStorage.getItem("role") || "Registered User";
-
-  const isPending = requestStatus === "pending";
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -48,53 +44,43 @@ export default function UserProfileHeader({
 
   // Dynamic role configuration for badges & themes
   const getRoleConfig = () => {
-    if (isPending) {
-      return {
-        label: "Status: Onboarding Pending",
-        color: "#D97706",
-        bgColor: "rgba(245, 158, 11, 0.12)",
-        borderColor: "rgba(245, 158, 11, 0.3)",
-        gradient: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
-        pulse: true,
-      };
-    }
     if (role === "Admin") {
       return {
         label: "Role: System Admin",
-        color: "#DC2626",
-        bgColor: "rgba(220, 38, 38, 0.1)",
-        borderColor: "rgba(220, 38, 38, 0.25)",
-        gradient: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+        color: "#09090B",
+        bgColor: "#F4F4F5",
+        borderColor: "#E4E4E7",
+        gradient: "#09090B",
         pulse: false,
       };
     }
     if (role === "Manager") {
       return {
         label: "Role: Team Manager",
-        color: "#7C3AED",
-        bgColor: "rgba(124, 58, 237, 0.1)",
-        borderColor: "rgba(124, 58, 237, 0.25)",
-        gradient: "linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)",
+        color: "#09090B",
+        bgColor: "#F4F4F5",
+        borderColor: "#E4E4E7",
+        gradient: "#09090B",
         pulse: false,
       };
     }
     if (role === "Employee") {
       return {
         label: "Role: Verified Employee",
-        color: "#15803D",
-        bgColor: "rgba(22, 163, 74, 0.1)",
-        borderColor: "rgba(22, 163, 74, 0.25)",
-        gradient: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+        color: "#09090B",
+        bgColor: "#F4F4F5",
+        borderColor: "#E4E4E7",
+        gradient: "#09090B",
         pulse: false,
       };
     }
     // Default Registered User
     return {
       label: "Role: Registered User",
-      color: "#2563EB",
-      bgColor: "rgba(37, 99, 235, 0.08)",
-      borderColor: "rgba(37, 99, 235, 0.22)",
-      gradient: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+      color: "#09090B",
+      bgColor: "#F4F4F5",
+      borderColor: "#E4E4E7",
+      gradient: "#09090B",
       pulse: false,
     };
   };
@@ -194,11 +180,9 @@ export default function UserProfileHeader({
                 width: 10,
                 height: 10,
                 borderRadius: "50%",
-                bgcolor: isPending ? "#F59E0B" : "#10B981",
+                bgcolor: "#10B981",
                 border: "2px solid #FFFFFF",
-                boxShadow: isPending
-                  ? "0 0 6px rgba(245, 158, 11, 0.8)"
-                  : "0 0 6px rgba(16, 185, 129, 0.8)",
+                boxShadow: "0 0 6px rgba(16, 185, 129, 0.8)",
               }}
             />
           </Box>
@@ -254,15 +238,15 @@ export default function UserProfileHeader({
               width: 38,
               height: 38,
               borderRadius: "12px",
-              background: "rgba(239, 68, 68, 0.08)",
-              border: "1px solid rgba(239, 68, 68, 0.2)",
-              color: "#DC2626",
+              background: "#F4F4F5",
+              border: "1px solid #E4E4E7",
+              color: "#09090B",
               transition: "all 0.25s ease",
               "&:hover": {
-                background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
-                borderColor: "#DC2626",
+                background: "#09090B",
+                borderColor: "#09090B",
                 color: "#FFFFFF",
-                boxShadow: "0 4px 14px rgba(220, 38, 38, 0.3)",
+                boxShadow: "0 4px 14px rgba(0, 0, 0, 0.2)",
                 transform: "translateY(-1px)",
               },
             }}
@@ -291,7 +275,7 @@ export default function UserProfileHeader({
             borderRadius: "24px",
             overflow: "hidden",
             boxShadow:
-              "0 20px 40px -10px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(226, 232, 240, 0.8)",
+              "0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px #E4E4E7",
             border: "none",
             mt: 1.5,
             background: "#FFFFFF",
@@ -302,7 +286,7 @@ export default function UserProfileHeader({
         <Box
           sx={{
             p: 2.5,
-            background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
+            bgcolor: "#09090B",
             color: "#FFFFFF",
             position: "relative",
             overflow: "hidden",
@@ -408,39 +392,6 @@ export default function UserProfileHeader({
 
           {/* Quick Links List */}
           <Stack spacing={0.5} mb={2}>
-            {onOpenHRModal && (
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={() => {
-                  handleCloseMenu();
-                  onOpenHRModal();
-                }}
-                startIcon={<Sparkles size={16} />}
-                sx={{
-                  justifyContent: "flex-start",
-                  borderRadius: "12px",
-                  py: 1,
-                  px: 1.5,
-                  textTransform: "none",
-                  fontWeight: 700,
-                  fontSize: "0.82rem",
-                  background: isPending
-                    ? "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)"
-                    : "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-                  boxShadow: isPending
-                    ? "0 4px 14px rgba(245, 158, 11, 0.3)"
-                    : "0 4px 14px rgba(37, 99, 235, 0.3)",
-                  "&:hover": {
-                    background: isPending
-                      ? "linear-gradient(135deg, #D97706 0%, #B45309 100%)"
-                      : "linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)",
-                  },
-                }}
-              >
-                {isPending ? "View HR Onboarding Status" : "Request Employee Access"}
-              </Button>
-            )}
 
             <Button
               fullWidth

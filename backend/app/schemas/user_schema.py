@@ -23,4 +23,8 @@ class UserGoogleLogin(BaseModel):
     name: Optional[str] = ""
     picture: Optional[str] = ""
     google_id: Optional[str] = ""
-    token: Optional[str] = ""
+    token: Optional[str] = ""
+
+class AccountActivate(BaseModel):
+    token: str
+    password: str = Field(..., min_length=8)

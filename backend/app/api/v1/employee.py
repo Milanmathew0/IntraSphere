@@ -33,12 +33,24 @@ async def add_employee(employee: EmployeeCreate):
     if result == "USER_EXISTS":
         raise HTTPException(
             status_code=400,
-            detail="This user already has an employee profile"
+            detail="This user email already exists"
         )
+        
+    if result == "DEPARTMENT_NOT_FOUND":
+        raise HTTPException(status_code=400, detail="Department not found")
+        
+    if result == "DESIGNATION_NOT_FOUND":
+        raise HTTPException(status_code=400, detail="Designation not found")
+
+    employee_id = result["employee_id"]
+    activation_token = result["activation_token"]
+    activation_url = f"http://localhost:5173/activate-account?token={activation_token}"
 
     return {
         "message": "Employee created successfully",
-        "employee_id": result
+        "employee_id": employee_id,
+        "invitation_status": "Pending",
+        "activation_url": activation_url
     }
 
 

@@ -5,9 +5,6 @@ from datetime import date
 
 # Create Employee
 class EmployeeCreate(BaseModel):
-    user_id: str
-    employee_id: str
-
     first_name: str
     last_name: str
     email: str
@@ -16,16 +13,17 @@ class EmployeeCreate(BaseModel):
     department_id: str
     designation_id: str
 
-    address: str
+    address: Optional[str] = ""
 
-    emergency_contact_name: str
-    emergency_contact_phone: str
+    emergency_contact_name: Optional[str] = ""
+    emergency_contact_phone: Optional[str] = ""
 
     joining_date: date
 
     employment_status: str = "Active"
 
     profile_image: Optional[str] = None
+    reporting_manager_id: Optional[str] = None
 
 
 # Update Employee
@@ -48,6 +46,7 @@ class EmployeeUpdate(BaseModel):
     employment_status: Optional[str] = None
 
     profile_image: Optional[str] = None
+    reporting_manager_id: Optional[str] = None
 
 
 # Response Model
@@ -65,13 +64,14 @@ class EmployeeResponse(BaseModel):
     department_id: str
     designation_id: str
 
-    address: str
+    address: Optional[str] = ""
 
-    emergency_contact_name: str
-    emergency_contact_phone: str
+    emergency_contact_name: Optional[str] = ""
+    emergency_contact_phone: Optional[str] = ""
 
     joining_date: date
 
     employment_status: str
 
     profile_image: Optional[str] = None
+    reporting_manager_id: Optional[str] = None

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 
 from app.schemas.user_schema import UserRegister, UserLogin, UserGoogleLogin
-from app.services.user_service import create_user, get_user_by_email, get_or_create_google_user
+from app.services.user_service import create_user, get_user_by_email, get_or_create_google_user, sync_and_get_user_role
 from app.utils.security import verify_password
 from app.utils.jwt_handler import create_access_token
 from app.utils.dependencies import get_current_user
@@ -48,8 +48,22 @@ async def login(user: UserLogin):
             status_code=401,
             detail="Invalid email or password"
         )
+        
+    account_status = db_user.get("account_status", "Active")
+    is_active = db_user.get("is_active", True)
+    
+    if account_status == "Invited":
+        raise HTTPException(
+            status_code=403,
+            detail="Please activate your account using the invitation link."
+        )
+    if account_status in ["Inactive", "Suspended"] or not is_active:
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive or suspended."
+        )
 
-    user_role = db_user.get("role", "User")
+    user_role = await sync_and_get_user_role(db_user)
     username = db_user.get("username", db_user["email"].split("@")[0])
 
     access_token = create_access_token(
@@ -81,8 +95,23 @@ async def google_login(payload: UserGoogleLogin):
         name=payload.name,
         picture=payload.picture
     )
+    
+    account_status = db_user.get("account_status", "Active")
+    is_active = db_user.get("is_active", True)
+    
+    if account_status == "Invited":
+        raise HTTPException(
+            status_code=403,
+            detail="Please activate your account using the invitation link."
+        )
+    if account_status in ["Inactive", "Suspended"] or not is_active:
+        raise HTTPException(
+            status_code=403,
+            detail="Account is inactive or suspended."
+        )
 
-    user_role = db_user.get("role", "User")
+    user_role = await sync_and_get_user_role(db_user)
+
     username = db_user.get("username", db_user["email"].split("@")[0])
 
     access_token = create_access_token(
@@ -106,6 +135,51 @@ async def google_login(payload: UserGoogleLogin):
         "employee_code": emp_code,
         "picture": db_user.get("picture", "")
     }
+
+
+from app.schemas.user_schema import AccountActivate
+from app.database.mongodb import db
+from app.utils.security import hash_password
+from passlib.context import CryptContext
+from datetime import datetime
+
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+@router.post("/activate")
+async def activate_account(payload: AccountActivate):
+    users_collection = db["users"]
+    
+    invited_users = await users_collection.find({"account_status": "Invited"}).to_list(length=1000)
+    matched_user = None
+    for u in invited_users:
+        token_hash = u.get("activation_token_hash")
+        expires = u.get("activation_token_expires")
+        
+        if token_hash and pwd_context.verify(payload.token, token_hash):
+            if expires and expires < datetime.utcnow():
+                raise HTTPException(status_code=400, detail="Activation link has expired")
+            matched_user = u
+            break
+            
+    if not matched_user:
+        raise HTTPException(status_code=400, detail="Invalid or expired activation link")
+        
+    await users_collection.update_one(
+        {"_id": matched_user["_id"]},
+        {
+            "$set": {
+                "password": hash_password(payload.password),
+                "account_status": "Active",
+                "is_active": True
+            },
+            "$unset": {
+                "activation_token_hash": "",
+                "activation_token_expires": ""
+            }
+        }
+    )
+    
+    return {"message": "Account activated successfully"}
 
 
 @router.get("/me")

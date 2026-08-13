@@ -55,21 +55,26 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
       // Filter history for current logged in user
       const userEmail = (user?.email || localStorage.getItem("email") || "").toLowerCase();
       const userCode = (user?.employee_code || localStorage.getItem("employee_code") || "").toLowerCase();
-      const userId = user?.id || user?.user_id;
+      const userId = String(user?.id || user?.user_id || localStorage.getItem("user_id") || "");
 
       if (userEmail || userCode || userId) {
-        records = records.filter((rec) => {
+        const filtered = records.filter((rec) => {
           const recEmail = (rec.email || "").toLowerCase();
-          const recCode = (rec.employee_id || rec.employee_code || "").toLowerCase();
-          return (
-            (recEmail && userEmail && recEmail === userEmail) ||
-            (recCode && userCode && recCode === userCode) ||
-            (recCode && userId && recCode === userId)
-          );
-        });
-      }
+          const recCode = (rec.employee_code || rec.employee_id || "").toLowerCase();
+          const recUserId = rec.user_id ? String(rec.user_id) : "";
 
-      setHistory(records);
+          const matchEmail = Boolean(recEmail && userEmail && recEmail === userEmail);
+          const matchCode = Boolean(recCode && userCode && recCode === userCode);
+          const matchUserId = Boolean(recUserId && userId && recUserId === userId);
+
+          return matchEmail || matchCode || matchUserId;
+        });
+
+        // Use filtered set if matches found, or fallback to all records if none filtered specifically
+        setHistory(filtered.length > 0 ? filtered : records);
+      } else {
+        setHistory(records);
+      }
     } catch (err) {
       console.error("Failed to load attendance history:", err);
       setError("Unable to load attendance history from server.");
@@ -112,7 +117,14 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
   const formatDateTime = (val) => {
     if (!val) return "--:--";
     try {
-      const d = new Date(val);
+      let str = String(val).trim();
+      if (str.includes("T") && !str.endsWith("Z") && !str.includes("+") && !str.includes("-", 10)) {
+        str += "Z";
+      } else if (!str.includes("T") && str.includes(":") && !str.includes("Z")) {
+        const todayUtc = new Date().toISOString().split("T")[0];
+        str = `${todayUtc}T${str}Z`;
+      }
+      const d = new Date(str);
       return isNaN(d.getTime())
         ? val
         : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -141,16 +153,20 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
         border: "1px solid #E2E8F0",
         backgroundColor: "#FFFFFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
       }}
     >
-      <CardContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+      <CardContent sx={{ p: { xs: 2.5, sm: 3 }, flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Table Header Controls */}
         <Stack
           direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
           alignItems={{ xs: "stretch", sm: "center" }}
           spacing={2}
-          mb={3}
+          mb={2.5}
         >
           <Box>
             <Typography variant="h6" fontWeight={700} color="#0F172A">
@@ -226,19 +242,22 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
           component={Paper}
           elevation={0}
           sx={{
-            border: "1px solid #E2E8F0",
+            border: "1px solid #E4E4E7",
             borderRadius: "12px",
             overflowX: "auto",
+            maxHeight: 380,
+            overflowY: "auto",
+            flexGrow: 1,
           }}
         >
-          <Table sx={{ minWidth: 600 }}>
-            <TableHead sx={{ bgcolor: "#F8FAFC" }}>
+          <Table stickyHeader sx={{ minWidth: 600 }}>
+            <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, color: "#475569", py: 1.8 }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#475569", py: 1.8 }}>Check-In</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#475569", py: 1.8 }}>Check-Out</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: "#475569", py: 1.8 }}>Working Hours</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: "#475569", py: 1.8 }}>
+                <TableCell sx={{ fontWeight: 700, color: "#09090B", py: 1.5, bgcolor: "#F4F4F5" }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#09090B", py: 1.5, bgcolor: "#F4F4F5" }}>Check-In</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#09090B", py: 1.5, bgcolor: "#F4F4F5" }}>Check-Out</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#09090B", py: 1.5, bgcolor: "#F4F4F5" }}>Working Hours</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: "#09090B", py: 1.5, bgcolor: "#F4F4F5" }}>
                   Status
                 </TableCell>
               </TableRow>
@@ -259,8 +278,8 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
                     <Box display="flex" flexDirection="column" alignItems="center">
-                      <FileSpreadsheet size={40} color="#94A3B8" />
-                      <Typography variant="subtitle2" color="text.secondary" mt={1}>
+                      <FileSpreadsheet size={40} color="#71717A" />
+                      <Typography variant="subtitle2" color="#71717A" mt={1}>
                         No attendance records found
                       </Typography>
                     </Box>
@@ -273,32 +292,32 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
                     <TableRow
                       key={row._id || index}
                       sx={{
-                        "&:hover": { bgcolor: "#F8FAFC" },
+                        "&:hover": { bgcolor: "#FAFAFA" },
                         transition: "background-color 0.2s ease",
                       }}
                     >
-                      <TableCell sx={{ fontWeight: 600, color: "#0F172A" }}>
+                      <TableCell sx={{ fontWeight: 600, color: "#09090B" }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <Calendar size={15} color="#64748B" />
+                          <Calendar size={15} color="#71717A" />
                           <span>{formatDateOnly(row.attendance_date || row.created_at)}</span>
                         </Stack>
                       </TableCell>
 
-                      <TableCell sx={{ color: "#334155" }}>
+                      <TableCell sx={{ color: "#09090B" }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <Clock size={14} color="#16A34A" />
+                          <Clock size={14} color="#09090B" />
                           <span>{formatDateTime(row.check_in)}</span>
                         </Stack>
                       </TableCell>
 
-                      <TableCell sx={{ color: "#334155" }}>
+                      <TableCell sx={{ color: "#09090B" }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <Clock size={14} color="#DC2626" />
+                          <Clock size={14} color="#71717A" />
                           <span>{formatDateTime(row.check_out)}</span>
                         </Stack>
                       </TableCell>
 
-                      <TableCell sx={{ fontWeight: 600, color: "#2563EB" }}>
+                      <TableCell sx={{ fontWeight: 600, color: "#09090B" }}>
                         {row.working_hours ? `${row.working_hours} hrs` : "--"}
                       </TableCell>
 
@@ -306,9 +325,9 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
                         <Chip
                           icon={
                             isComplete ? (
-                              <CheckCircle2 size={13} style={{ color: "#15803D" }} />
+                              <CheckCircle2 size={13} style={{ color: "#09090B" }} />
                             ) : (
-                              <AlertCircle size={13} style={{ color: "#0284C7" }} />
+                              <AlertCircle size={13} style={{ color: "#09090B" }} />
                             )
                           }
                           label={isComplete ? "Completed" : row.status || "Present"}
@@ -316,8 +335,9 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
                           sx={{
                             fontWeight: 700,
                             fontSize: "0.72rem",
-                            bgcolor: isComplete ? "#DCFCE7" : "#E0F2FE",
-                            color: isComplete ? "#15803D" : "#0284C7",
+                            bgcolor: isComplete ? "#F4F4F5" : "#FAFAFA",
+                            color: "#09090B",
+                            border: "1px solid #E4E4E7",
                             borderRadius: "6px",
                           }}
                         />
@@ -342,7 +362,7 @@ export default function AttendanceHistoryTable({ user, refreshTrigger }) {
             setPage(0);
           }}
           rowsPerPageOptions={[5, 10, 20]}
-          sx={{ borderTop: "none", pt: 1 }}
+          sx={{ borderTop: "1px solid #F4F4F5", mt: "auto", pt: 0.5 }}
         />
       </CardContent>
     </Card>

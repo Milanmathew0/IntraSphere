@@ -71,9 +71,9 @@ export default function EmployeeDirectoryWidget({ showToast }) {
       elevation={0}
       sx={{
         borderRadius: "24px",
-        border: "1px solid rgba(59, 130, 246, 0.3)",
-        background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)",
-        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.04)",
+        border: "1px solid #E4E4E7",
+        background: "#FFFFFF",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
       }}
     >
       <CardContent sx={{ p: 3 }}>
@@ -94,27 +94,26 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                 width: 44,
                 height: 44,
                 borderRadius: "14px",
-                background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+                bgcolor: "#09090B",
                 color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)",
               }}
             >
               <Users size={22} />
             </Box>
             <Box>
               <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="h6" fontWeight={800} color="#0F172A">
-                  Employee Directory
+                <Typography variant="h6" fontWeight={900} color="#09090B">
+                  Staff Directory & Database
                 </Typography>
                 <Chip
                   label={`${employees.length} Members`}
                   size="small"
                   sx={{
-                    bgcolor: "#E8F0FE",
-                    color: "#1D4ED8",
+                    bgcolor: "#F4F4F5",
+                    color: "#27272A",
                     fontWeight: 700,
                     fontSize: "0.75rem",
                     border: "1px solid rgba(59, 130, 246, 0.3)",

@@ -65,32 +65,41 @@ export function NotificationsAndActivities() {
     <Card
       elevation={0}
       sx={{
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         borderRadius: 4,
-        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+        background: "#FFFFFF",
         height: "100%",
       }}
     >
       <CardContent sx={{ p: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
           <Box display="flex" alignItems="center" gap={1.5}>
-            <Avatar sx={{ bgcolor: "#FFF3E0", color: "#E65100", width: 42, height: 42 }}>
+            <Avatar sx={{ bgcolor: "#09090B", color: "#FFFFFF", width: 42, height: 42 }}>
               <NotificationsActiveIcon />
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight="bold" color="#1E293B">
+              <Typography variant="h6" fontWeight="900" color="#09090B">
                 Notifications & Activities
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#71717A">
                 Recent updates and upcoming office events
               </Typography>
             </Box>
           </Box>
-          <Chip label="3 New" color="warning" size="small" sx={{ fontWeight: 700 }} />
+          <Chip
+            label="3 New"
+            size="small"
+            sx={{
+              fontWeight: 700,
+              bgcolor: "#F4F4F5",
+              color: "#09090B",
+              border: "1px solid #E4E4E7"
+            }}
+          />
         </Stack>
 
         {/* Notifications feed */}
-        <Typography variant="caption" color="text.secondary" fontWeight="bold" display="block" mb={1}>
+        <Typography variant="caption" color="#71717A" fontWeight="bold" display="block" mb={1}>
           RECENT NOTIFICATIONS
         </Typography>
 
@@ -104,16 +113,16 @@ export function NotificationsAndActivities() {
                 <ListItemText
                   primary={
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Typography variant="body2" fontWeight="600" color="#0F172A">
+                      <Typography variant="body2" fontWeight="700" color="#09090B">
                         {item.title}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="#71717A">
                         {item.time}
                       </Typography>
                     </Stack>
                   }
                   secondary={
-                    <Typography variant="caption" color="text.secondary" display="block">
+                    <Typography variant="caption" color="#71717A" display="block">
                       {item.subtitle}
                     </Typography>
                   }
@@ -127,7 +136,7 @@ export function NotificationsAndActivities() {
         <Divider sx={{ my: 2 }} />
 
         {/* Upcoming Activities */}
-        <Typography variant="caption" color="text.secondary" fontWeight="bold" display="block" mb={1.5}>
+        <Typography variant="caption" color="#71717A" fontWeight="bold" display="block" mb={1.5}>
           UPCOMING ACTIVITIES
         </Typography>
 
@@ -138,22 +147,22 @@ export function NotificationsAndActivities() {
               elevation={0}
               sx={{
                 p: 1.5,
-                border: "1px solid #E2E8F0",
+                border: "1px solid #E4E4E7",
                 borderRadius: 2.5,
-                bgcolor: "#F8FAFC",
+                bgcolor: "#FAFAFA",
                 display: "flex",
                 alignItems: "center",
                 gap: 1.5,
               }}
             >
-              <Avatar sx={{ width: 36, height: 36, bgcolor: "#E3F2FD", color: "#1976D2" }}>
+              <Avatar sx={{ width: 36, height: 36, bgcolor: "#09090B", color: "#FFFFFF" }}>
                 <EventIcon fontSize="small" />
               </Avatar>
               <Box>
-                <Typography variant="body2" fontWeight="600" color="#1E293B">
+                <Typography variant="body2" fontWeight="700" color="#09090B">
                   {act.title}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" display="block">
+                <Typography variant="caption" color="#71717A" display="block">
                   🕒 {act.time} • 📍 {act.location}
                 </Typography>
               </Box>

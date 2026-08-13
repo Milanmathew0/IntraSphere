@@ -12,12 +12,6 @@ import {
   Tooltip,
   Snackbar,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
   LinearProgress,
 } from "@mui/material";
 import {
@@ -28,7 +22,6 @@ import {
   Cpu,
   Coffee,
   Clock,
-  Send,
   Zap,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -43,32 +36,7 @@ export default function UserDashboard() {
   const username = user?.username || user?.email?.split("@")[0] || "User";
   const userEmail = user?.email || "user@intrasphere.io";
 
-  // HR Request State (Persisted in localStorage & backend DB)
-  const [requestStatus, setRequestStatus] = useState(() => {
-    return (
-      localStorage.getItem(`hr_request_status_${userEmail}`) || "idle"
-    );
-  });
 
-  const [requestDetails, setRequestDetails] = useState(() => {
-    const saved = localStorage.getItem(`hr_request_details_${userEmail}`);
-    return saved
-      ? JSON.parse(saved)
-      : {
-          department: "Engineering",
-          jobTitle: "Software Engineer",
-          empCode: "",
-          message: "",
-          submittedAt: "",
-        };
-  });
-
-  // Modal State
-  const [openHRModal, setOpenHRModal] = useState(false);
-  const [department, setDepartment] = useState("Engineering");
-  const [jobTitle, setJobTitle] = useState("");
-  const [empCode, setEmpCode] = useState("");
-  const [message, setMessage] = useState("");
 
   // Department Explorer State
   const [activeDeptTab, setActiveDeptTab] = useState("Engineering");
@@ -84,92 +52,14 @@ export default function UserDashboard() {
     setToast({ open: true, message: msg, severity });
   };
 
-  // Fetch Onboarding Request Status from Backend on Mount
-  useEffect(() => {
-    fetchMyRequestStatus();
-  }, []);
 
-  const fetchMyRequestStatus = async () => {
-    try {
-      const res = await api.get("/api/v1/onboarding/request/me");
-      if (res.data && res.data.request) {
-        const req = res.data.request;
-        setRequestStatus(req.status);
-        const details = {
-          department: req.department || "Engineering",
-          jobTitle: req.job_title || "Employee",
-          empCode: req.emp_code || "",
-          message: req.message || "",
-          submittedAt: req.submitted_at || "",
-        };
-        setRequestDetails(details);
-        localStorage.setItem(`hr_request_status_${userEmail}`, req.status);
-        localStorage.setItem(`hr_request_details_${userEmail}`, JSON.stringify(details));
-      }
-    } catch (err) {
-      console.log("Using cached/local onboarding status", err);
-    }
-  };
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const handleSubmitHRRequest = async (e) => {
-    e.preventDefault();
-    if (!jobTitle.trim()) {
-      showToast("Please enter your desired job title or role.", "error");
-      return;
-    }
 
-    const nowFormatted = new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const newDetails = {
-      department,
-      jobTitle,
-      empCode,
-      message,
-      submittedAt: nowFormatted,
-    };
-
-    try {
-      await api.post("/api/v1/onboarding/request", {
-        department,
-        job_title: jobTitle,
-        emp_code: empCode,
-        message,
-      });
-
-      setRequestDetails(newDetails);
-      setRequestStatus("pending");
-
-      localStorage.setItem(`hr_request_status_${userEmail}`, "pending");
-      localStorage.setItem(
-        `hr_request_details_${userEmail}`,
-        JSON.stringify(newDetails)
-      );
-
-      setOpenHRModal(false);
-      showToast(
-        "Your employee access request has been sent to the HR Manager!",
-        "success"
-      );
-    } catch (err) {
-      console.error(err);
-      // Fallback local update if offline
-      setRequestDetails(newDetails);
-      setRequestStatus("pending");
-      setOpenHRModal(false);
-      showToast("Employee access request submitted!", "success");
-    }
-  };
 
   // Company Departments Info
   const departmentsData = {
@@ -213,43 +103,66 @@ export default function UserDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#F8FAFC",
-        color: "#0F172A",
+        backgroundColor: "#FAFAFA",
+        color: "#09090B",
         position: "relative",
         overflowX: "hidden",
         fontFamily: "'Inter', sans-serif",
         pb: 8,
       }}
     >
-      {/* Background Ambient Light Orbs */}
+      {/* Top Header Banner */}
       <Box
         sx={{
-          position: "fixed",
-          top: "-15%",
-          left: "-10%",
-          width: "550px",
-          height: "550px",
-          background:
-            "radial-gradient(circle, rgba(46, 125, 50, 0.12) 0%, rgba(248, 250, 252, 0) 70%)",
-          filter: "blur(90px)",
-          pointerEvents: "none",
-          zIndex: 0,
+          bgcolor: "#09090B",
+          color: "#FFFFFF",
+          pt: 1.5,
+          pb: 8,
+          px: { xs: 2, sm: 4, md: 6 },
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
         }}
-      />
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: "-20%",
-          right: "-10%",
-          width: "600px",
-          height: "600px",
-          background:
-            "radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(248, 250, 252, 0) 70%)",
-          filter: "blur(100px)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, cursor: "pointer" }} onClick={() => navigate("/")}>
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: "12px",
+                  bgcolor: "#18181B",
+                  border: "1px solid #27272A",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ShieldCheck size={22} color="#FFFFFF" />
+              </Box>
+              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF">
+                IntraSphere
+              </Typography>
+            </Box>
+
+            <UserProfileHeader
+              user={{ ...user, role: "User" }}
+              onLogout={handleLogout}
+            />
+          </Box>
+        </Container>
+      </Box>
+
+        {/* Hero Greeting Row */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 2 }}>
+          <Box>
+            <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.75)", fontWeight: 500 }}>
+              Welcome back,
+            </Typography>
+            <Typography variant="h3" fontWeight={800} letterSpacing={-0.8} sx={{ color: "#FFFFFF", mt: 0.2 }}>
+              {username}
+            </Typography>
+          </Box>
+        </Box>
 
       {/* Main Container */}
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, pt: 3 }}>
@@ -307,9 +220,7 @@ export default function UserDashboard() {
           {/* User Profile Header Component */}
           <UserProfileHeader
             user={user}
-            requestStatus={requestStatus}
             onLogout={handleLogout}
-            onOpenHRModal={() => setOpenHRModal(true)}
           />
         </GlassCard>
 
@@ -360,230 +271,10 @@ export default function UserDashboard() {
                 IntraSphere is a next-generation enterprise workspace platform. We empower modern teams with AI-driven workspace reservations, automated attendance logging, quiet focus pod management, and real-time collaboration tools.
               </Typography>
 
-              {/* Main Action Button */}
-              {requestStatus === "idle" ? (
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<Send size={20} />}
-                  onClick={() => setOpenHRModal(true)}
-                  sx={{
-                    borderRadius: "16px",
-                    px: 4,
-                    py: 1.6,
-                    fontSize: "1rem",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    color: "#FFFFFF",
-                    background: "linear-gradient(135deg, #2E7D32 0%, #15803D 100%)",
-                    boxShadow: "0 8px 25px rgba(46, 125, 50, 0.35)",
-                    "&:hover": {
-                      background: "linear-gradient(135deg, #15803D 0%, #166534 100%)",
-                      transform: "translateY(-2px)",
-                    },
-                  }}
-                >
-                  Request Employee Access from HR
-                </Button>
-              ) : (
-                <Button
-                  variant="outlined"
-                  size="large"
-                  startIcon={<Clock size={20} color="#D97706" />}
-                  onClick={() =>
-                    showToast(
-                      "Your application is currently under review by the HR Manager.",
-                      "info"
-                    )
-                  }
-                  sx={{
-                    borderRadius: "16px",
-                    px: 4,
-                    py: 1.6,
-                    fontSize: "1rem",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    color: "#D97706",
-                    borderColor: "rgba(217, 119, 6, 0.4)",
-                    background: "rgba(245, 158, 11, 0.08)",
-                  }}
-                >
-                  Request Pending HR Approval
-                </Button>
-              )}
+
             </Grid>
 
-            {/* Hero Visual Card / Request Summary */}
-            <Grid item xs={12} md={5}>
-              {requestStatus === "pending" ? (
-                /* Interactive Pending Status Card */
-                <Box
-                  sx={{
-                    p: 3.5,
-                    borderRadius: "24px",
-                    background: "rgba(254, 243, 199, 0.5)",
-                    border: "1px solid rgba(245, 158, 11, 0.3)",
-                    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
-                  }}
-                >
-                  <Box display="flex" alignItems="center" gap={1.5} mb={2}>
-                    <Clock size={24} color="#D97706" />
-                    <Typography variant="h6" fontWeight={700} color="#B45309">
-                      Onboarding Status: Pending
-                    </Typography>
-                  </Box>
 
-                  <Typography variant="body2" color="#475569" mb={3}>
-                    Your application to join as an official employee has been submitted to the HR Manager.
-                  </Typography>
-
-                  <Stack spacing={2} mb={3}>
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography variant="caption" color="#64748B">
-                        Requested Department:
-                      </Typography>
-                      <Typography variant="caption" fontWeight={700} color="#0F172A">
-                        {requestDetails.department}
-                      </Typography>
-                    </Box>
-
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography variant="caption" color="#64748B">
-                        Target Job Title:
-                      </Typography>
-                      <Typography variant="caption" fontWeight={700} color="#15803D">
-                        {requestDetails.jobTitle}
-                      </Typography>
-                    </Box>
-
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography variant="caption" color="#64748B">
-                        Submitted On:
-                      </Typography>
-                      <Typography variant="caption" color="#334155">
-                        {requestDetails.submittedAt}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <LinearProgress
-                    variant="indeterminate"
-                    sx={{
-                      height: 6,
-                      borderRadius: 3,
-                      bgcolor: "rgba(245, 158, 11, 0.2)",
-                      "& .MuiLinearProgress-bar": { bgcolor: "#D97706" },
-                    }}
-                  />
-                  <Typography
-                    variant="caption"
-                    color="#64748B"
-                    display="block"
-                    textAlign="center"
-                    mt={1.5}
-                  >
-                    HR Manager review in progress...
-                  </Typography>
-                </Box>
-              ) : (
-                /* Information Visual Card */
-                <Box
-                  sx={{
-                    p: 3.5,
-                    borderRadius: "24px",
-                    background: "rgba(241, 245, 249, 0.7)",
-                    border: "1px solid rgba(226, 232, 240, 0.9)",
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={700} color="#0F172A" mb={1}>
-                    How Onboarding Works
-                  </Typography>
-                  <Typography variant="body2" color="#64748B" mb={3}>
-                    Follow 3 simple steps to activate full employee privileges:
-                  </Typography>
-
-                  <Stack spacing={2.5}>
-                    <Box display="flex" gap={2} alignItems="flex-start">
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "10px",
-                          bgcolor: "rgba(46, 125, 50, 0.15)",
-                          color: "#15803D",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                        }}
-                      >
-                        1
-                      </Box>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
-                          Submit Request to HR
-                        </Typography>
-                        <Typography variant="caption" color="#64748B">
-                          Provide your department interest and position title.
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    <Box display="flex" gap={2} alignItems="flex-start">
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "10px",
-                          bgcolor: "rgba(37, 99, 235, 0.15)",
-                          color: "#1D4ED8",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                        }}
-                      >
-                        2
-                      </Box>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
-                          HR Manager Approval
-                        </Typography>
-                        <Typography variant="caption" color="#64748B">
-                          HR verifies your record and upgrades your account role to Employee.
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    <Box display="flex" gap={2} alignItems="flex-start">
-                      <Box
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "10px",
-                          bgcolor: "rgba(147, 51, 234, 0.15)",
-                          color: "#7E22CE",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                        }}
-                      >
-                        3
-                      </Box>
-                      <Box>
-                        <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
-                          Unlock Employee Portal
-                        </Typography>
-                        <Typography variant="caption" color="#64748B">
-                          Gain access to attendance check-in, shift logs, and quiet pods.
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Stack>
-                </Box>
-              )}
-            </Grid>
           </Grid>
         </GlassCard>
 
@@ -844,21 +535,6 @@ export default function UserDashboard() {
                       <Typography variant="body2" fontWeight={600} color="#0F172A">
                         {role}
                       </Typography>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          setDepartment(activeDeptTab);
-                          setJobTitle(role);
-                          setOpenHRModal(true);
-                        }}
-                        sx={{
-                          color: "#15803D",
-                          textTransform: "none",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Apply for this Role
-                      </Button>
                     </Box>
                   ))}
                 </Stack>
@@ -868,173 +544,6 @@ export default function UserDashboard() {
         </GlassCard>
       </Container>
 
-      {/* Interactive Modal: Send Request to HR Manager */}
-      <Dialog
-        open={openHRModal}
-        onClose={() => setOpenHRModal(false)}
-        PaperProps={{
-          sx: {
-            borderRadius: "24px",
-            background: "#FFFFFF",
-            border: "1px solid #E2E8F0",
-            color: "#0F172A",
-            maxWidth: "520px",
-            width: "100%",
-            boxShadow: "0 20px 40px rgba(15, 23, 42, 0.15)",
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 800, pt: 3, pb: 1, color: "#0F172A" }}>
-          Request Employee Onboarding from HR Manager
-        </DialogTitle>
-        <form onSubmit={handleSubmitHRRequest}>
-          <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-            <Typography variant="body2" color="#64748B">
-              Fill out your position details below. Once submitted, the HR Manager will review your details and upgrade your account role to <strong>Employee</strong>.
-            </Typography>
-
-            <TextField
-              label="Full Name"
-              disabled
-              value={username}
-              fullWidth
-              sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                  color: "#334155",
-                  WebkitTextFillColor: "#334155",
-                },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-              }}
-            />
-
-            <TextField
-              label="Email Address"
-              disabled
-              value={userEmail}
-              fullWidth
-              sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                  color: "#334155",
-                  WebkitTextFillColor: "#334155",
-                },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-              }}
-            />
-
-            <TextField
-              select
-              fullWidth
-              label="Target Department"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              SelectProps={{
-                MenuProps: {
-                  PaperProps: {
-                    sx: {
-                      bgcolor: "#FFFFFF",
-                      color: "#0F172A",
-                      border: "1px solid #E2E8F0",
-                      boxShadow: "0 10px 30px rgba(15, 23, 42, 0.15)",
-                      "& .MuiMenuItem-root": {
-                        color: "#0F172A",
-                        "&:hover": { bgcolor: "rgba(46, 125, 50, 0.08)" },
-                        "&.Mui-selected": { bgcolor: "rgba(46, 125, 50, 0.15)" },
-                      },
-                    },
-                  },
-                },
-              }}
-              sx={{
-                "& .MuiInputBase-input": { color: "#0F172A" },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#15803D" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#CBD5E1" },
-                  "&:hover fieldset": { borderColor: "#15803D" },
-                },
-              }}
-            >
-              <MenuItem value="Engineering">Engineering & Product Tech</MenuItem>
-              <MenuItem value="HR">Human Resources & Culture</MenuItem>
-              <MenuItem value="Operations">Facilities & Workspace Operations</MenuItem>
-              <MenuItem value="Sales">Global Enterprise Sales</MenuItem>
-            </TextField>
-
-            <TextField
-              required
-              fullWidth
-              label="Job Title / Position"
-              placeholder="e.g. Software Engineer, Operations Analyst..."
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              sx={{
-                "& .MuiInputBase-input": { color: "#0F172A" },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#15803D" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#CBD5E1" },
-                  "&:hover fieldset": { borderColor: "#15803D" },
-                },
-              }}
-            />
-
-            <TextField
-              fullWidth
-              label="Employee Code / Offer Ref (Optional)"
-              placeholder="e.g. EMP-98214..."
-              value={empCode}
-              onChange={(e) => setEmpCode(e.target.value)}
-              sx={{
-                "& .MuiInputBase-input": { color: "#0F172A" },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#15803D" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#CBD5E1" },
-                  "&:hover fieldset": { borderColor: "#15803D" },
-                },
-              }}
-            />
-
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Note for HR Manager (Optional)"
-              placeholder="Tell HR about your joining date or team reference..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              sx={{
-                "& .MuiInputBase-input": { color: "#0F172A" },
-                "& .MuiInputLabel-root": { color: "#64748B" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#15803D" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#CBD5E1" },
-                  "&:hover fieldset": { borderColor: "#15803D" },
-                },
-              }}
-            />
-          </DialogContent>
-          <DialogActions sx={{ p: 3, pt: 1 }}>
-            <Button onClick={() => setOpenHRModal(false)} sx={{ color: "#64748B" }}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                borderRadius: "12px",
-                bgcolor: "#2E7D32",
-                color: "#FFFFFF",
-                "&:hover": { bgcolor: "#15803D" },
-                fontWeight: 700,
-                px: 3,
-              }}
-            >
-              Submit Request to HR
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
 
       {/* Snackbar Toast Feedback */}
       <Snackbar

@@ -8,7 +8,7 @@ export function AuthLayout({ children }) {
         minHeight: "100vh",
         width: "100%",
         display: "flex",
-        backgroundColor: "#F5F7FA",
+        backgroundColor: "#FAFAFA",
       }}
     >
       <Box
@@ -19,11 +19,11 @@ export function AuthLayout({ children }) {
           flexDirection: { xs: "column", md: "row" },
         }}
       >
-        {/* Left Side: Minimal Professional Hero (Desktop) */}
+        {/* Left Side: Minimal Black & White Hero */}
         <Box
           sx={{
             flex: { xs: "none", md: "1" },
-            background: "linear-gradient(135deg, #0A192F 0%, #102A43 50%, #1976D2 100%)",
+            bgcolor: "#09090B",
             color: "#FFFFFF",
             p: { xs: 4, sm: 6, md: 8 },
             display: "flex",
@@ -79,8 +79,8 @@ export function AuthLayout({ children }) {
             <Typography
               variant="h6"
               sx={{
-                fontWeight: 500,
-                color: "#00ACC1",
+                fontWeight: 600,
+                color: "#A1A1AA",
                 mb: 2,
                 fontSize: "1.1rem",
               }}

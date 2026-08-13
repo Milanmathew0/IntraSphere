@@ -23,8 +23,9 @@ export default function QuickActionsGrid({ onActionClick }) {
       title: "Daily Attendance",
       desc: "Log your daily office entry and exit time with 1-click check-in.",
       icon: <Clock size={24} />,
-      color: "#2563EB",
-      bgColor: "#EFF6FF",
+      color: "#09090B",
+      bgColor: "#09090B",
+      iconColor: "#FFFFFF",
       buttonText: "Mark Attendance",
     },
     {
@@ -32,8 +33,9 @@ export default function QuickActionsGrid({ onActionClick }) {
       title: "Meeting Room Booking",
       desc: "Reserve emergency war rooms, conference pods, and video booths.",
       icon: <Video size={24} />,
-      color: "#7C3AED",
-      bgColor: "#F5F3FF",
+      color: "#09090B",
+      bgColor: "#18181B",
+      iconColor: "#FFFFFF",
       buttonText: "Book a Room",
     },
     {
@@ -41,8 +43,9 @@ export default function QuickActionsGrid({ onActionClick }) {
       title: "Workspace Reservation",
       desc: "Reserve quiet focus desks, ergonomic seats, and phone booths.",
       icon: <Building2 size={24} />,
-      color: "#059669",
-      bgColor: "#ECFDF5",
+      color: "#09090B",
+      bgColor: "#27272A",
+      iconColor: "#FFFFFF",
       buttonText: "Reserve Desk",
     },
     {
@@ -50,8 +53,9 @@ export default function QuickActionsGrid({ onActionClick }) {
       title: "Apply for Leave",
       desc: "Submit PTO, sick leave, or remote work requests to HR.",
       icon: <CalendarOff size={24} />,
-      color: "#D97706",
-      bgColor: "#FFFBEB",
+      color: "#09090B",
+      bgColor: "#3F3F46",
+      iconColor: "#FFFFFF",
       buttonText: "Apply Leave",
     },
   ];
@@ -64,7 +68,7 @@ export default function QuickActionsGrid({ onActionClick }) {
             elevation={0}
             sx={{
               borderRadius: "16px",
-              border: "1px solid #E2E8F0",
+              border: "1px solid #E4E4E7",
               backgroundColor: "#FFFFFF",
               boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
               transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -75,7 +79,7 @@ export default function QuickActionsGrid({ onActionClick }) {
               "&:hover": {
                 transform: "translateY(-4px)",
                 boxShadow: "0 12px 24px rgba(0, 0, 0, 0.08)",
-                borderColor: act.color,
+                borderColor: "#09090B",
               },
             }}
             onClick={() => onActionClick && onActionClick(act.id)}
@@ -88,7 +92,7 @@ export default function QuickActionsGrid({ onActionClick }) {
                   height: 48,
                   borderRadius: "12px",
                   bgcolor: act.bgColor,
-                  color: act.color,
+                  color: act.iconColor,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -98,11 +102,11 @@ export default function QuickActionsGrid({ onActionClick }) {
                 {act.icon}
               </Box>
 
-              <Typography variant="h6" fontWeight={700} color="#0F172A" mb={0.8} fontSize="1rem">
+              <Typography variant="h6" fontWeight={700} color="#09090B" mb={0.8} fontSize="1rem">
                 {act.title}
               </Typography>
 
-              <Typography variant="body2" color="text.secondary" mb={2.5} flexGrow={1} lineHeight={1.5}>
+              <Typography variant="body2" color="#71717A" mb={2.5} flexGrow={1} lineHeight={1.5}>
                 {act.desc}
               </Typography>
 
@@ -112,7 +116,7 @@ export default function QuickActionsGrid({ onActionClick }) {
                 sx={{
                   alignSelf: "flex-start",
                   fontWeight: 700,
-                  color: act.color,
+                  color: "#09090B",
                   p: 0,
                   textTransform: "none",
                   "&:hover": { bgcolor: "transparent", textDecoration: "underline" },

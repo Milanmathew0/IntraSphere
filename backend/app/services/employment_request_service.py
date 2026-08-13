@@ -166,6 +166,13 @@ async def approve_request(
     if designation is None:
         return "DESIGNATION_NOT_FOUND"
 
+    desig_name = designation.get("designation_name", "") if designation else ""
+    assigned_role = "Employee"
+    if "manager" in desig_name.lower():
+        assigned_role = "Manager"
+    elif "hr" in desig_name.lower():
+        assigned_role = "HR"
+
     # Update User Role
     await users_collection.update_one(
         {
@@ -173,7 +180,7 @@ async def approve_request(
         },
         {
             "$set": {
-                "role": "Employee",
+                "role": assigned_role,
                 "updated_at": datetime.utcnow()
             }
         }

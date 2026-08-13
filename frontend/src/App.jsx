@@ -4,6 +4,8 @@ import { AuthProvider } from "./context/AuthContext";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ActivateAccount from "./pages/ActivateAccount";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import UserDashboard from "./pages/UserDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
@@ -11,6 +13,8 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Employees from "./pages/Employees";
+import Leave from "./pages/Leave";
+import MeetingRooms from "./pages/MeetingRooms";
 
 function App() {
   return (
@@ -18,12 +22,13 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Default route */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Landing Page Route */}
+            <Route path="/" element={<LandingPage />} />
 
             {/* Authentication Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/activate-account" element={<ActivateAccount />} />
 
             {/* Unified & Role-specific Dashboard Routes */}
             <Route
@@ -63,6 +68,26 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["Admin"]}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Meeting Room Booking Route */}
+            <Route
+              path="/meeting-rooms"
+              element={
+                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <MeetingRooms />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Leave Management Route */}
+            <Route
+              path="/leave"
+              element={
+                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Admin"]}>
+                  <Leave />
                 </ProtectedRoute>
               }
             />

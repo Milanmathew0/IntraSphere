@@ -24,27 +24,18 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
   const getScheduleIcon = (type) => {
     switch (type) {
       case "meeting":
-        return <Video size={18} color="#7C3AED" />;
+        return <Video size={18} color="#09090B" />;
       case "workspace":
-        return <Building2 size={18} color="#059669" />;
+        return <Building2 size={18} color="#09090B" />;
       case "leave":
-        return <CalendarOff size={18} color="#D97706" />;
+        return <CalendarOff size={18} color="#09090B" />;
       default:
-        return <Calendar size={18} color="#2563EB" />;
+        return <Calendar size={18} color="#09090B" />;
     }
   };
 
-  const getBadgeColor = (type) => {
-    switch (type) {
-      case "meeting":
-        return { bg: "#F5F3FF", text: "#7C3AED" };
-      case "workspace":
-        return { bg: "#ECFDF5", text: "#059669" };
-      case "leave":
-        return { bg: "#FFFBEB", text: "#D97706" };
-      default:
-        return { bg: "#EFF6FF", text: "#2563EB" };
-    }
+  const getBadgeColor = () => {
+    return { bg: "#F4F4F5", text: "#09090B", border: "#E4E4E7" };
   };
 
   return (
@@ -52,7 +43,7 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
       elevation={0}
       sx={{
         borderRadius: "16px",
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         backgroundColor: "#FFFFFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
         height: "100%",
@@ -67,8 +58,8 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
               sx={{
                 p: 1.2,
                 borderRadius: "12px",
-                bgcolor: "#F5F3FF",
-                color: "#7C3AED",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -77,10 +68,10 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
               <Calendar size={22} />
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={700} color="#0F172A">
+              <Typography variant="h6" fontWeight={700} color="#09090B">
                 Today's Schedule
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#71717A">
                 Your bookings, reservations & leave schedule
               </Typography>
             </Box>
@@ -90,8 +81,9 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
             label={`${scheduleItems.length} Events`}
             size="small"
             sx={{
-              bgcolor: "#F1F5F9",
-              color: "#475569",
+              bgcolor: "#F4F4F5",
+              color: "#09090B",
+              border: "1px solid #E4E4E7",
               fontWeight: 700,
               fontSize: "0.75rem",
               borderRadius: "8px",
@@ -106,8 +98,8 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
             sx={{
               p: 4,
               borderRadius: "14px",
-              bgcolor: "#F8FAFC",
-              border: "1px dashed #CBD5E1",
+              bgcolor: "#FAFAFA",
+              border: "1px dashed #D4D4D8",
               textAlign: "center",
               my: "auto",
               display: "flex",
@@ -120,17 +112,17 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
               sx={{
                 p: 2,
                 borderRadius: "50%",
-                bgcolor: "#EFF6FF",
-                color: "#2563EB",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
                 mb: 1.5,
               }}
             >
               <Sparkles size={28} />
             </Box>
-            <Typography variant="subtitle1" fontWeight={700} color="#1E293B" mb={0.5}>
+            <Typography variant="subtitle1" fontWeight={700} color="#09090B" mb={0.5}>
               No Events Scheduled Today
             </Typography>
-            <Typography variant="body2" color="text.secondary" maxWidth={280}>
+            <Typography variant="body2" color="#71717A" maxWidth={280}>
               You have no active meeting room bookings, desk reservations, or approved leaves for today.
             </Typography>
           </Paper>
@@ -138,7 +130,7 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
           /* Schedule Item List */
           <Stack spacing={2}>
             {scheduleItems.map((item, idx) => {
-              const badge = getBadgeColor(item.type);
+              const badge = getBadgeColor();
               return (
                 <Paper
                   key={idx}
@@ -146,7 +138,7 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
                   sx={{
                     p: 2,
                     borderRadius: "12px",
-                    border: "1px solid #E2E8F0",
+                    border: "1px solid #E4E4E7",
                     bgcolor: "#FFFFFF",
                     transition: "transform 0.2s ease, box-shadow 0.2s ease",
                     "&:hover": {
@@ -161,6 +153,7 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
                         p: 1,
                         borderRadius: "10px",
                         bgcolor: badge.bg,
+                        border: `1px solid ${badge.border}`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -171,7 +164,7 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
 
                     <Box flexGrow={1}>
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
+                        <Typography variant="subtitle2" fontWeight={700} color="#09090B">
                           {item.title}
                         </Typography>
                         <Chip
@@ -183,10 +176,11 @@ export default function TodayScheduleCard({ scheduleItems = [] }) {
                             fontWeight: 700,
                             bgcolor: badge.bg,
                             color: badge.text,
+                            border: `1px solid ${badge.border}`
                           }}
                         />
                       </Stack>
-                      <Typography variant="caption" color="text.secondary" display="flex" alignItems="center" gap={0.5} mt={0.3}>
+                      <Typography variant="caption" color="#71717A" display="flex" alignItems="center" gap={0.5} mt={0.3}>
                         <MapPin size={12} /> {item.location || "Main Office"}
                       </Typography>
                     </Box>

@@ -26,9 +26,9 @@ export function AttendanceWidget() {
     <Card
       elevation={0}
       sx={{
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         borderRadius: 4,
-        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+        background: "#FFFFFF",
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -37,23 +37,28 @@ export function AttendanceWidget() {
       <CardContent sx={{ p: 3, flexGrow: 1 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Box display="flex" alignItems="center" gap={1.5}>
-            <Avatar sx={{ bgcolor: "#E3F2FD", color: "#1976D2", width: 42, height: 42 }}>
+            <Avatar sx={{ bgcolor: "#09090B", color: "#FFFFFF", width: 42, height: 42 }}>
               <AccessTimeIcon />
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight="bold" color="#1E293B">
+              <Typography variant="h6" fontWeight="900" color="#09090B">
                 Daily Attendance
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" color="#71717A">
                 Manual Office Check-in / Check-out
               </Typography>
             </Box>
           </Box>
           <Chip
-            icon={<CheckCircleOutlinedIcon fontSize="small" />}
+            icon={<CheckCircleOutlinedIcon fontSize="small" style={{ color: "#09090B" }} />}
             label={isCheckedIn ? "Checked In" : "Checked Out"}
-            color={isCheckedIn ? "success" : "default"}
-            sx={{ fontWeight: 600, px: 1 }}
+            sx={{
+              fontWeight: 700,
+              px: 1,
+              bgcolor: "#F4F4F5",
+              color: "#09090B",
+              border: "1px solid #E4E4E7"
+            }}
           />
         </Stack>
 
@@ -61,34 +66,34 @@ export function AttendanceWidget() {
           elevation={0}
           sx={{
             p: 2.5,
-            bgcolor: "#F1F5F9",
+            bgcolor: "#FAFAFA",
             borderRadius: 3,
-            border: "1px solid #E2E8F0",
+            border: "1px solid #E4E4E7",
             mb: 3,
           }}
         >
           <Grid container spacing={2} textAlign="center">
             <Grid item xs={4}>
-              <Typography variant="caption" color="text.secondary" display="block">
+              <Typography variant="caption" color="#71717A" display="block">
                 Check In
               </Typography>
-              <Typography variant="subtitle1" fontWeight="bold" color="#0F172A">
+              <Typography variant="subtitle1" fontWeight="800" color="#09090B">
                 09:15 AM
               </Typography>
             </Grid>
-            <Grid item xs={4} sx={{ borderLeft: "1px solid #CBD5E1", borderRight: "1px solid #CBD5E1" }}>
-              <Typography variant="caption" color="text.secondary" display="block">
+            <Grid item xs={4} sx={{ borderLeft: "1px solid #E4E4E7", borderRight: "1px solid #E4E4E7" }}>
+              <Typography variant="caption" color="#71717A" display="block">
                 Check Out
               </Typography>
-              <Typography variant="subtitle1" fontWeight="bold" color="#0F172A">
+              <Typography variant="subtitle1" fontWeight="800" color="#09090B">
                 --:-- PM
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography variant="caption" color="text.secondary" display="block">
+              <Typography variant="caption" color="#71717A" display="block">
                 Logged Hours
               </Typography>
-              <Typography variant="subtitle1" fontWeight="bold" color="#1976D2">
+              <Typography variant="subtitle1" fontWeight="800" color="#09090B">
                 5h 42m
               </Typography>
             </Grid>
@@ -97,22 +102,32 @@ export function AttendanceWidget() {
 
         <Stack direction="row" spacing={2} mb={3}>
           <Button
-            variant={isCheckedIn ? "contained" : "outlined"}
-            color="success"
+            variant="contained"
             fullWidth
             startIcon={<LoginIcon />}
             onClick={() => setIsCheckedIn(true)}
-            sx={{ py: 1.2, fontWeight: 600 }}
+            sx={{
+              py: 1.2,
+              fontWeight: 800,
+              bgcolor: "#09090B",
+              color: "#FFFFFF",
+              "&:hover": { bgcolor: "#27272A" }
+            }}
           >
             Check In
           </Button>
           <Button
-            variant={!isCheckedIn ? "contained" : "outlined"}
-            color="error"
+            variant="outlined"
             fullWidth
             startIcon={<LogoutIcon />}
             onClick={() => setIsCheckedIn(false)}
-            sx={{ py: 1.2, fontWeight: 600 }}
+            sx={{
+              py: 1.2,
+              fontWeight: 800,
+              borderColor: "#09090B",
+              color: "#09090B",
+              "&:hover": { bgcolor: "#F4F4F5", borderColor: "#09090B" }
+            }}
           >
             Check Out
           </Button>

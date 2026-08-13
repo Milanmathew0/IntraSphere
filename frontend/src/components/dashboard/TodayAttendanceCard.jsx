@@ -116,20 +116,30 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
   const hasCheckedOut = Boolean(todayRecord && todayRecord.check_out);
 
   let statusState = "Not Checked In";
-  let statusBadgeColor = { bg: "#FEF3C7", text: "#D97706" }; // Amber
+  let statusBadgeColor = { bg: "#F4F4F5", text: "#09090B", border: "#E4E4E7" };
 
   if (hasCheckedIn && !hasCheckedOut) {
     statusState = "Checked In";
-    statusBadgeColor = { bg: "#E0F2FE", text: "#0284C7" }; // Light Blue
+    statusBadgeColor = { bg: "#18181B", text: "#FFFFFF", border: "#27272A" };
   } else if (hasCheckedIn && hasCheckedOut) {
     statusState = "Attendance Completed";
-    statusBadgeColor = { bg: "#DCFCE7", text: "#15803D" }; // Green
+    statusBadgeColor = { bg: "#F4F4F5", text: "#09090B", border: "#E4E4E7" };
   }
 
   const formatTime = (timeStr) => {
     if (!timeStr) return "--:--";
     try {
-      const d = new Date(timeStr);
+      let str = String(timeStr).trim();
+      // If ISO format without Z or timezone offset, append Z to force UTC parsing
+      if (str.includes("T") && !str.endsWith("Z") && !str.includes("+") && !str.includes("-", 10)) {
+        str += "Z";
+      } else if (!str.includes("T") && str.includes(":") && !str.includes("Z")) {
+        // If time-only string like "16:12:00", combine with today's date in UTC
+        const todayUtc = new Date().toISOString().split("T")[0];
+        str = `${todayUtc}T${str}Z`;
+      }
+
+      const d = new Date(str);
       return isNaN(d.getTime())
         ? timeStr
         : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -150,7 +160,7 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
       elevation={0}
       sx={{
         borderRadius: "16px",
-        border: "1px solid #E2E8F0",
+        border: "1px solid #E4E4E7",
         backgroundColor: "#FFFFFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -170,8 +180,8 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               sx={{
                 p: 1.2,
                 borderRadius: "12px",
-                bgcolor: "#EFF6FF",
-                color: "#2563EB",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -180,10 +190,10 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               <Clock size={22} />
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={700} color="#0F172A" lineHeight={1.2}>
+              <Typography variant="h6" fontWeight={700} color="#09090B" lineHeight={1.2}>
                 Today's Attendance
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="flex" alignItems="center" gap={0.5} mt={0.3}>
+              <Typography variant="caption" color="#71717A" display="flex" alignItems="center" gap={0.5} mt={0.3}>
                 <Calendar size={12} /> {todayFormatted}
               </Typography>
             </Box>
@@ -194,7 +204,7 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               <Button
                 size="small"
                 onClick={fetchTodayAttendance}
-                sx={{ minWidth: 32, p: 0.8, color: "#64748B", borderRadius: "8px" }}
+                sx={{ minWidth: 32, p: 0.8, color: "#09090B", borderRadius: "8px" }}
               >
                 <RefreshCw size={16} className={loading ? "spin" : ""} />
               </Button>
@@ -211,6 +221,7 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               sx={{
                 bgcolor: statusBadgeColor.bg,
                 color: statusBadgeColor.text,
+                border: `1px solid ${statusBadgeColor.border}`,
                 fontWeight: 700,
                 fontSize: "0.75rem",
                 borderRadius: "8px",
@@ -233,19 +244,18 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               sx={{
                 p: 2,
                 borderRadius: "12px",
-                bgcolor: !hasCheckedIn ? "#FFFBEB" : hasCheckedOut ? "#F0FDF4" : "#F0F9FF",
-                border: "1px solid",
-                borderColor: !hasCheckedIn ? "#FCD34D" : hasCheckedOut ? "#86EFAC" : "#BAE6FD",
+                bgcolor: "#F4F4F5",
+                border: "1px solid #E4E4E7",
                 mb: 3,
               }}
             >
-              <Typography variant="body2" fontWeight={600} color="#1E293B">
+              <Typography variant="body2" fontWeight={600} color="#09090B">
                 {!hasCheckedIn && "⚠️ You haven't checked in today."}
                 {hasCheckedIn && !hasCheckedOut && "🟢 You are currently checked in."}
                 {hasCheckedIn && hasCheckedOut && "🎉 Attendance Completed for today!"}
               </Typography>
               {lastUpdated && (
-                <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                <Typography variant="caption" color="#71717A" display="block" mt={0.5}>
                   Last updated: {lastUpdated}
                 </Typography>
               )}
@@ -256,36 +266,36 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
               elevation={0}
               sx={{
                 p: 2.5,
-                bgcolor: "#F8FAFC",
+                bgcolor: "#FAFAFA",
                 borderRadius: "12px",
-                border: "1px solid #E2E8F0",
+                border: "1px solid #E4E4E7",
                 mb: 3,
               }}
             >
               <Grid container spacing={2} textAlign="center">
                 <Grid item xs={4}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600} display="block">
+                  <Typography variant="caption" color="#71717A" fontWeight={600} display="block">
                     CHECK IN
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={700} color="#0F172A" mt={0.5}>
+                  <Typography variant="subtitle1" fontWeight={700} color="#09090B" mt={0.5}>
                     {todayRecord?.check_in ? formatTime(todayRecord.check_in) : "--:--"}
                   </Typography>
                 </Grid>
 
-                <Grid item xs={4} sx={{ borderLeft: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600} display="block">
+                <Grid item xs={4} sx={{ borderLeft: "1px solid #E4E4E7", borderRight: "1px solid #E4E4E7" }}>
+                  <Typography variant="caption" color="#71717A" fontWeight={600} display="block">
                     CHECK OUT
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={700} color="#0F172A" mt={0.5}>
+                  <Typography variant="subtitle1" fontWeight={700} color="#09090B" mt={0.5}>
                     {todayRecord?.check_out ? formatTime(todayRecord.check_out) : "--:--"}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={4}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600} display="block">
+                  <Typography variant="caption" color="#71717A" fontWeight={600} display="block">
                     WORKING HOURS
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={700} color="#2563EB" mt={0.5}>
+                  <Typography variant="subtitle1" fontWeight={700} color="#09090B" mt={0.5}>
                     {todayRecord?.working_hours ? `${todayRecord.working_hours} hrs` : "--"}
                   </Typography>
                 </Grid>
@@ -306,9 +316,10 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
                     borderRadius: "10px",
                     fontWeight: 700,
                     fontSize: "0.95rem",
-                    bgcolor: "#16A34A",
-                    boxShadow: "0 4px 14px rgba(22, 163, 74, 0.25)",
-                    "&:hover": { bgcolor: "#15803D" },
+                    bgcolor: "#09090B",
+                    color: "#FFFFFF",
+                    boxShadow: "none",
+                    "&:hover": { bgcolor: "#27272A", boxShadow: "none" },
                     textTransform: "none",
                   }}
                 >
@@ -328,9 +339,10 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
                     borderRadius: "10px",
                     fontWeight: 700,
                     fontSize: "0.95rem",
-                    bgcolor: "#DC2626",
-                    boxShadow: "0 4px 14px rgba(220, 38, 38, 0.25)",
-                    "&:hover": { bgcolor: "#B91C1C" },
+                    bgcolor: "#27272A",
+                    color: "#FFFFFF",
+                    boxShadow: "none",
+                    "&:hover": { bgcolor: "#3F3F46", boxShadow: "none" },
                     textTransform: "none",
                   }}
                 >
@@ -340,7 +352,7 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
 
               {hasCheckedIn && hasCheckedOut && (
                 <Chip
-                  icon={<CheckCircle2 size={16} style={{ color: "#15803D" }} />}
+                  icon={<CheckCircle2 size={16} style={{ color: "#09090B" }} />}
                   label="Today's Shift Completed"
                   sx={{
                     width: "100%",
@@ -348,9 +360,9 @@ export default function TodayAttendanceCard({ user, onAttendanceChange, showToas
                     borderRadius: "10px",
                     fontWeight: 700,
                     fontSize: "0.9rem",
-                    bgcolor: "#DCFCE7",
-                    color: "#15803D",
-                    border: "1px solid #86EFAC",
+                    bgcolor: "#F4F4F5",
+                    color: "#09090B",
+                    border: "1px solid #E4E4E7",
                   }}
                 />
               )}

@@ -84,14 +84,21 @@ async def approve_onboarding_request(request_id: str):
         {"$set": {"status": "approved", "updated_at": datetime.utcnow()}}
     )
 
-    # 2. Upgrade user role in users collection to 'Employee'
+    # 2. Upgrade user role in users collection to 'Employee' / 'Manager' / 'HR'
     user_record = await users_collection.find_one({"email": user_email})
     user_id = user_record["_id"] if user_record else None
+
+    job_title = request.get("job_title", "")
+    target_role = "Employee"
+    if "manager" in job_title.lower():
+        target_role = "Manager"
+    elif "hr" in job_title.lower():
+        target_role = "HR"
 
     if user_record:
         await users_collection.update_one(
             {"_id": user_id},
-            {"$set": {"role": "Employee"}}
+            {"$set": {"role": target_role}}
         )
 
     # 3. Auto-create or activate profile in employees collection

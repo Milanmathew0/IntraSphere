@@ -202,9 +202,7 @@ async def check_out(employee_code: str):
 # =====================================================
 
 async def get_all_attendance():
-
     pipeline = [
-
         {
             "$lookup": {
                 "from": "employees",
@@ -213,11 +211,12 @@ async def get_all_attendance():
                 "as": "employee"
             }
         },
-
         {
-            "$unwind": "$employee"
+            "$unwind": {
+                "path": "$employee",
+                "preserveNullAndEmptyArrays": True
+            }
         },
-
         {
             "$lookup": {
                 "from": "departments",
@@ -226,11 +225,12 @@ async def get_all_attendance():
                 "as": "department"
             }
         },
-
         {
-            "$unwind": "$department"
+            "$unwind": {
+                "path": "$department",
+                "preserveNullAndEmptyArrays": True
+            }
         },
-
         {
             "$lookup": {
                 "from": "designations",
@@ -239,50 +239,50 @@ async def get_all_attendance():
                 "as": "designation"
             }
         },
-
         {
-            "$unwind": "$designation"
+            "$unwind": {
+                "path": "$designation",
+                "preserveNullAndEmptyArrays": True
+            }
         },
-
         {
             "$project": {
-
                 "_id": 1,
-
-                "employee_id": "$employee.employee_id",
-
-                "employee_name": {
-                    "$concat": [
-                        "$employee.first_name",
-                        " ",
-                        "$employee.last_name"
-                    ]
+                "email": { "$ifNull": ["$employee.email", ""] },
+                "employee_code": { "$ifNull": ["$employee.employee_id", ""] },
+                "employee_id": { "$ifNull": ["$employee.employee_id", ""] },
+                "user_id": {
+                    "$cond": {
+                        "if": { "$and": [{ "$ne": ["$employee.user_id", None] }, { "$ne": ["$employee.user_id", ""] }] },
+                        "then": { "$toString": "$employee.user_id" },
+                        "else": ""
+                    }
                 },
-
-                "department": "$department.department_name",
-
-                "designation": "$designation.designation_name",
-
+                "employee_name": {
+                    "$trim": {
+                        "input": {
+                            "$concat": [
+                                { "$ifNull": ["$employee.first_name", ""] },
+                                " ",
+                                { "$ifNull": ["$employee.last_name", ""] }
+                            ]
+                        }
+                    }
+                },
+                "department": { "$ifNull": ["$department.department_name", "General"] },
+                "designation": { "$ifNull": ["$designation.designation_name", "Staff"] },
                 "attendance_date": 1,
-
                 "check_in": 1,
-
                 "check_out": 1,
-
                 "working_hours": 1,
-
                 "status": 1
             }
         }
-
     ]
 
     attendance = []
-
     async for record in attendance_collection.aggregate(pipeline):
-
         record["_id"] = str(record["_id"])
-
         attendance.append(record)
 
     return attendance

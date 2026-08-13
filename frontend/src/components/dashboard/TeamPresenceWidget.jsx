@@ -10,14 +10,13 @@ import {
   Stack,
   Divider,
   LinearProgress,
+  IconButton
 } from "@mui/material";
 import {
   Users,
-  CheckCircle2,
-  Clock,
   ArrowRight,
-  Laptop,
-  Building,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
@@ -39,7 +38,7 @@ export default function TeamPresenceWidget() {
     try {
       const res = await api.get("/api/v1/employees");
       if (res.data && res.data.employees) {
-        const emps = res.data.employees.slice(0, 5).map((e) => ({
+        const emps = res.data.employees.map((e) => ({
           name: e.name || `${e.first_name || ""} ${e.last_name || ""}`.trim() || e.email,
           role: e.designation || e.department || "Employee",
           status: e.employment_status === "Active" ? "In Office" : "Offline",
@@ -56,17 +55,17 @@ export default function TeamPresenceWidget() {
     <Card
       elevation={0}
       sx={{
-        borderRadius: 4,
-        border: "1px solid #E2E8F0",
-        background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)",
-        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+        borderRadius: "16px",
+        border: "1px solid #E4E4E7",
+        bgcolor: "#FFFFFF",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
         height: "100%",
         display: "flex",
         flexDirection: "column",
       }}
     >
       <CardContent sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        {/* Header */}
+        {/* Top Header Row */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Box display="flex" alignItems="center" gap={1.5}>
             <Box
@@ -74,8 +73,8 @@ export default function TeamPresenceWidget() {
                 width: 38,
                 height: 38,
                 borderRadius: "12px",
-                bgcolor: "rgba(37, 99, 235, 0.1)",
-                color: "#1D4ED8",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -84,10 +83,10 @@ export default function TeamPresenceWidget() {
               <Users size={20} />
             </Box>
             <Box>
-              <Typography variant="h6" fontWeight={800} color="#0F172A">
+              <Typography variant="h6" fontWeight={900} color="#09090B">
                 Team Presence Today
               </Typography>
-              <Typography variant="caption" color="#64748B">
+              <Typography variant="caption" color="#71717A">
                 Department headcount & attendance status
               </Typography>
             </Box>
@@ -97,121 +96,206 @@ export default function TeamPresenceWidget() {
             label="93% Present"
             size="small"
             sx={{
-              bgcolor: "rgba(34, 197, 94, 0.12)",
-              color: "#15803D",
+              bgcolor: "#F4F4F5",
+              color: "#09090B",
+              border: "1px solid #E4E4E7",
               fontWeight: 700,
               fontSize: "0.75rem",
+              borderRadius: "6px"
             }}
           />
         </Box>
 
-        <Divider sx={{ mb: 2.5 }} />
+        <Divider sx={{ mb: 2 }} />
 
-        {/* Attendance Progress Bar */}
+        {/* Headcount Progress Bar */}
         <Box sx={{ mb: 2.5 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1, mb: 0.5 }}>
-            <Typography variant="caption" color="#64748B" fontWeight={600}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1, mb: 0.75 }}>
+            <Typography variant="caption" color="#71717A" fontWeight={600}>
               Checked-in Headcount:
             </Typography>
-            <Typography variant="caption" color="#10B981" fontWeight={700}>
+            <Typography variant="caption" color="#09090B" fontWeight={800}>
               {teamMembers.length} Active Staff
             </Typography>
           </Box>
           <LinearProgress
             variant="determinate"
-            value={88}
+            value={93}
             sx={{
               height: 6,
               borderRadius: 3,
-              bgcolor: "#E2E8F0",
-              "& .MuiLinearProgress-bar": { bgcolor: "#10B981" },
+              bgcolor: "#E4E4E7",
+              "& .MuiLinearProgress-bar": { bgcolor: "#09090B" },
             }}
           />
         </Box>
 
-        {/* Member Status List */}
-        <Stack
-          spacing={1.5}
+        {/* Table Header Row (Monochrome) */}
+        <Box
           sx={{
-            overflowY: "auto",
-            maxHeight: 280,
-            mb: 2,
-            pr: 0.8,
-            "&::-webkit-scrollbar": { width: "5px" },
-            "&::-webkit-scrollbar-track": { background: "transparent" },
-            "&::-webkit-scrollbar-thumb": { background: "#CBD5E1", borderRadius: "4px" },
+            display: "grid",
+            gridTemplateColumns: { xs: "2fr 1.5fr 1fr", sm: "2.5fr 2fr 1.2fr 1.5fr" },
+            px: 2,
+            py: 1.25,
+            bgcolor: "#F4F4F5",
+            border: "1px solid #E4E4E7",
+            borderRadius: "8px",
+            mb: 1,
+            alignItems: "center"
           }}
         >
+          <Typography variant="caption" fontWeight={800} color="#09090B">
+            Member Name
+          </Typography>
+          <Typography variant="caption" fontWeight={800} color="#09090B">
+            Role / Department
+          </Typography>
+          <Typography variant="caption" fontWeight={800} color="#09090B">
+            Status
+          </Typography>
+          <Typography variant="caption" fontWeight={800} color="#09090B" textAlign="right">
+            Actions
+          </Typography>
+        </Box>
+
+        {/* Table Content Rows (Monochrome) */}
+        <Stack spacing={0} sx={{ flexGrow: 1, overflowY: "auto", maxHeight: 320 }}>
           {teamMembers.map((member, idx) => (
             <Box
               key={idx}
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              p={1.5}
-              borderRadius="12px"
               sx={{
-                bgcolor: "#FFFFFF",
-                border: "1px solid #E2E8F0",
+                display: "grid",
+                gridTemplateColumns: { xs: "2fr 1.5fr 1fr", sm: "2.5fr 2fr 1.2fr 1.5fr" },
+                px: 2,
+                py: 1.75,
+                borderBottom: "1px solid #E4E4E7",
+                alignItems: "center",
+                transition: "background-color 0.15s ease",
+                "&:hover": { bgcolor: "#FAFAFA" }
               }}
             >
+              {/* Member Avatar & Name */}
               <Box display="flex" alignItems="center" gap={1.5}>
                 <Avatar
                   sx={{
-                    bgcolor: idx % 2 === 0 ? "#0288D1" : "#7B1FA2",
+                    bgcolor: "#09090B",
+                    color: "#FFFFFF",
                     width: 32,
                     height: 32,
                     fontSize: "0.8rem",
-                    fontWeight: 700,
+                    fontWeight: 800,
                   }}
                 >
-                  {member.name.charAt(0)}
+                  {member.name.charAt(0).toUpperCase()}
                 </Avatar>
-                <Box>
-                  <Typography variant="body2" fontWeight={700} color="#0F172A">
-                    {member.name}
-                  </Typography>
-                  <Typography variant="caption" color="#64748B">
-                    {member.role}
-                  </Typography>
-                </Box>
+                <Typography variant="body2" fontWeight={800} color="#09090B">
+                  {member.name}
+                </Typography>
               </Box>
 
-              <Chip
-                label={member.status}
-                size="small"
-                sx={{
-                  bgcolor:
-                    member.status === "In Office"
-                      ? "rgba(34, 197, 94, 0.12)"
-                      : "rgba(59, 130, 246, 0.12)",
-                  color: member.status === "In Office" ? "#15803D" : "#1D4ED8",
-                  fontWeight: 700,
-                  fontSize: "0.7rem",
-                }}
-              />
+              {/* Role */}
+              <Typography variant="body2" color="#71717A" fontWeight={500}>
+                {member.role}
+              </Typography>
+
+              {/* Status Badge */}
+              <Box>
+                <Chip
+                  label={member.status}
+                  size="small"
+                  sx={{
+                    bgcolor: "#F4F4F5",
+                    color: "#09090B",
+                    border: "1px solid #E4E4E7",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    borderRadius: "6px"
+                  }}
+                />
+              </Box>
+
+              {/* Action Buttons */}
+              <Box display="flex" gap={1} justifyContent="flex-end">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate("/employees")}
+                  sx={{
+                    borderRadius: "6px",
+                    borderColor: "#09090B",
+                    color: "#09090B",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    px: 1.5,
+                    py: 0.25,
+                    minWidth: 0,
+                    "&:hover": { bgcolor: "#F4F4F5", borderColor: "#09090B" }
+                  }}
+                >
+                  View
+                </Button>
+              </Box>
             </Box>
           ))}
         </Stack>
 
-        <Button
-          fullWidth
-          variant="outlined"
-          endIcon={<ArrowRight size={16} />}
-          onClick={() => navigate("/employees")}
+        {/* Footer Bar (Monochrome) */}
+        <Box
           sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            pt: 2,
             mt: "auto",
-            borderRadius: "12px",
-            color: "#0288D1",
-            borderColor: "rgba(2, 136, 209, 0.3)",
-            fontWeight: 700,
-            textTransform: "none",
-            "&:hover": { bgcolor: "rgba(2, 136, 209, 0.05)" },
+            borderTop: "1px solid #E4E4E7"
           }}
         >
-          View Full Team Directory
-        </Button>
+          <Button
+            variant="text"
+            size="small"
+            endIcon={<ArrowRight size={16} />}
+            onClick={() => navigate("/employees")}
+            sx={{
+              color: "#09090B",
+              fontWeight: 800,
+              textTransform: "none",
+              fontSize: "13px",
+              p: 0,
+              "&:hover": { bgcolor: "transparent", color: "#27272A" }
+            }}
+          >
+            View Full Team Directory
+          </Button>
+
+          {/* Right Pagination Buttons */}
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <IconButton size="small" sx={{ border: "1px solid #E4E4E7", borderRadius: "6px", p: 0.5 }}>
+              <ChevronLeft size={14} color="#09090B" />
+            </IconButton>
+            <Box
+              sx={{
+                width: 26,
+                height: 26,
+                borderRadius: "6px",
+                bgcolor: "#09090B",
+                color: "#FFFFFF",
+                fontSize: "12px",
+                fontWeight: 800,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              1
+            </Box>
+            <IconButton size="small" sx={{ border: "1px solid #E4E4E7", borderRadius: "6px", p: 0.5 }}>
+              <ChevronRight size={14} color="#09090B" />
+            </IconButton>
+          </Stack>
+        </Box>
       </CardContent>
     </Card>
   );
 }
+

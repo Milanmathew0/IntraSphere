@@ -8,9 +8,12 @@ designations_collection = db["designations"]
 
 
 import secrets
-from datetime import datetime, timedelta
-from passlib.context import CryptContext
+import hashlib
+from datetime import datetime, timedelta, date
 from bson import ObjectId
+from app.core.config import settings
+from app.services.email_service import send_employee_activation_email
+from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -35,8 +38,6 @@ async def create_employee(employee):
         employee_dict["joining_date"],
         datetime.min.time()
     )
-
-
 
     # Check if user email already exists
     users_collection = db["users"]
@@ -65,20 +66,25 @@ async def create_employee(employee):
     elif "hr" in desig_name.lower():
         assigned_role = "HR"
 
-    # Generate activation token
+    # Generate secure activation token
     activation_token = secrets.token_urlsafe(32)
-    activation_token_hash = pwd_context.hash(activation_token)
+    activation_token_hash = hashlib.sha256(activation_token.encode("utf-8")).hexdigest()
+    expires_at = datetime.utcnow() + timedelta(hours=24)
 
     # Create User
+    full_name = f"{employee.first_name} {employee.last_name}".strip()
     new_user = {
-        "username": f"{employee.first_name} {employee.last_name}".strip(),
+        "username": full_name,
         "email": employee.email,
-        "password": "",  # To be set upon activation
+        "password": None,  # Set upon activation
         "role": assigned_role,
         "account_status": "Invited",
         "is_active": False,
         "activation_token_hash": activation_token_hash,
-        "activation_token_expires": datetime.utcnow() + timedelta(days=1)
+        "activation_token_expires_at": expires_at,
+        "activation_token_expires": expires_at,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
     }
 
     user_result = await users_collection.insert_one(new_user)
@@ -97,9 +103,19 @@ async def create_employee(employee):
 
     result = await employees_collection.insert_one(employee_dict)
 
+    # Build activation URL and send activation email
+    activation_url = f"{settings.FRONTEND_URL}/activate-account?token={activation_token}"
+    email_sent, email_msg = await send_employee_activation_email(
+        recipient_email=employee.email,
+        employee_name=full_name,
+        activation_url=activation_url
+    )
+
     return {
         "employee_id": emp_code,
-        "activation_token": activation_token
+        "email_sent": email_sent,
+        "email_message": email_msg,
+        "dev_activation_url": activation_url if settings.DEV_MODE else None
     }
 
 

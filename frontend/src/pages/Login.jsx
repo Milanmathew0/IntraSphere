@@ -38,6 +38,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
 
   const [snackbar, setSnackbar] = useState({
@@ -62,20 +63,49 @@ export default function Login() {
     }
   };
 
+  // LIVE VALIDATION FUNCTIONS
+  const validateEmail = (val) => {
+    const trimmed = val.trim();
+    if (!trimmed) return "Email address is required";
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmed)) {
+      return "Please enter a valid email address (e.g. name@domain.com)";
+    }
+    return "";
+  };
+
+  const validatePassword = (val) => {
+    if (!val) return "Password is required";
+    if (val.length < 6) return "Password must be at least 6 characters long";
+    return "";
+  };
+
+  // INSTANT LIVE KEYSTROKE HANDLERS
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    setTouched((prev) => ({ ...prev, email: true }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(val) }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const val = e.target.value;
+    setPassword(val);
+    setTouched((prev) => ({ ...prev, password: true }));
+    setErrors((prev) => ({ ...prev, password: validatePassword(val) }));
+  };
+
   const validateForm = () => {
-    const newErrors = {};
-    if (!email) {
-      newErrors.email = "Email address is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
 
-    if (!password) {
-      newErrors.password = "Password is required";
-    }
+    setErrors({
+      email: emailErr,
+      password: passwordErr,
+    });
+    setTouched({ email: true, password: true });
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !emailErr && !passwordErr;
   };
 
   const handleSubmit = async (e) => {
@@ -87,7 +117,7 @@ export default function Login() {
 
     try {
       const response = await api.post("/api/v1/auth/login", {
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -96,25 +126,42 @@ export default function Login() {
       authLogin({
         access_token: response.data.access_token,
         role: assignedRole,
-        email: response.data.email || email,
-        username: response.data.username || email.split("@")[0],
+        email: response.data.email || email.trim(),
+        username: response.data.username || email.trim().split("@")[0],
         user_id: response.data.user_id,
       });
 
       setSnackbar({
         open: true,
-        message: "Login successful! Redirecting to dashboard...",
+        message: "Login successful! Redirecting to portal...",
         severity: "success",
       });
 
-      setTimeout(() => navigate("/dashboard"), 700);
+      setTimeout(() => navigate("/dashboard"), 600);
     } catch (err) {
+      const serverDetail = err.response?.data?.detail;
+      let errorMsg = "Unable to login. Please check your email and password.";
+
+      if (serverDetail) {
+        if (typeof serverDetail === "string") {
+          errorMsg = serverDetail;
+        } else if (Array.isArray(serverDetail)) {
+          errorMsg = serverDetail.map((d) => d.msg).join(", ");
+        }
+      }
+
       setSnackbar({
         open: true,
-        message:
-          err.response?.data?.detail || "Unable to login. Please check your credentials.",
+        message: errorMsg,
         severity: "error",
       });
+
+      if (err.response?.status === 401) {
+        setErrors({
+          email: "Invalid email or password",
+          password: "Check password and try again",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -127,7 +174,7 @@ export default function Login() {
 
       const response = await api.post("/api/v1/auth/google", {
         email: decoded.email,
-        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.strip(),
+        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.trim(),
         picture: decoded.picture || "",
         google_id: decoded.sub,
         token: credentialResponse.credential,
@@ -150,7 +197,7 @@ export default function Login() {
         severity: "success",
       });
 
-      setTimeout(() => navigate("/dashboard"), 700);
+      setTimeout(() => navigate("/dashboard"), 600);
     } catch (err) {
       console.error("Google authentication error:", err);
       setSnackbar({
@@ -212,21 +259,22 @@ export default function Login() {
             </Typography>
           </Box>
 
-          {/* Clean Unified Login Form */}
+          {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               label="Email Address"
               fullWidth
               margin="normal"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={!!errors.email}
-              helperText={errors.email}
+              onChange={handleEmailChange}
+              error={!!(touched.email && errors.email)}
+              helperText={touched.email && errors.email ? errors.email : ""}
+              placeholder="name@company.com"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailOutlinedIcon color="action" fontSize="small" />
+                      <EmailOutlinedIcon color={touched.email && errors.email ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                 },
@@ -239,14 +287,15 @@ export default function Login() {
               fullWidth
               margin="normal"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={!!errors.password}
-              helperText={errors.password}
+              onChange={handlePasswordChange}
+              error={!!(touched.password && errors.password)}
+              helperText={touched.password && errors.password ? errors.password : ""}
+              placeholder="Enter your password"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" fontSize="small" />
+                      <LockOutlinedIcon color={touched.password && errors.password ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -257,11 +306,7 @@ export default function Login() {
                         edge="end"
                         size="small"
                       >
-                        {showPassword ? (
-                          <VisibilityOff fontSize="small" />
-                        ) : (
-                          <Visibility fontSize="small" />
-                        )}
+                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -299,7 +344,7 @@ export default function Login() {
                   e.preventDefault();
                   setSnackbar({
                     open: true,
-                    message: "Password reset link sent to your email",
+                    message: "If an active account exists, password reset instructions have been sent.",
                     severity: "info",
                   });
                 }}
@@ -330,11 +375,7 @@ export default function Login() {
                 "&:hover": { backgroundColor: "#1565C0" },
               }}
             >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Sign In"
-              )}
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
             </Button>
 
             {/* Divider */}
@@ -392,7 +433,7 @@ export default function Login() {
       {/* Snackbar Alert */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >

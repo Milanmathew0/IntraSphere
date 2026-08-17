@@ -9,6 +9,8 @@ class LeaveTypeCreate(BaseModel):
     annual_allocation: float = 12.0
     carry_forward_allowed: bool = False
     maximum_consecutive_days: Optional[int] = 5
+    minimum_notice_days: int = 1
+    maximum_advance_days: Optional[int] = 90
     requires_attachment: bool = False
     requires_approval: bool = True
     allow_negative_balance: bool = False
@@ -20,6 +22,8 @@ class LeaveTypeUpdate(BaseModel):
     annual_allocation: Optional[float] = None
     carry_forward_allowed: Optional[bool] = None
     maximum_consecutive_days: Optional[int] = None
+    minimum_notice_days: Optional[int] = None
+    maximum_advance_days: Optional[int] = None
     requires_attachment: Optional[bool] = None
     requires_approval: Optional[bool] = None
     allow_negative_balance: Optional[bool] = None
@@ -32,6 +36,8 @@ class LeaveTypeResponse(BaseModel):
     annual_allocation: float
     carry_forward_allowed: bool
     maximum_consecutive_days: Optional[int]
+    minimum_notice_days: int
+    maximum_advance_days: Optional[int]
     requires_attachment: bool
     requires_approval: bool
     allow_negative_balance: bool

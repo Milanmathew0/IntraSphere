@@ -18,7 +18,8 @@ import {
   ArrowRight,
   ChevronDown,
   User,
-  Briefcase
+  Briefcase,
+  AlertCircle
 } from "lucide-react";
 import api from "../../api/axios";
 
@@ -34,6 +35,9 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
     joining_date: ""
   });
 
+  const [touched, setTouched] = useState({});
+  const [errors, setErrors] = useState({});
+
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -41,6 +45,66 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
   const [error, setError] = useState("");
   const [activationData, setActivationData] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  // Regex rules
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const PHONE_REGEX = /^(?:\+91[\-\s]?|91[\-\s]?|0)?[6-9]\d{9}$/;
+  const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
+  const validateField = (name, value) => {
+    let err = "";
+    const strVal = String(value || "").trim();
+
+    if (name === "first_name") {
+      if (!strVal) {
+        err = "First name is required.";
+      } else if (strVal.length < 2) {
+        err = "First name must be at least 2 characters.";
+      } else if (!NAME_REGEX.test(strVal)) {
+        err = "First name can only contain letters, spaces, hyphens, and apostrophes.";
+      }
+    } else if (name === "last_name") {
+      if (!strVal) {
+        err = "Last name is required.";
+      } else if (!NAME_REGEX.test(strVal)) {
+        err = "Last name can only contain letters, spaces, hyphens, and apostrophes.";
+      }
+    } else if (name === "email") {
+      if (!strVal) {
+        err = "Email address is required.";
+      } else if (!EMAIL_REGEX.test(strVal)) {
+        err = "Please enter a valid email address (e.g. johnsmith@gmail.com).";
+      }
+    } else if (name === "phone") {
+      if (!strVal) {
+        err = "Phone number is required.";
+      } else if (!PHONE_REGEX.test(strVal)) {
+        err = "Please enter a valid 10-digit Indian phone number starting with 6, 7, 8, or 9 (e.g. 9876543210 or +91 9876543210).";
+      }
+    } else if (name === "joining_date") {
+      if (!value) {
+        err = "Joining date is required.";
+      }
+    } else if (name === "department_id") {
+      if (!value) {
+        err = "Please select a department.";
+      }
+    } else if (name === "designation_id") {
+      if (!value) {
+        err = "Please select a designation.";
+      }
+    }
+    return err;
+  };
+
+  const validateAllFields = (data) => {
+    const errs = {};
+    ["first_name", "last_name", "email", "phone", "joining_date", "department_id", "designation_id"].forEach((key) => {
+      const err = validateField(key, data[key]);
+      if (err) errs[key] = err;
+    });
+    return errs;
+  };
 
   useEffect(() => {
     if (open) {
@@ -54,6 +118,8 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
         designation_id: "",
         joining_date: new Date().toISOString().split("T")[0]
       });
+      setTouched({});
+      setErrors({});
       setError("");
       setActivationData(null);
       setCopied(false);
@@ -63,16 +129,29 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
 
   const fetchDependencies = async () => {
     setFetching(true);
+    setError("");
     try {
-      const [deptRes, desigRes] = await Promise.all([
-        api.get("/api/v1/departments"),
-        api.get("/api/v1/designations"),
+      const [deptRes, desigRes] = await Promise.allSettled([
+        api.get("/api/v1/departments/"),
+        api.get("/api/v1/designations/"),
       ]);
-      const depts = deptRes.data?.departments || [];
-      const desigs = desigRes.data?.designations || [];
+
+      let depts = [];
+      if (deptRes.status === "fulfilled" && deptRes.value.data?.departments) {
+        depts = deptRes.value.data.departments;
+      }
+
+      let desigs = [];
+      if (desigRes.status === "fulfilled" && desigRes.value.data?.designations) {
+        desigs = desigRes.value.data.designations;
+      }
 
       setDepartments(depts);
       setDesignations(desigs);
+
+      if (deptRes.status === "rejected" || desigRes.status === "rejected") {
+        setError("Failed to load departments or designations. Please check backend connection.");
+      }
 
       setFormData((prev) => ({
         ...prev,
@@ -89,16 +168,62 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    const fieldErr = validateField(name, value);
+    const updatedErrors = { ...errors, [name]: fieldErr };
+    setErrors(updatedErrors);
+
+    // Automatically clear global error banner when fields become valid
+    if (error) {
+      const tab0Fields = ["first_name", "last_name", "email", "phone", "joining_date"];
+      const hasRemainingTab0Error = tab0Fields.some((key) => validateField(key, updated[key]));
+      const tab1Fields = ["department_id", "designation_id"];
+      const hasRemainingTab1Error = tab1Fields.some((key) => validateField(key, updated[key]));
+
+      if (activeTab === 0 && !hasRemainingTab0Error) {
+        setError("");
+      } else if (activeTab === 1 && !hasRemainingTab1Error) {
+        setError("");
+      }
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    const fieldErr = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: fieldErr }));
   };
 
   const handleNextOrSubmit = (e) => {
     if (e) e.preventDefault();
+
     if (activeTab < 1) {
-      if (!formData.first_name || !formData.last_name || !formData.email || !formData.phone) {
-        setError("Please fill in all required basic fields (First Name, Last Name, Email, Phone).");
+      // Validate Tab 0
+      const tab0Fields = ["first_name", "last_name", "email", "phone", "joining_date"];
+      const newTouched = { ...touched };
+      const newErrors = { ...errors };
+      let hasTab0Error = false;
+
+      tab0Fields.forEach((key) => {
+        newTouched[key] = true;
+        const err = validateField(key, formData[key]);
+        newErrors[key] = err;
+        if (err) hasTab0Error = true;
+      });
+
+      setTouched(newTouched);
+      setErrors(newErrors);
+
+      if (hasTab0Error) {
+        setError("Please fix the validation errors in basic information before proceeding.");
         return;
       }
+
       setError("");
       setActiveTab(1);
     } else {
@@ -107,13 +232,30 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
   };
 
   const handleSubmit = async () => {
-    if (!formData.first_name || !formData.last_name || !formData.email || !formData.phone) {
-      setError("Please fill in all required basic details.");
+    const allErrs = validateAllFields(formData);
+    const allTouched = {
+      first_name: true,
+      last_name: true,
+      email: true,
+      phone: true,
+      joining_date: true,
+      department_id: true,
+      designation_id: true
+    };
+
+    setTouched(allTouched);
+    setErrors(allErrs);
+
+    // Check if Tab 0 has errors
+    if (allErrs.first_name || allErrs.last_name || allErrs.email || allErrs.phone || allErrs.joining_date) {
+      setError("Please fix the basic information details.");
       setActiveTab(0);
       return;
     }
-    if (!formData.department_id || !formData.designation_id) {
-      setError("Please select a department and designation.");
+
+    // Check if Tab 1 has errors
+    if (allErrs.department_id || allErrs.designation_id) {
+      setError("Please select a valid department and designation.");
       setActiveTab(1);
       return;
     }
@@ -122,39 +264,38 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
     setError("");
     try {
       const payload = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone,
+        first_name: formData.first_name.trim(),
+        last_name: formData.last_name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
         department_id: formData.department_id,
         designation_id: formData.designation_id,
         joining_date: formData.joining_date
       };
 
       const response = await api.post("/api/v1/employees", payload);
-      if (response.data.activation_url) {
-        setActivationData(response.data);
-      } else {
-        onSuccess();
-        onClose();
-      }
+      setActivationData({
+        ...response.data,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email
+      });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || "Failed to create employee");
+      const detail = err.response?.data?.detail;
+      if (detail === "USER_EXISTS") {
+        setError("An employee or user account with this email address already exists.");
+        setErrors((prev) => ({ ...prev, email: "An employee with this email already exists." }));
+        setActiveTab(0);
+      } else {
+        setError(detail || "Failed to create employee. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCopy = () => {
-    if (activationData?.activation_url) {
-      navigator.clipboard.writeText(activationData.activation_url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const inputStyle = {
+  const baseInputStyle = {
     width: "100%",
     boxSizing: "border-box",
     height: "42px",
@@ -166,7 +307,19 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
     border: "1px solid #D1D5DB",
     borderRadius: "6px",
     outline: "none",
-    transition: "border-color 0.2s, box-shadow 0.2s"
+    transition: "all 0.2s ease"
+  };
+
+  const getInputStyle = (fieldName) => {
+    const hasError = touched[fieldName] && errors[fieldName];
+    const isValid = touched[fieldName] && !errors[fieldName] && formData[fieldName];
+
+    return {
+      ...baseInputStyle,
+      borderColor: hasError ? "#EF4444" : isValid ? "#10B981" : "#D1D5DB",
+      backgroundColor: hasError ? "#FEF2F2" : isValid ? "#F0FDF4" : "#FFFFFF",
+      boxShadow: hasError ? "0 0 0 3px rgba(239, 68, 68, 0.12)" : isValid ? "0 0 0 3px rgba(16, 185, 129, 0.12)" : "none"
+    };
   };
 
   const labelStyle = {
@@ -238,7 +391,13 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
             return (
               <Box
                 key={step.title}
-                onClick={() => setActiveTab(idx)}
+                onClick={() => {
+                  if (idx === 1 && activeTab === 0) {
+                    handleNextOrSubmit();
+                  } else {
+                    setActiveTab(idx);
+                  }
+                }}
                 sx={{
                   py: 2,
                   display: "flex",
@@ -313,48 +472,102 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
             <CircularProgress size={36} sx={{ color: "#10B981" }} />
           </Box>
         ) : activationData ? (
-          <Box textAlign="center" py={3}>
+          <Box textAlign="center" py={3} px={2}>
             <CheckCircle2 size={64} color="#10B981" style={{ margin: "0 auto", marginBottom: 16 }} />
-            <Typography variant="h6" fontWeight={700} color="#1E293B" gutterBottom>
-              {activationData.message}
-            </Typography>
-            <Typography variant="body2" color="#64748B" mb={3}>
-              An account activation invitation has been generated. Please share this link with the employee.
+            
+            <Typography variant="h5" fontWeight={700} color="#1E293B" gutterBottom>
+              {activationData.first_name} {activationData.last_name}
             </Typography>
 
-            <Box
-              sx={{
-                bgcolor: "#F8FAFC",
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid #E2E8F0",
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                wordBreak: "break-all"
-              }}
-            >
-              <Typography variant="body2" sx={{ flex: 1, textAlign: "left", fontFamily: "monospace", color: "#1E293B" }}>
-                {activationData.activation_url}
-              </Typography>
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-                onClick={handleCopy}
+            <Typography variant="body1" color="#2563EB" fontWeight={600} mb={2}>
+              {activationData.email}
+            </Typography>
+
+            {activationData.email_sent ? (
+              <Box
                 sx={{
-                  bgcolor: copied ? "#10B981" : "#2563EB",
-                  "&:hover": { bgcolor: copied ? "#059669" : "#1D4ED8" },
-                  borderRadius: "6px",
-                  textTransform: "none"
+                  bgcolor: "#F0FDF4",
+                  border: "1px solid #BBF7D0",
+                  borderRadius: 3,
+                  p: 2.5,
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 1
                 }}
               >
-                {copied ? "Copied" : "Copy"}
-              </Button>
-            </Box>
+                <Typography variant="body2" color="#166534" fontWeight={600} gutterBottom>
+                  Invitation email sent successfully ✓
+                </Typography>
+                <Typography variant="body2" color="#15803D">
+                  An account activation email has been sent to <strong>{activationData.email}</strong>. The employee should check their email to activate their account and create their password.
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  bgcolor: "#FFFBEB",
+                  border: "1px solid #FDE68A",
+                  borderRadius: 3,
+                  p: 2.5,
+                  maxWidth: 480,
+                  mx: "auto",
+                  mb: 1
+                }}
+              >
+                <Typography variant="body2" color="#92400E" fontWeight={600} gutterBottom>
+                  Employee created, but email could not be sent
+                </Typography>
+                <Typography variant="body2" color="#B45309">
+                  The account has been created in <em>Invited</em> status. An activation email could not be delivered (Notice: {activationData.email_message || "Check SMTP credentials in .env"}). You can resend the email later.
+                </Typography>
+              </Box>
+            )}
+
+            {activationData.dev_activation_url && (
+              <Box
+                sx={{
+                  mt: 2.5,
+                  pt: 2,
+                  borderTop: "1px dashed #CBD5E1",
+                  maxWidth: 480,
+                  mx: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1
+                }}
+              >
+                <Typography variant="caption" color="#64748B" fontWeight={600}>
+                  🛠️ Developer Action (Local Testing Only):
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
+                  onClick={() => {
+                    navigator.clipboard.writeText(activationData.dev_activation_url);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  sx={{
+                    borderRadius: "8px",
+                    borderColor: "#94A3B8",
+                    color: "#475569",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    fontSize: "12px",
+                    px: 2,
+                    py: 0.75,
+                    "&:hover": { borderColor: "#475569", bgcolor: "#F8FAFC" }
+                  }}
+                >
+                  {copied ? "Copied Activation Link!" : "Copy Dev Activation Link"}
+                </Button>
+              </Box>
+            )}
           </Box>
         ) : (
-          <form id="add-employee-form" onSubmit={handleNextOrSubmit}>
+          <form id="add-employee-form" onSubmit={handleNextOrSubmit} noValidate>
             {error && (
               <Box
                 sx={{
@@ -364,16 +577,21 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                   p: 1.5,
                   borderRadius: "6px",
                   fontSize: "14px",
-                  mb: 3
+                  mb: 3,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1
                 }}
               >
-                {error}
+                <AlertCircle size={18} color="#991B1B" />
+                <span>{error}</span>
               </Box>
             )}
 
             {/* TAB 0: Basic Information */}
             {activeTab === 0 && (
               <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }} gap={3}>
+                {/* First Name */}
                 <Box>
                   <label style={labelStyle}>First name *</label>
                   <input
@@ -381,12 +599,18 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="John"
-                    required
-                    style={inputStyle}
+                    style={getInputStyle("first_name")}
                   />
+                  {touched.first_name && errors.first_name && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.first_name}
+                    </Typography>
+                  )}
                 </Box>
 
+                {/* Last Name */}
                 <Box>
                   <label style={labelStyle}>Last name *</label>
                   <input
@@ -394,12 +618,18 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                     name="last_name"
                     value={formData.last_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Smith"
-                    required
-                    style={inputStyle}
+                    style={getInputStyle("last_name")}
                   />
+                  {touched.last_name && errors.last_name && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.last_name}
+                    </Typography>
+                  )}
                 </Box>
 
+                {/* Email */}
                 <Box>
                   <label style={labelStyle}>Email *</label>
                   <input
@@ -407,12 +637,18 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Johnsmith@gmail.com"
-                    required
-                    style={inputStyle}
+                    style={getInputStyle("email")}
                   />
+                  {touched.email && errors.email && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.email}
+                    </Typography>
+                  )}
                 </Box>
 
+                {/* Phone */}
                 <Box>
                   <label style={labelStyle}>Phone *</label>
                   <input
@@ -420,12 +656,18 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="245-201-5689"
-                    required
-                    style={inputStyle}
+                    onBlur={handleBlur}
+                    placeholder="9876543210"
+                    style={getInputStyle("phone")}
                   />
+                  {touched.phone && errors.phone && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.phone}
+                    </Typography>
+                  )}
                 </Box>
 
+                {/* Joining Date */}
                 <Box>
                   <label style={labelStyle}>Joining date *</label>
                   <Box sx={{ position: "relative", width: "100%" }}>
@@ -434,8 +676,8 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       name="joining_date"
                       value={formData.joining_date}
                       onChange={handleChange}
-                      required
-                      style={{ ...inputStyle, paddingRight: "38px" }}
+                      onBlur={handleBlur}
+                      style={{ ...getInputStyle("joining_date"), paddingRight: "38px" }}
                     />
                     <Box
                       sx={{
@@ -453,6 +695,11 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       <Calendar size={18} />
                     </Box>
                   </Box>
+                  {touched.joining_date && errors.joining_date && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.joining_date}
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             )}
@@ -460,6 +707,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
             {/* TAB 1: Employment Details */}
             {activeTab === 1 && (
               <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={3}>
+                {/* Department */}
                 <Box>
                   <label style={labelStyle}>Department *</label>
                   <Box sx={{ position: "relative", width: "100%" }}>
@@ -467,9 +715,9 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       name="department_id"
                       value={formData.department_id}
                       onChange={handleChange}
-                      required
+                      onBlur={handleBlur}
                       style={{
-                        ...inputStyle,
+                        ...getInputStyle("department_id"),
                         WebkitAppearance: "none",
                         MozAppearance: "none",
                         appearance: "none",
@@ -500,8 +748,14 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       <ChevronDown size={18} />
                     </Box>
                   </Box>
+                  {touched.department_id && errors.department_id && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.department_id}
+                    </Typography>
+                  )}
                 </Box>
 
+                {/* Designation */}
                 <Box>
                   <label style={labelStyle}>Designation *</label>
                   <Box sx={{ position: "relative", width: "100%" }}>
@@ -509,9 +763,9 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       name="designation_id"
                       value={formData.designation_id}
                       onChange={handleChange}
-                      required
+                      onBlur={handleBlur}
                       style={{
-                        ...inputStyle,
+                        ...getInputStyle("designation_id"),
                         WebkitAppearance: "none",
                         MozAppearance: "none",
                         appearance: "none",
@@ -542,13 +796,17 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       <ChevronDown size={18} />
                     </Box>
                   </Box>
+                  {touched.designation_id && errors.designation_id && (
+                    <Typography variant="caption" color="#DC2626" fontWeight={600} sx={{ mt: 0.5, display: "block" }}>
+                      {errors.designation_id}
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             )}
           </form>
         )}
       </DialogContent>
-
 
       {/* Footer Action Bar */}
       <DialogActions
@@ -637,6 +895,3 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
     </Dialog>
   );
 }
-
-
-

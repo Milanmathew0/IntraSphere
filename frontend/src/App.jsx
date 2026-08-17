@@ -71,6 +71,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["Admin"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Meeting Room Booking Route */}
             <Route

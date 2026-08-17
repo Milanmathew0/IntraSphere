@@ -14,6 +14,8 @@ from app.api.v1.employment_request import router as employment_request_router
 from app.api.v1.onboarding import router as onboarding_router
 from app.api.v1.leave import router as leave_router
 from app.api.v1.meeting_rooms import router as meeting_rooms_router
+from app.api.v1.admin import router as admin_router
+from app.api.v1.health import router as health_router
 from app.services.leave_service import init_leave_system
 from app.services.department_service import init_departments
 from app.services.designation_service import init_designations
@@ -31,6 +33,14 @@ async def startup_event():
     await init_departments()
     await init_designations()
     await init_meeting_rooms()
+
+    # Create collection indexes
+    try:
+        await db["users"].create_index("email", unique=True)
+        await db["users"].create_index("activation_token_hash")
+        await db["employees"].create_index("employee_id", unique=True)
+    except Exception as e:
+        pass
 
 
 # Mount Static Uploads Directory
@@ -66,6 +76,8 @@ app.include_router(employment_request_router, prefix="/api/v1")
 app.include_router(onboarding_router, prefix="/api/v1")
 app.include_router(leave_router, prefix="/api/v1")
 app.include_router(meeting_rooms_router, prefix="/api/v1")
+app.include_router(admin_router, prefix="/api/v1")
+app.include_router(health_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():

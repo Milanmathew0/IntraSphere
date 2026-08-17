@@ -51,6 +51,9 @@ export default function TeamPresenceWidget() {
     }
   };
 
+  const presentCount = teamMembers.filter((m) => m.status === "In Office").length;
+  const presencePercentage = teamMembers.length > 0 ? Math.round((presentCount / teamMembers.length) * 100) : 100;
+
   return (
     <Card
       elevation={0}
@@ -93,7 +96,7 @@ export default function TeamPresenceWidget() {
           </Box>
 
           <Chip
-            label="93% Present"
+            label={`${presencePercentage}% Present`}
             size="small"
             sx={{
               bgcolor: "#F4F4F5",
@@ -120,7 +123,7 @@ export default function TeamPresenceWidget() {
           </Box>
           <LinearProgress
             variant="determinate"
-            value={93}
+            value={presencePercentage}
             sx={{
               height: 6,
               borderRadius: 3,

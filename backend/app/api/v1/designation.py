@@ -20,6 +20,7 @@ router = APIRouter(
 
 
 @router.post("/")
+@router.post("")
 async def add_designation(designation: DesignationCreate):
 
     result = await create_designation(designation)
@@ -37,6 +38,7 @@ async def add_designation(designation: DesignationCreate):
 
 
 @router.get("/")
+@router.get("")
 async def get_designations():
 
     designations = await get_all_designations()

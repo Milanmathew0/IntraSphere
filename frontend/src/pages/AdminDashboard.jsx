@@ -1,49 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  AppBar,
-  Avatar,
   Box,
-  Button,
   Container,
   Paper,
   Stack,
-  Toolbar,
   Typography,
   Grid,
-  Tabs,
-  Tab,
+  Button,
   Chip,
   Snackbar,
   Alert,
+  CircularProgress,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import EventBusyIcon from "@mui/icons-material/EventBusy";
-import HistoryIcon from "@mui/icons-material/History";
-import PersonIcon from "@mui/icons-material/Person";
-import PeopleIcon from "@mui/icons-material/People";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import PeopleIcon from "@mui/icons-material/People";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
-import { BrandLogo } from "../components/BrandLogo";
 import UserProfileHeader from "../components/dashboard/UserProfileHeader";
-import AttendanceWidget from "../components/dashboard/AttendanceWidget";
-import EmergencyMeetingRooms from "../components/dashboard/EmergencyMeetingRooms";
-import WorkspaceReservationCard from "../components/dashboard/WorkspaceReservationCard";
-import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
-import BookingHistoryTable from "../components/dashboard/BookingHistoryTable";
-import EmployeeProfileSection from "../components/dashboard/EmployeeProfileSection";
+import api from "../api/axios";
 
+// Admin Dashboard Components
+import AdminSummaryCards from "../components/Admin/AdminSummaryCards";
+import EmployeeOverview from "../components/Admin/EmployeeOverview";
+import OnboardingOverview from "../components/Admin/OnboardingOverview";
+import AttendanceOverview from "../components/Admin/AttendanceOverview";
+import LeaveOverview from "../components/Admin/LeaveOverview";
+import MeetingRoomOverview from "../components/Admin/MeetingRoomOverview";
+import FacilityOverview from "../components/Admin/FacilityOverview";
+import UserManagementSection from "../components/Admin/UserManagementSection";
+import RecentActivity from "../components/Admin/RecentActivity";
+import AdminAnalytics from "../components/Admin/AdminAnalytics";
+import QuickActions from "../components/Admin/QuickActions";
+import SystemHealth from "../components/Admin/SystemHealth";
+
+// Modals
+import ManageUsersModal from "../components/Admin/ManageUsersModal";
+import AuditLogsModal from "../components/Admin/AuditLogsModal";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const email = user?.email || localStorage.getItem("email") || "Admin";
+
+  const email = user?.email || localStorage.getItem("email") || "admin@intrasphere.com";
   const username = user?.username || email.split("@")[0];
 
-  const [activeTab, setActiveTab] = useState(0);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Modal States
+  const [manageUsersOpen, setManageUsersOpen] = useState(false);
+  const [auditLogsOpen, setAuditLogsOpen] = useState(false);
 
   // Toast Notification State
   const [toast, setToast] = useState({
@@ -56,6 +70,34 @@ export default function AdminDashboard() {
     setToast({ open: true, message: msg, severity });
   };
 
+  const fetchDashboardStats = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.get("/api/v1/admin/dashboard");
+      setDashboardData(res.data);
+    } catch (err) {
+      console.error("Error loading admin dashboard stats:", err);
+      try {
+        const resFallback = await api.get("/api/v1/dashboard/admin");
+        setDashboardData(resFallback.data);
+      } catch (fallbackErr) {
+        console.error("Fallback error loading admin stats:", fallbackErr);
+        const errorMsg =
+          err.response?.data?.detail ||
+          fallbackErr.response?.data?.detail ||
+          "Unable to load dashboard statistics. Please check backend connection.";
+        setError(errorMsg);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -65,59 +107,82 @@ export default function AdminDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#FAFAFA",
+        backgroundColor: "#F8FAFC",
         display: "flex",
         flexDirection: "column",
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Top Header Banner */}
+      {/* HEADER BANNER */}
       <Box
         sx={{
-          bgcolor: "#09090B",
+          bgcolor: "#0F172A",
           color: "#FFFFFF",
-          pt: 1.5,
-          pb: 4,
+          pt: 1.8,
+          pb: 3.5,
           px: { xs: 2, sm: 4, md: 6 },
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
         }}
       >
         <Container maxWidth="xl">
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, cursor: "pointer" }} onClick={() => navigate("/")}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            {/* Branding Logo */}
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 1.5, cursor: "pointer" }}
+              onClick={() => navigate("/admin-dashboard")}
+            >
               <Box
                 sx={{
-                  width: 38,
-                  height: 38,
+                  width: 42,
+                  height: 42,
                   borderRadius: "12px",
-                  bgcolor: "#18181B",
-                  border: "1px solid #27272A",
+                  bgcolor: "#1E293B",
+                  border: "1px solid #334155",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <AdminPanelSettingsIcon style={{ color: "#FFFFFF" }} />
+                <AdminPanelSettingsIcon style={{ color: "#38BDF8", fontSize: 26 }} />
               </Box>
-              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF">
-                IntraSphere
-              </Typography>
+              <Box>
+                <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF" sx={{ lineHeight: 1.2 }}>
+                  IntraSphere
+                </Typography>
+                <Typography variant="caption" fontWeight={600} color="#94A3B8">
+                  Admin Control Center
+                </Typography>
+              </Box>
             </Box>
 
+            {/* Right Side Header Controls */}
             <Stack direction="row" spacing={2} alignItems="center">
+              <Tooltip title="Refresh Stats">
+                <IconButton onClick={fetchDashboardStats} sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}>
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="System Notifications">
+                <IconButton sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}>
+                  <NotificationsIcon />
+                </IconButton>
+              </Tooltip>
+
               <Button
                 variant="contained"
                 startIcon={<MeetingRoomIcon />}
                 onClick={() => navigate("/meeting-rooms")}
                 sx={{
-                  bgcolor: "#18181B",
+                  bgcolor: "#1E293B",
                   color: "#FFFFFF",
-                  border: "1px solid #27272A",
-                  "&:hover": { bgcolor: "#27272A" },
-                  fontWeight: 800,
+                  border: "1px solid #334155",
+                  "&:hover": { bgcolor: "#334155" },
+                  fontWeight: 700,
                   borderRadius: "50px",
                   textTransform: "none",
                   px: 2.5,
+                  display: { xs: "none", sm: "inline-flex" },
                 }}
               >
                 Meeting Rooms
@@ -128,16 +193,17 @@ export default function AdminDashboard() {
                 startIcon={<PeopleIcon />}
                 onClick={() => navigate("/employees")}
                 sx={{
-                  bgcolor: "#FFFFFF",
-                  color: "#09090B",
-                  "&:hover": { bgcolor: "#F4F4F5" },
-                  fontWeight: 800,
+                  bgcolor: "#1976D2",
+                  color: "#FFFFFF",
+                  "&:hover": { bgcolor: "#1565C0" },
+                  fontWeight: 700,
                   borderRadius: "50px",
                   textTransform: "none",
                   px: 2.5,
+                  display: { xs: "none", md: "inline-flex" },
                 }}
               >
-                Employee Management
+                Employees
               </Button>
 
               <UserProfileHeader user={{ ...user, role: "Admin" }} onLogout={handleLogout} />
@@ -146,158 +212,121 @@ export default function AdminDashboard() {
         </Container>
       </Box>
 
-      {/* Main Content Container */}
-      <Container maxWidth="xl" sx={{ mt: 3, mb: 6, flexGrow: 1 }}>
+      {/* MAIN CONTENT CONTAINER */}
+      <Container maxWidth="xl" sx={{ mt: 3.5, mb: 6, flexGrow: 1 }}>
         {/* Welcome Header */}
         <Paper
           elevation={0}
           sx={{
-            p: 4,
-            borderRadius: 4,
-            border: "1px solid #E4E4E7",
+            p: 3.5,
+            borderRadius: 3.5,
+            border: "1px solid #E2E8F0",
             backgroundColor: "#FFFFFF",
             mb: 4,
           }}
         >
-          <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems="center" spacing={2}>
+          <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", md: "center" }} spacing={2}>
             <Box>
-              <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
-                <Typography variant="h4" fontWeight="900" color="#09090B">
-                  Welcome, {username} 👋
+              <Stack direction="row" spacing={1.5} alignItems="center" mb={0.8}>
+                <Typography variant="h4" fontWeight="900" color="#0F172A">
+                  Admin Dashboard
                 </Typography>
-                <Chip
-                  label="System Admin Portal"
-                  sx={{
-                    bgcolor: "#F3E5F5",
-                    color: "#7B1FA2",
-                    fontWeight: 700,
-                    fontSize: "0.85rem",
-                  }}
-                />
+                <Chip label="Organization Control Center" sx={{ bgcolor: "#E3F2FD", color: "#1976D2", fontWeight: 700 }} />
               </Stack>
-
               <Typography variant="body1" color="text.secondary">
-                Full System Administration Portal. Oversee company-wide attendance, manage employee directories, configure office rooms, and audit workspace reservations.
+                Centralized management and monitoring of IntraSphere office automation operations.
               </Typography>
             </Box>
 
-            {/* Quick Summary Pill Badges */}
-            <Stack direction="row" spacing={1.5} flexWrap="wrap" gap={1}>
-              <Paper elevation={0} sx={{ p: 1.5, px: 2, border: "1px solid #E2E8F0", borderRadius: 3, bgcolor: "#F1F5F9" }}>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  Total System Users
-                </Typography>
-                <Typography variant="subtitle2" fontWeight="bold" color="#7B1FA2">
-                  128 Employees
-                </Typography>
-              </Paper>
-              <Paper elevation={0} sx={{ p: 1.5, px: 2, border: "1px solid #E2E8F0", borderRadius: 3, bgcolor: "#F1F5F9" }}>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  System Health
-                </Typography>
-                <Typography variant="subtitle2" fontWeight="bold" color="#2E7D32">
-                  ● 100% Operational
-                </Typography>
-              </Paper>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={fetchDashboardStats}
+                sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700 }}
+              >
+                Refresh Data
+              </Button>
             </Stack>
           </Stack>
         </Paper>
 
-        {/* Tabbed Navigation */}
-        <Paper
-          elevation={0}
-          sx={{
-            borderRadius: 3,
-            border: "1px solid #E2E8F0",
-            bgcolor: "#FFFFFF",
-            mb: 4,
-            px: 2,
-          }}
-        >
-          <Tabs
-            value={activeTab}
-            onChange={(e, val) => setActiveTab(val)}
-            variant="scrollable"
-            scrollButtons="auto"
-            textColor="primary"
-            indicatorColor="primary"
-          >
-            <Tab icon={<DashboardIcon />} iconPosition="start" label="Admin Control Panel" sx={{ textTransform: "none", fontWeight: 600, py: 2 }} />
-            <Tab icon={<MeetingRoomIcon />} iconPosition="start" label="Room & Desk Allocations" sx={{ textTransform: "none", fontWeight: 600, py: 2 }} />
-            <Tab icon={<EventBusyIcon />} iconPosition="start" label="System Leave Records" sx={{ textTransform: "none", fontWeight: 600, py: 2 }} />
-            <Tab icon={<HistoryIcon />} iconPosition="start" label="All Booking Logs" sx={{ textTransform: "none", fontWeight: 600, py: 2 }} />
-            <Tab icon={<PersonIcon />} iconPosition="start" label="Admin Profile & Settings" sx={{ textTransform: "none", fontWeight: 600, py: 2 }} />
-          </Tabs>
-        </Paper>
+        {/* Error Alert */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }} action={<Button color="inherit" size="small" onClick={fetchDashboardStats}>Retry</Button>}>
+            {error}
+          </Alert>
+        )}
 
-        {/* Tab 0: Overview */}
-        {activeTab === 0 && (
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={4}>
+        {/* 1. SUMMARY CARDS */}
+        <Box sx={{ mb: 4 }}>
+          <AdminSummaryCards data={dashboardData} loading={loading} />
+        </Box>
 
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <AttendanceWidget />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <EmergencyMeetingRooms />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <WorkspaceReservationCard />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <LeaveApplicationCard />
-            </Grid>
+        {/* 2. OVERVIEW SECTIONS (2-Column & 3-Column Responsive Grids) */}
+        <Grid container spacing={3.5} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={6}>
+            <EmployeeOverview data={dashboardData} loading={loading} />
           </Grid>
-        )}
-
-        {/* Tab 1: Room & Desk Bookings */}
-        {activeTab === 1 && (
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <EmergencyMeetingRooms />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <WorkspaceReservationCard />
-            </Grid>
-            <Grid item xs={12}>
-              <BookingHistoryTable />
-            </Grid>
+          <Grid item xs={12} md={6}>
+            <OnboardingOverview data={dashboardData} loading={loading} />
           </Grid>
-        )}
+        </Grid>
 
-        {/* Tab 2: Leave Applications & Management */}
-        {activeTab === 2 && (
-          <Box textAlign="center" py={4}>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate("/leave")}
-              sx={{ borderRadius: "50px", px: 4, py: 1.5, bgcolor: "#064E3B", color: "#FFFFFF", fontWeight: 800 }}
-            >
-              Open Full Organization Leave Portal
-            </Button>
-          </Box>
-        )}
-
-        {/* Tab 3: History */}
-        {activeTab === 3 && (
-          <Box>
-            <BookingHistoryTable />
-          </Box>
-        )}
-
-        {/* Tab 4: Profile */}
-        {activeTab === 4 && (
-          <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} md={10} lg={8}>
-              <EmployeeProfileSection />
-            </Grid>
+        <Grid container spacing={3.5} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={6} lg={6}>
+            <AttendanceOverview
+              data={dashboardData}
+              loading={loading}
+              onNavigateToAttendance={() => navigate("/employees")}
+            />
           </Grid>
-        )}
+          <Grid item xs={12} md={6} lg={6}>
+            <LeaveOverview data={dashboardData} loading={loading} />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3.5} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={6}>
+            <MeetingRoomOverview data={dashboardData} loading={loading} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <UserManagementSection
+              data={dashboardData}
+              loading={loading}
+              onOpenManageUsers={() => setManageUsersOpen(true)}
+            />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3.5} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={6}>
+            <FacilityOverview data={dashboardData} loading={loading} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <RecentActivity
+              data={dashboardData}
+              loading={loading}
+              onOpenAuditLogs={() => setAuditLogsOpen(true)}
+            />
+          </Grid>
+        </Grid>
+
+        {/* 3. ADMIN ANALYTICS */}
+        <AdminAnalytics data={dashboardData} loading={loading} />
+
+        {/* 4. QUICK ACTIONS */}
+        <QuickActions
+          onOpenAddEmployee={() => navigate("/employees")}
+          onOpenManageUsers={() => setManageUsersOpen(true)}
+          onOpenReports={() => showToast("Reports exported to system downloads folder.", "info")}
+        />
+
+        {/* 5. SYSTEM HEALTH */}
+        <SystemHealth data={dashboardData} loading={loading} />
       </Container>
 
-      {/* Footer */}
+      {/* FOOTER */}
       <Box
         component="footer"
         sx={{
@@ -308,12 +337,24 @@ export default function AdminDashboard() {
           backgroundColor: "#FFFFFF",
         }}
       >
-        <Typography variant="caption" color="text.secondary">
-          © 2026 IntraSphere – Administrator Portal
+        <Typography variant="caption" color="text.secondary" fontWeight={500}>
+          © 2026 IntraSphere – Smart Office Management and Automation System | Administrator Control Center
         </Typography>
       </Box>
 
-      {/* Snackbar Toast Feedback */}
+      {/* MODALS */}
+      <ManageUsersModal
+        open={manageUsersOpen}
+        onClose={() => setManageUsersOpen(false)}
+        onRefreshDashboard={fetchDashboardStats}
+      />
+
+      <AuditLogsModal
+        open={auditLogsOpen}
+        onClose={() => setAuditLogsOpen(false)}
+      />
+
+      {/* FEEDBACK TOAST */}
       <Snackbar
         open={toast.open}
         autoHideDuration={4000}

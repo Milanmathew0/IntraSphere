@@ -55,11 +55,58 @@ async def preview_calculate_days(
     start_date: date,
     end_date: date,
     is_half_day: bool = False,
+    leave_type_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     try:
-        total_days = await calculate_working_days(start_date, end_date, is_half_day)
-        return {"total_days": total_days}
+        from app.services.leave_service import (
+            calculate_working_days_detail,
+            get_or_create_leave_balances,
+            users_collection,
+            employees_collection,
+            leave_types_collection
+        )
+        
+        detail = await calculate_working_days_detail(start_date, end_date, is_half_day)
+        working_days = detail["working_days"]
+        
+        remaining_balance = None
+        balance_after_request = None
+        leave_type_name = None
+        requires_attachment = False
+
+        if leave_type_id:
+            try:
+                lt_obj_id = ObjectId(leave_type_id)
+                leave_type = await leave_types_collection.find_one({"_id": lt_obj_id, "is_active": True})
+                if leave_type:
+                    leave_type_name = leave_type.get("name")
+                    requires_attachment = leave_type.get("requires_attachment", False)
+
+                    email = current_user.get("sub")
+                    user = await users_collection.find_one({"email": email})
+                    if user:
+                        employee = await employees_collection.find_one({"user_id": user["_id"]})
+                        if employee:
+                            balances = await get_or_create_leave_balances(employee["_id"], user["_id"], start_date.year)
+                            target_bal = next((b for b in balances if b["leave_type_id"] == leave_type_id), None)
+                            if target_bal:
+                                remaining_balance = float(target_bal["remaining"])
+                                balance_after_request = remaining_balance - working_days
+            except Exception:
+                pass
+
+        return {
+            "total_days": working_days,
+            "working_days": working_days,
+            "weekends_excluded": detail["weekends_excluded"],
+            "holidays_excluded": detail["holidays_excluded"],
+            "total_calendar_days": detail["total_calendar_days"],
+            "remaining_balance": remaining_balance,
+            "balance_after_request": balance_after_request,
+            "leave_type_name": leave_type_name,
+            "requires_attachment": requires_attachment
+        }
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
 

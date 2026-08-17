@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -37,6 +37,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 import TodayAttendanceCard from "../components/dashboard/TodayAttendanceCard";
 import AttendanceHistoryTable from "../components/dashboard/AttendanceHistoryTable";
 import QuickActionsGrid from "../components/dashboard/QuickActionsGrid";
@@ -56,6 +57,39 @@ export default function EmployeeDashboard() {
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [activeModal, setActiveModal] = useState(null); // 'meeting_room' | 'workspace' | 'leave' | null
   const [searchQuery, setSearchQuery] = useState("");
+  const [todayScheduleItems, setTodayScheduleItems] = useState([]);
+
+  useEffect(() => {
+    const fetchTodaySchedule = async () => {
+      try {
+        const res = await api.get("/api/v1/meeting-bookings/my");
+        const bookings = res.data || [];
+        const nowStr = new Date().toDateString();
+        const todayBookings = bookings
+          .filter((b) => {
+            if (b.status === "Cancelled") return false;
+            const startDt = new Date(b.start_time);
+            return startDt.toDateString() === nowStr;
+          })
+          .map((b) => {
+            const startDt = new Date(b.start_time);
+            const endDt = new Date(b.end_time);
+            const startFormatted = startDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            const endFormatted = endDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            return {
+              type: "meeting",
+              title: b.title || b.room_name || "Meeting",
+              time: `${startFormatted} - ${endFormatted}`,
+              location: `${b.room_name}${b.location ? " • " + b.location : ""}`,
+            };
+          });
+        setTodayScheduleItems(todayBookings);
+      } catch (err) {
+        console.error("Error fetching today schedule:", err);
+      }
+    };
+    fetchTodaySchedule();
+  }, []);
 
   const [toast, setToast] = useState({
     open: false,
@@ -127,20 +161,6 @@ export default function EmployeeDashboard() {
     }
   ];
 
-  const todayScheduleItems = [
-    {
-      type: "meeting",
-      title: "Emergency War Room Alpha",
-      time: "02:00 PM - 03:00 PM",
-      location: "Building A - Floor 3",
-    },
-    {
-      type: "workspace",
-      title: "Silent Call Pod #A4 (Focus Desk)",
-      time: "04:00 PM - 05:00 PM",
-      location: "Quiet Zone B",
-    },
-  ];
 
   const currentDateFormatted = new Date().toLocaleDateString("en-US", {
     weekday: "short",
@@ -581,9 +601,13 @@ export default function EmployeeDashboard() {
                   <QuickActionsGrid onActionClick={handleQuickAction} />
                 </Box>
 
-                {/* Attendance History Table & Notifications */}
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "8fr 4fr" }, gap: 3 }}>
+                {/* Attendance History Table */}
+                <Box sx={{ width: "100%" }}>
                   <AttendanceHistoryTable user={user} refreshTrigger={historyRefreshTrigger} />
+                </Box>
+
+                {/* Notifications & Activity (Placed down below) */}
+                <Box sx={{ width: "100%" }}>
                   <NotificationsCard />
                 </Box>
               </Stack>

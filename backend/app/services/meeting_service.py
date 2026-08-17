@@ -98,6 +98,17 @@ async def init_meeting_rooms():
 # HELPER FUNCTIONS
 # ==========================================
 
+def format_iso_utc(dt) -> Optional[str]:
+    if dt is None:
+        return None
+    if isinstance(dt, datetime):
+        s = dt.isoformat()
+    else:
+        s = str(dt)
+    if not s.endswith("Z"):
+        s += "Z"
+    return s
+
 async def get_employee_from_user(user_payload: dict):
     """Resolve authenticated user payload to employee document."""
     email = user_payload.get("sub")
@@ -202,11 +213,7 @@ async def get_all_rooms_filtered(
             if status_filter == "Maintenance" and curr_status != "Maintenance":
                 continue
 
-        created_at_val = r.get("created_at")
-        if isinstance(created_at_val, datetime):
-            created_at_str = created_at_val.isoformat()
-        else:
-            created_at_str = str(created_at_val) if created_at_val else None
+        created_at_str = format_iso_utc(r.get("created_at"))
 
         rooms.append({
             "id": str(r["_id"]),
@@ -260,8 +267,8 @@ async def get_room_details_by_id(room_id_str: str):
             "booking_id": str(b["_id"]),
             "title": b["title"],
             "meeting_type": b.get("meeting_type", "Internal Sync"),
-            "start_time": b["start_time"].isoformat(),
-            "end_time": b["end_time"].isoformat(),
+            "start_time": format_iso_utc(b["start_time"]),
+            "end_time": format_iso_utc(b["end_time"]),
             "organizer_name": org_name,
             "attendee_count": len(b.get("attendees", [])) + 1
         })
@@ -317,8 +324,8 @@ async def check_room_availability(room_id_str: str, start_time: datetime, end_ti
     async for c in conflicts_cursor:
         conflicts.append({
             "title": c["title"],
-            "start_time": c["start_time"].isoformat(),
-            "end_time": c["end_time"].isoformat()
+            "start_time": format_iso_utc(c["start_time"]),
+            "end_time": format_iso_utc(c["end_time"])
         })
 
     is_available = len(conflicts) == 0
@@ -326,8 +333,8 @@ async def check_room_availability(room_id_str: str, start_time: datetime, end_ti
         "available": is_available,
         "room_id": room_id_str,
         "room_name": room["room_name"],
-        "start_time": start_time.isoformat(),
-        "end_time": end_time.isoformat(),
+        "start_time": format_iso_utc(start_time),
+        "end_time": format_iso_utc(end_time),
         "conflicts": conflicts
     }
 
@@ -363,15 +370,20 @@ async def create_booking(user_payload: dict, booking_data):
         end_dt = end_dt.replace(tzinfo=None)
 
     if start_dt >= end_dt:
-        raise HTTPException(status_code=400, detail="Start time must be strictly before end time.")
+        raise HTTPException(status_code=400, detail="End time must be later than start time. Meeting duration must be greater than zero.")
 
-    if end_dt <= now:
+    if end_dt <= now or start_dt < (now - timedelta(minutes=5)):
         raise HTTPException(status_code=400, detail="Cannot book a meeting room for a past time slot.")
 
+    duration_seconds = (end_dt - start_dt).total_seconds()
+
+    # Minimum duration check (15 minutes)
+    if duration_seconds < 900:
+        raise HTTPException(status_code=400, detail="Meeting duration must be at least 15 minutes.")
+
     # Maximum duration check (4 hours)
-    duration_hours = (end_dt - start_dt).total_seconds() / 3600.0
-    if duration_hours > 8.0:
-        raise HTTPException(status_code=400, detail="Maximum allowable single meeting duration is 8 hours.")
+    if duration_seconds > 14400:
+        raise HTTPException(status_code=400, detail="Meeting duration cannot exceed 4 hours.")
 
     # 3. Resolve & Validate Attendees
     organizer_emp_id = emp["_id"]
@@ -393,7 +405,7 @@ async def create_booking(user_payload: dict, booking_data):
     if total_participants > room["capacity"]:
         raise HTTPException(
             status_code=400,
-            detail=f"Selected room capacity ({room['capacity']}) cannot accommodate all {total_participants} attendees."
+            detail=f"Selected room cannot accommodate all attendees. Room capacity is {room['capacity']}."
         )
 
     # 4. Atomic Conflict Detection (Double-booking protection)
@@ -405,9 +417,11 @@ async def create_booking(user_payload: dict, booking_data):
     })
 
     if conflict:
+        c_start = conflict['start_time'].strftime('%H:%M')
+        c_end = conflict['end_time'].strftime('%H:%M')
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Room '{room['room_name']}' is already booked during the selected time ({conflict['start_time'].strftime('%H:%M')} - {conflict['end_time'].strftime('%H:%M')})."
+            detail=f"{room['room_name']} is already booked from {c_start} to {c_end}."
         )
 
     # 5. Insert Booking Document
@@ -468,8 +482,11 @@ async def get_my_bookings(user_payload: dict):
     cursor = bookings_collection.find({
         "$or": [
             {"organizer_employee_id": emp["_id"]},
+            {"organizer_employee_id": str(emp["_id"])},
             {"organizer_user_id": user["_id"]},
-            {"attendees": emp["_id"]}
+            {"organizer_user_id": str(user["_id"])},
+            {"attendees": emp["_id"]},
+            {"attendees": str(emp["_id"])}
         ]
     }).sort("start_time", -1)
 
@@ -515,12 +532,12 @@ async def get_my_bookings(user_payload: dict):
             "title": b["title"],
             "description": b.get("description", ""),
             "meeting_type": b.get("meeting_type", "Internal Sync"),
-            "start_time": b["start_time"].isoformat(),
-            "end_time": b["end_time"].isoformat(),
+            "start_time": format_iso_utc(b["start_time"]),
+            "end_time": format_iso_utc(b["end_time"]),
             "attendees": att_list,
             "attendee_count": len(att_list) + 1,
             "status": status_val,
-            "created_at": b.get("created_at")
+            "created_at": format_iso_utc(b.get("created_at"))
         })
 
     return bookings

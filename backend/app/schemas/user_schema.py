@@ -27,4 +27,9 @@ class UserGoogleLogin(BaseModel):
 
 class AccountActivate(BaseModel):
     token: str
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8)
+
+
+class ResendActivationRequest(BaseModel):
+    email: EmailStr
+

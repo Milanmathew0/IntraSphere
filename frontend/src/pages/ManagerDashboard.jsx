@@ -92,20 +92,44 @@ export default function ManagerDashboard() {
 
   const fetchDashboardMetrics = async () => {
     try {
-      const empRes = await api.get("/api/v1/employees");
-      const empList = empRes.data.employees || empRes.data || [];
+      const [empRes, attRes, pendRes] = await Promise.allSettled([
+        api.get("/api/v1/employees"),
+        api.get("/api/v1/attendance/today"),
+        api.get("/api/v1/leave-requests/pending-approvals"),
+      ]);
+
+      let empList = [];
+      if (empRes.status === "fulfilled" && empRes.value.data) {
+        empList = empRes.value.data.employees || empRes.value.data || [];
+      }
+
+      let todayAttCount = 0;
+      if (attRes.status === "fulfilled" && attRes.value.data) {
+        todayAttCount = attRes.value.data.count || (attRes.value.data.attendance || []).length || 0;
+      }
 
       let pendingCount = 0;
-      try {
-        const pendRes = await api.get("/api/v1/leave-requests/pending-approvals");
-        pendingCount = (pendRes.data || []).length;
-      } catch (e) {
-        console.error("Error fetching pending approvals count:", e);
+      if (pendRes.status === "fulfilled" && pendRes.value.data) {
+        pendingCount = (pendRes.value.data || []).length;
+      }
+
+      const totalWorkforce = empList.length;
+      const activeEmps = empList.filter(
+        (e) => e.employment_status === "Active" || e.is_active !== false
+      ).length;
+
+      let presentPercentage = 100;
+      if (totalWorkforce > 0) {
+        if (todayAttCount > 0) {
+          presentPercentage = Math.round((todayAttCount / totalWorkforce) * 100);
+        } else {
+          presentPercentage = Math.round((activeEmps / totalWorkforce) * 100);
+        }
       }
 
       setMetrics({
-        totalWorkforce: empList.length,
-        presentPercentage: 93,
+        totalWorkforce,
+        presentPercentage,
         pendingLeaves: pendingCount,
         loading: false,
       });
@@ -426,7 +450,7 @@ export default function ManagerDashboard() {
                 Daily Presence
               </Typography>
               <Typography variant="h4" fontWeight={900} color="#09090B" mt={0.5}>
-                93%
+                {metrics.loading ? <CircularProgress size={24} sx={{ color: "#09090B" }} /> : `${metrics.presentPercentage}%`}
               </Typography>
             </Box>
             <Box
@@ -527,102 +551,7 @@ export default function ManagerDashboard() {
               flexDirection: "column"
             }}
           >
-            {/* Filter Controls Row */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 2,
-                mb: 3,
-                p: 2,
-                bgcolor: "#FAFAFA",
-                borderRadius: "12px",
-                border: "1px solid #E4E4E7"
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography variant="body2" fontWeight={700} color="#09090B">
-                    Search Name:
-                  </Typography>
-                  <input
-                    type="text"
-                    placeholder="Please enter keyword..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      height: "38px",
-                      padding: "0 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #E4E4E7",
-                      fontSize: "14px",
-                      outline: "none",
-                      width: "200px",
-                      color: "#09090B",
-                      backgroundColor: "#FFFFFF"
-                    }}
-                  />
-                </Box>
 
-                <Button
-                  variant="outlined"
-                  startIcon={<Search size={16} />}
-                  sx={{
-                    borderRadius: "6px",
-                    textTransform: "none",
-                    fontWeight: 700,
-                    borderColor: "#09090B",
-                    color: "#09090B",
-                    px: 2.5,
-                    height: "38px",
-                    "&:hover": { bgcolor: "#F4F4F5", borderColor: "#09090B" }
-                  }}
-                >
-                  Search
-                </Button>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Button
-                  variant="contained"
-                  onClick={() => setIsAddModalOpen(true)}
-                  startIcon={<Plus size={16} />}
-                  sx={{
-                    borderRadius: "6px",
-                    bgcolor: "#09090B",
-                    color: "#FFFFFF",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    px: 2.5,
-                    height: "38px",
-                    boxShadow: "none",
-                    "&:hover": { bgcolor: "#27272A", boxShadow: "none" }
-                  }}
-                >
-                  Add Employee
-                </Button>
-
-                <Button
-                  variant="contained"
-                  startIcon={<Download size={16} />}
-                  sx={{
-                    borderRadius: "6px",
-                    bgcolor: "#09090B",
-                    color: "#FFFFFF",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    px: 2.5,
-                    height: "38px",
-                    boxShadow: "none",
-                    "&:hover": { bgcolor: "#27272A", boxShadow: "none" }
-                  }}
-                >
-                  Export Data
-                </Button>
-              </Box>
-            </Box>
 
             {/* TAB CONTENTS */}
 

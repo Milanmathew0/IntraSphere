@@ -52,10 +52,10 @@ export default function MyBookings({ showToast }) {
     const endDt = new Date(b.end_time);
 
     if (tabValue === "upcoming") {
-      return b.status === "Confirmed" && startDt >= now;
+      return b.status === "Confirmed" && endDt >= now;
     }
     if (tabValue === "today") {
-      return b.status === "Confirmed" && startDt.toDateString() === now.toDateString();
+      return b.status !== "Cancelled" && (startDt.toDateString() === now.toDateString() || endDt.toDateString() === now.toDateString());
     }
     if (tabValue === "past") {
       return b.status === "Completed" || (b.status === "Confirmed" && endDt < now);
@@ -140,7 +140,7 @@ export default function MyBookings({ showToast }) {
               <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Date & Time</TableCell>
               <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Type</TableCell>
               <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Status</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 800, color: "#475569" }}>Action</TableCell>
+              <TableCell sx={{ fontWeight: 800, color: "#475569" }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -179,15 +179,17 @@ export default function MyBookings({ showToast }) {
                   <TableCell>
                     <Chip size="small" label={b.meeting_type} sx={{ bgcolor: "#F1F5F9", color: "#475569", fontWeight: 600, fontSize: "0.72rem" }} />
                   </TableCell>
-                  <TableCell>{getStatusChip(b.status)}</TableCell>
-                  <TableCell align="right">
+                  <TableCell>
+                    {getStatusChip(b.status)}
+                  </TableCell>
+                  <TableCell>
                     {b.status === "Confirmed" && startDt >= now && (
                       <Button
                         size="small"
                         variant="outlined"
                         color="error"
                         onClick={() => setCancelModal({ open: true, booking: b })}
-                        sx={{ borderRadius: "8px", textTransform: "none", fontWeight: 700 }}
+                        sx={{ borderRadius: "8px", textTransform: "none", fontWeight: 700, px: 1.5, py: 0.2 }}
                       >
                         Cancel
                       </Button>

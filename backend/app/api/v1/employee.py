@@ -43,14 +43,23 @@ async def add_employee(employee: EmployeeCreate):
         raise HTTPException(status_code=400, detail="Designation not found")
 
     employee_id = result["employee_id"]
-    activation_token = result["activation_token"]
-    activation_url = f"http://localhost:5173/activate-account?token={activation_token}"
+    email_sent = result.get("email_sent", False)
+    email_msg = result.get("email_message", "")
+
+    if email_sent:
+        message = "Employee created successfully. Activation email has been sent."
+        invitation_status = "Sent"
+    else:
+        message = "Employee created, but activation email could not be sent."
+        invitation_status = "Pending"
 
     return {
-        "message": "Employee created successfully",
+        "message": message,
         "employee_id": employee_id,
-        "invitation_status": "Pending",
-        "activation_url": activation_url
+        "invitation_status": invitation_status,
+        "email_sent": email_sent,
+        "email_message": email_msg,
+        "dev_activation_url": result.get("dev_activation_url")
     }
 
 

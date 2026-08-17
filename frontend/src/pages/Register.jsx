@@ -41,7 +41,9 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -64,33 +66,93 @@ export default function Register() {
     }
   };
 
+  // LIVE VALIDATORS
+  const validateUsername = (val) => {
+    const trimmed = val.trim();
+    if (!trimmed) return "Full name / Username is required";
+    if (trimmed.length < 3) return "Username must be at least 3 characters long";
+    if (!/^[a-zA-Z0-9._\s-]+$/.test(trimmed)) {
+      return "Username can only contain letters, numbers, spaces, and . - _";
+    }
+    return "";
+  };
+
+  const validateEmail = (val) => {
+    const trimmed = val.trim();
+    if (!trimmed) return "Email address is required";
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmed)) {
+      return "Please enter a valid email address (e.g. name@company.com)";
+    }
+    return "";
+  };
+
+  const validatePassword = (val) => {
+    if (!val) return "Password is required";
+    if (val.length < 8) return "Password must be at least 8 characters long";
+    if (!/[a-z]/.test(val) || !/[A-Z]/.test(val)) {
+      return "Password must contain both uppercase and lowercase letters";
+    }
+    if (!/[\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(val)) {
+      return "Password must include at least one number or special character";
+    }
+    return "";
+  };
+
+  const validateConfirmPassword = (confirmVal, pwdVal) => {
+    if (!confirmVal) return "Please confirm your password";
+    if (confirmVal !== pwdVal) return "Passwords do not match";
+    return "";
+  };
+
+  // INSTANT LIVE KEYSTROKE HANDLERS
+  const handleUsernameChange = (e) => {
+    const val = e.target.value;
+    setUsername(val);
+    setTouched((prev) => ({ ...prev, username: true }));
+    setErrors((prev) => ({ ...prev, username: validateUsername(val) }));
+  };
+
+  const handleEmailChange = (e) => {
+    const val = e.target.value;
+    setEmail(val);
+    setTouched((prev) => ({ ...prev, email: true }));
+    setErrors((prev) => ({ ...prev, email: validateEmail(val) }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const val = e.target.value;
+    setPassword(val);
+    setTouched((prev) => ({ ...prev, password: true }));
+    setErrors((prev) => ({
+      ...prev,
+      password: validatePassword(val),
+      confirmPassword: confirmPassword ? validateConfirmPassword(confirmPassword, val) : prev.confirmPassword,
+    }));
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const val = e.target.value;
+    setConfirmPassword(val);
+    setTouched((prev) => ({ ...prev, confirmPassword: true }));
+    setErrors((prev) => ({ ...prev, confirmPassword: validateConfirmPassword(val, password) }));
+  };
+
   const validateForm = () => {
-    const newErrors = {};
+    const uErr = validateUsername(username);
+    const eErr = validateEmail(email);
+    const pErr = validatePassword(password);
+    const cErr = validateConfirmPassword(confirmPassword, password);
 
-    if (!username.trim()) {
-      newErrors.username = "Username is required";
-    }
+    setErrors({
+      username: uErr,
+      email: eErr,
+      password: pErr,
+      confirmPassword: cErr,
+    });
+    setTouched({ username: true, email: true, password: true, confirmPassword: true });
 
-    if (!email) {
-      newErrors.email = "Email address is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    if (!password) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
-
-    if (!confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !uErr && !eErr && !pErr && !cErr;
   };
 
   const handleSubmit = async (e) => {
@@ -101,22 +163,36 @@ export default function Register() {
 
     try {
       await api.post("/api/v1/auth/register", {
-        username,
-        email,
+        username: username.trim(),
+        email: email.trim(),
         password,
       });
 
       setSnackbar({
         open: true,
-        message: "Account created successfully!",
+        message: "Account created successfully! Redirecting to login...",
         severity: "success",
       });
 
       setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
+      const serverDetail = err.response?.data?.detail;
+      let errorMsg = "Registration failed. Please check your information.";
+
+      if (serverDetail) {
+        if (typeof serverDetail === "string") {
+          errorMsg = serverDetail;
+          if (serverDetail.toLowerCase().includes("email")) {
+            setErrors((prev) => ({ ...prev, email: serverDetail }));
+          }
+        } else if (Array.isArray(serverDetail)) {
+          errorMsg = serverDetail.map((d) => d.msg).join(", ");
+        }
+      }
+
       setSnackbar({
         open: true,
-        message: err.response?.data?.detail || "Registration failed",
+        message: errorMsg,
         severity: "error",
       });
     } finally {
@@ -131,7 +207,7 @@ export default function Register() {
 
       const response = await api.post("/api/v1/auth/google", {
         email: decoded.email,
-        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.strip(),
+        name: decoded.name || `${decoded.given_name || ""} ${decoded.family_name || ""}`.trim(),
         picture: decoded.picture || "",
         google_id: decoded.sub,
         token: credentialResponse.credential,
@@ -209,18 +285,19 @@ export default function Register() {
           {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
-              label="Username"
+              label="Full Name / Username"
               fullWidth
               margin="dense"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              error={!!errors.username}
-              helperText={errors.username}
+              onChange={handleUsernameChange}
+              error={!!(touched.username && errors.username)}
+              helperText={touched.username && errors.username ? errors.username : ""}
+              placeholder="John Doe"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonOutlinedIcon color="action" fontSize="small" />
+                      <PersonOutlinedIcon color={touched.username && errors.username ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                 },
@@ -232,14 +309,15 @@ export default function Register() {
               fullWidth
               margin="dense"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={!!errors.email}
-              helperText={errors.email}
+              onChange={handleEmailChange}
+              error={!!(touched.email && errors.email)}
+              helperText={touched.email && errors.email ? errors.email : ""}
+              placeholder="name@company.com"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailOutlinedIcon color="action" fontSize="small" />
+                      <EmailOutlinedIcon color={touched.email && errors.email ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                 },
@@ -252,14 +330,15 @@ export default function Register() {
               fullWidth
               margin="dense"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={!!errors.password}
-              helperText={errors.password}
+              onChange={handlePasswordChange}
+              error={!!(touched.password && errors.password)}
+              helperText={touched.password && errors.password ? errors.password : ""}
+              placeholder="At least 8 characters"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" fontSize="small" />
+                      <LockOutlinedIcon color={touched.password && errors.password ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -286,14 +365,15 @@ export default function Register() {
               fullWidth
               margin="dense"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              error={!!(touched.confirmPassword && errors.confirmPassword)}
+              helperText={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : ""}
+              placeholder="Re-enter password"
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" fontSize="small" />
+                      <LockOutlinedIcon color={touched.confirmPassword && errors.confirmPassword ? "error" : "action"} fontSize="small" />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -382,7 +462,7 @@ export default function Register() {
       {/* Snackbar Alert */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >

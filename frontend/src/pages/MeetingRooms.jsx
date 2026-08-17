@@ -71,8 +71,11 @@ export default function MeetingRooms() {
   const [locationFilter, setLocationFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
+  // Refresh Trigger State
+  const [refreshKey, setRefreshKey] = useState(0);
+
   // Modals State
-  const [detailsModal, setDetailsModal] = useState({ open: false, room: null });
+  const [detailsModal, setDetailsModal] = useState({ open: false, room: null, booking: null });
   const [bookingModal, setBookingModal] = useState({
     open: false,
     room: null,
@@ -627,6 +630,10 @@ export default function MeetingRooms() {
         {activeTab === 1 && (
           <RoomCalendar
             rooms={rooms}
+            refreshKey={refreshKey}
+            onSelectBooking={(b, room) => {
+              setDetailsModal({ open: true, room: room, booking: b });
+            }}
             onSlotClick={(room, dateStr, hourStr) => {
               setBookingModal({
                 open: true,
@@ -702,8 +709,15 @@ export default function MeetingRooms() {
       <RoomDetailsModal
         open={detailsModal.open}
         room={detailsModal.room}
-        onClose={() => setDetailsModal({ open: false, room: null })}
+        booking={detailsModal.booking}
+        onClose={() => setDetailsModal({ open: false, room: null, booking: null })}
         onBookRoom={(r) => setBookingModal({ open: true, room: r })}
+        onBookingCancelled={() => {
+          showToast("Booking cancelled successfully", "info");
+          setRefreshKey((prev) => prev + 1);
+          fetchSummaryStats();
+          fetchRooms();
+        }}
       />
 
       <BookingModal
@@ -715,6 +729,7 @@ export default function MeetingRooms() {
         onClose={() => setBookingModal({ open: false, room: null, prefillDate: null, prefillStartTime: null })}
         onSuccess={(msg) => {
           showToast(msg, "success");
+          setRefreshKey((prev) => prev + 1);
           fetchSummaryStats();
           fetchRooms();
         }}

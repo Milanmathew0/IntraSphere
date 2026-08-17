@@ -37,6 +37,8 @@ async def init_leave_system():
                 "annual_allocation": 12.0,
                 "carry_forward_allowed": False,
                 "maximum_consecutive_days": 5,
+                "minimum_notice_days": 1,
+                "maximum_advance_days": 90,
                 "requires_attachment": False,
                 "requires_approval": True,
                 "allow_negative_balance": False,
@@ -50,9 +52,41 @@ async def init_leave_system():
                 "annual_allocation": 10.0,
                 "carry_forward_allowed": False,
                 "maximum_consecutive_days": 7,
+                "minimum_notice_days": 0,
+                "maximum_advance_days": None,
                 "requires_attachment": True,
                 "requires_approval": True,
                 "allow_negative_balance": False,
+                "is_active": True,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            },
+            {
+                "name": "Earned Leave",
+                "description": "Privilege annual leave accrued over service duration",
+                "annual_allocation": 15.0,
+                "carry_forward_allowed": True,
+                "maximum_consecutive_days": 14,
+                "minimum_notice_days": 3,
+                "maximum_advance_days": 90,
+                "requires_attachment": False,
+                "requires_approval": True,
+                "allow_negative_balance": False,
+                "is_active": True,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            },
+            {
+                "name": "Unpaid Leave",
+                "description": "Leave without pay when paid balance is exhausted",
+                "annual_allocation": 0.0,
+                "carry_forward_allowed": False,
+                "maximum_consecutive_days": 30,
+                "minimum_notice_days": 0,
+                "maximum_advance_days": 90,
+                "requires_attachment": False,
+                "requires_approval": True,
+                "allow_negative_balance": True,
                 "is_active": True,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
@@ -81,35 +115,73 @@ async def create_audit_log(user_id: ObjectId, action: str, entity_type: str, ent
 # DURATION CALCULATOR (Single Source of Truth)
 # =====================================================
 
-async def calculate_working_days(start_date: date, end_date: date, is_half_day: bool = False) -> float:
+async def calculate_working_days_detail(start_date: date, end_date: date, is_half_day: bool = False) -> dict:
     if start_date > end_date:
-        return 0.0
+        return {
+            "working_days": 0.0,
+            "weekends_excluded": 0,
+            "holidays_excluded": 0,
+            "total_calendar_days": 0
+        }
+
+    total_calendar_days = (end_date - start_date).days + 1
 
     if is_half_day:
         if start_date != end_date:
             raise ValueError("Half-day leave start date must equal end date.")
-        # Check if weekend
-        if start_date.weekday() in (5, 6):
-            return 0.0
-        # Check holiday
+        
+        is_weekend = start_date.weekday() in (5, 6)
         start_dt = datetime.combine(start_date, datetime.min.time())
         holiday = await holidays_collection.find_one({"date": start_dt, "is_active": True})
+        
+        if is_weekend:
+            return {
+                "working_days": 0.0,
+                "weekends_excluded": 1,
+                "holidays_excluded": 0,
+                "total_calendar_days": 1
+            }
         if holiday:
-            return 0.0
-        return 0.5
+            return {
+                "working_days": 0.0,
+                "weekends_excluded": 0,
+                "holidays_excluded": 1,
+                "total_calendar_days": 1
+            }
+        return {
+            "working_days": 0.5,
+            "weekends_excluded": 0,
+            "holidays_excluded": 0,
+            "total_calendar_days": 1
+        }
 
-    total_days = 0.0
+    working_days = 0.0
+    weekends_excluded = 0
+    holidays_excluded = 0
+
     current = start_date
     while current <= end_date:
-        # Skip Saturday (5) and Sunday (6)
-        if current.weekday() not in (5, 6):
+        if current.weekday() in (5, 6):
+            weekends_excluded += 1
+        else:
             curr_dt = datetime.combine(current, datetime.min.time())
             holiday = await holidays_collection.find_one({"date": curr_dt, "is_active": True})
-            if not holiday:
-                total_days += 1.0
+            if holiday:
+                holidays_excluded += 1
+            else:
+                working_days += 1.0
         current += timedelta(days=1)
 
-    return total_days
+    return {
+        "working_days": working_days,
+        "weekends_excluded": weekends_excluded,
+        "holidays_excluded": holidays_excluded,
+        "total_calendar_days": total_calendar_days
+    }
+
+async def calculate_working_days(start_date: date, end_date: date, is_half_day: bool = False) -> float:
+    detail = await calculate_working_days_detail(start_date, end_date, is_half_day)
+    return detail["working_days"]
 
 
 # =====================================================
@@ -177,7 +249,9 @@ async def get_or_create_leave_balances(employee_id: ObjectId, user_id: ObjectId,
 # =====================================================
 
 async def submit_leave_request(user_payload: dict, req_data: dict):
-    # 1. Fetch User and Employee records
+    today_date = date.today()
+
+    # 1. Fetch User and Employee records (Active Employee check)
     email = user_payload.get("sub")
     user = await users_collection.find_one({"email": email})
     if not user or not user.get("is_active", True):
@@ -185,7 +259,7 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
 
     employee = await employees_collection.find_one({"user_id": user["_id"]})
     if not employee or employee.get("employment_status") != "Active":
-        return {"error": "Active employee profile not found for this account.", "status_code": 403}
+        return {"error": "Only active employees can submit leave requests.", "status_code": 403}
 
     # 2. Leave Type check
     try:
@@ -195,42 +269,84 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
 
     leave_type = await leave_types_collection.find_one({"_id": leave_type_id, "is_active": True})
     if not leave_type:
-        return {"error": "Selected Leave Type is invalid or inactive.", "status_code": 400}
+        return {"error": "This leave type is currently unavailable.", "status_code": 400}
 
-    # 3. Dates validation
-    start_date = req_data["start_date"]
-    end_date = req_data["end_date"]
+    # 3. Dates validation & Start <= End
+    start_date = req_data.get("start_date")
+    end_date = req_data.get("end_date")
+
+    if not start_date:
+        return {"error": "Please select a start date.", "status_code": 400}
+    if not end_date:
+        return {"error": "Please select an end date.", "status_code": 400}
     if start_date > end_date:
-        return {"error": "End date cannot be earlier than start date.", "status_code": 400}
+        return {"error": "End date must be on or after the start date.", "status_code": 400}
 
+    # 4. Check if date range is completely in the past
+    if end_date < today_date:
+        return {"error": "You cannot apply for leave for a date that has already passed.", "status_code": 400}
+
+    # 5. Notice Period Validation
+    min_notice = leave_type.get("minimum_notice_days", 0)
+    if min_notice > 0:
+        advance_notice_days = (start_date - today_date).days
+        if advance_notice_days < min_notice:
+            return {"error": f"Please apply at least {min_notice} day(s) in advance for {leave_type['name']}.", "status_code": 400}
+
+    # 6. Future Advance Limit Validation
+    max_advance = leave_type.get("maximum_advance_days")
+    if max_advance is not None and max_advance > 0:
+        advance_days = (start_date - today_date).days
+        if advance_days > max_advance:
+            return {"error": f"You cannot apply for {leave_type['name']} more than {max_advance} days in advance.", "status_code": 400}
+
+    # 7. Half-Day Validation
     is_half_day = req_data.get("is_half_day", False)
     half_day_session = req_data.get("half_day_session")
 
     if is_half_day:
         if start_date != end_date:
-            return {"error": "Half-day leave requests must have identical start and end dates.", "status_code": 400}
-        if half_day_session not in ("Morning", "Afternoon"):
-            return {"error": "Half-day session must be 'Morning' or 'Afternoon'.", "status_code": 400}
+            return {"error": "Half-day leave can only be applied for a single working day.", "status_code": 400}
+        if half_day_session not in ("Morning", "Afternoon", "First Half", "Second Half"):
+            return {"error": "Please select a valid half-day session (Morning or Afternoon).", "status_code": 400}
+        
+        if start_date.weekday() in (5, 6):
+            return {"error": "Half-day leave can only be applied on a working day.", "status_code": 400}
+        
+        start_dt_check = datetime.combine(start_date, datetime.min.time())
+        holiday_check = await holidays_collection.find_one({"date": start_dt_check, "is_active": True})
+        if holiday_check:
+            return {"error": "Half-day leave can only be applied on a working day.", "status_code": 400}
 
-    # 4. Calculate total working days (excluding weekends & holidays)
+    # 8. Reason Validation
+    reason = req_data.get("reason", "").strip()
+    if not reason:
+        return {"error": "Reason for leave is required.", "status_code": 400}
+    if len(reason) < 10:
+        return {"error": "Reason must be at least 10 characters long.", "status_code": 400}
+    if len(reason) > 500:
+        return {"error": "Reason cannot exceed 500 characters.", "status_code": 400}
+
+    # 9. Attachment Requirement Validation
+    if leave_type.get("requires_attachment") and not req_data.get("attachment_url"):
+        return {"error": f"Medical certificate or supporting document is required for {leave_type['name']}.", "status_code": 400}
+
+    # 10. Calculate total working days (excluding weekends & holidays)
     try:
-        total_days = await calculate_working_days(start_date, end_date, is_half_day)
+        days_detail = await calculate_working_days_detail(start_date, end_date, is_half_day)
+        total_days = days_detail["working_days"]
     except ValueError as ve:
         return {"error": str(ve), "status_code": 400}
 
     if total_days <= 0:
-        return {"error": "Selected date range contains no working days (all fall on weekends or company holidays).", "status_code": 400}
+        return {"error": "The selected date range does not contain any working days.", "status_code": 400}
 
-    # 5. Check Maximum Consecutive Days Limit
+    # 11. Check Maximum Consecutive Working Days Limit
     max_days = leave_type.get("maximum_consecutive_days")
     if max_days and total_days > max_days:
-        return {"error": f"Maximum consecutive days allowed for {leave_type['name']} is {max_days} days.", "status_code": 400}
+        return {"error": f"{leave_type['name']} cannot exceed {max_days} consecutive working days.", "status_code": 400}
 
-    # 6. Check Attachment Requirement
-    if leave_type.get("requires_attachment") and not req_data.get("attachment_url"):
-        return {"error": f"Medical/Supporting document attachment is required for {leave_type['name']}.", "status_code": 400}
-
-    # 7. Check Overlapping Pending or Approved Leave Requests
+    # 12. Check Overlapping Pending or Approved Leave Requests
     start_dt = datetime.combine(start_date, datetime.min.time())
     end_dt = datetime.combine(end_date, datetime.max.time())
 
@@ -242,24 +358,30 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
         ]
     })
     if overlapping:
-        return {"error": "Leave request overlaps with an existing leave request.", "status_code": 400}
+        return {"error": "You already have a pending or approved leave request during part of the selected period.", "status_code": 409}
 
-    # 8. Check Leave Balance
+    # 13. Check Leave Balance (Atomic Check)
     year = start_date.year
     balances = await get_or_create_leave_balances(employee["_id"], user["_id"], year)
     target_bal = next((b for b in balances if b["leave_type_id"] == str(leave_type_id)), None)
 
-    if not target_bal:
+    if not target_bal and not leave_type.get("allow_negative_balance", False):
         return {"error": "Leave balance record not found.", "status_code": 400}
 
-    if not leave_type.get("allow_negative_balance", False):
+    if target_bal and not leave_type.get("allow_negative_balance", False):
         if target_bal["remaining"] < total_days:
-            return {"error": f"Insufficient leave balance. Remaining: {target_bal['remaining']} day(s), Requested: {total_days} day(s).", "status_code": 400}
+            return {"error": f"Insufficient {leave_type['name']} balance. You have {target_bal['remaining']} day(s) remaining.", "status_code": 400}
 
-    # 9. Determine Reporting Manager
+    # 14. Determine Reporting Manager (or fallback to HR/Admin)
     reporting_manager_id = employee.get("reporting_manager_id")
+    if not reporting_manager_id:
+        hr_admin = await users_collection.find_one({"role": {"$in": ["Admin", "HR"]}, "is_active": True})
+        if hr_admin:
+            admin_emp = await employees_collection.find_one({"user_id": hr_admin["_id"]})
+            if admin_emp:
+                reporting_manager_id = admin_emp["_id"]
 
-    # 10. Construct Leave Request Document
+    # 15. Construct Leave Request Document
     leave_doc = {
         "employee_id": employee["_id"],
         "user_id": user["_id"],
@@ -269,7 +391,7 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
         "is_half_day": is_half_day,
         "half_day_session": half_day_session if is_half_day else None,
         "total_days": total_days,
-        "reason": req_data.get("reason", "").strip(),
+        "reason": reason,
         "attachment_url": req_data.get("attachment_url"),
         "contact_number": req_data.get("contact_number"),
         "status": "Pending",
@@ -287,14 +409,15 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
     result = await leave_requests_collection.insert_one(leave_doc)
     request_id = result.inserted_id
 
-    # 11. Increase `pending` in leave_balances
-    new_pending = target_bal["pending"] + total_days
-    new_remaining = target_bal["allocated"] - target_bal["used"] - new_pending
+    # 16. Increase `pending` in leave_balances (if balance record exists)
+    if target_bal:
+        new_pending = target_bal["pending"] + total_days
+        new_remaining = target_bal["allocated"] - target_bal["used"] - new_pending
 
-    await leave_balances_collection.update_one(
-        {"_id": ObjectId(target_bal["_id"])},
-        {"$set": {"pending": new_pending, "remaining": new_remaining, "updated_at": datetime.utcnow()}}
-    )
+        await leave_balances_collection.update_one(
+            {"_id": ObjectId(target_bal["_id"])},
+            {"$set": {"pending": new_pending, "remaining": new_remaining, "updated_at": datetime.utcnow()}}
+        )
 
     # 12. Create Notification for Reporting Manager (if assigned)
     emp_name = f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip() or user.get("username", "Employee")

@@ -13,6 +13,7 @@ router = APIRouter(
 
 
 @router.post("/")
+@router.post("")
 async def add_department(department: DepartmentCreate):
 
     result = await create_department(department)
@@ -30,6 +31,7 @@ async def add_department(department: DepartmentCreate):
 
 
 @router.get("/")
+@router.get("")
 async def get_departments():
 
     departments = await get_all_departments()

@@ -16,8 +16,9 @@ import {
   CircularProgress,
   Stack,
   Divider,
+  Paper,
 } from "@mui/material";
-import { Calendar, Clock, Users, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Calendar, Clock, Users, AlertCircle, Info } from "lucide-react";
 import api from "../../api/axios";
 
 export default function BookingModal({ open, onClose, selectedRoom, rooms = [], onSuccess, prefillDate, prefillStartTime }) {
@@ -27,10 +28,8 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
   const [meetingType, setMeetingType] = useState("Internal Sync");
   
   // Date & Time Defaults
-  const [date, setDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().split("T")[0];
-  });
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [date, setDate] = useState(todayStr);
   const [startTime, setStartTime] = useState("10:00");
   const [endTime, setEndTime] = useState("11:00");
 
@@ -38,7 +37,6 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
   const [selectedAttendees, setSelectedAttendees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [availCheck, setAvailCheck] = useState(null);
 
   useEffect(() => {
     if (selectedRoom) {
@@ -52,16 +50,15 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
     if (prefillDate) setDate(prefillDate);
     if (prefillStartTime) {
       setStartTime(prefillStartTime);
-      // Auto set 1 hour later
       const [h, m] = prefillStartTime.split(":").map(Number);
       const endH = String((h + 1) % 24).padStart(2, "0");
       setEndTime(`${endH}:${String(m).padStart(2, "0")}`);
     }
   }, [prefillDate, prefillStartTime]);
 
-  // Fetch employees for attendee selection
   useEffect(() => {
     if (open) {
+      setErrorMsg("");
       api.get("/api/v1/employees")
         .then((res) => {
           const list = res.data.employees || res.data || [];
@@ -72,6 +69,16 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
   }, [open]);
 
   const activeRoomObj = rooms.find((r) => (r.id || r._id) === roomId) || selectedRoom;
+
+  // Compute duration in minutes
+  const getDurationMinutes = () => {
+    if (!startTime || !endTime) return 0;
+    const [sH, sM] = startTime.split(":").map(Number);
+    const [eH, eM] = endTime.split(":").map(Number);
+    return (eH * 60 + eM) - (sH * 60 + sM);
+  };
+
+  const durationMins = getDurationMinutes();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,12 +93,33 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
       return;
     }
 
-    // Construct Datetime strings (UTC)
+    if (activeRoomObj?.status === "Maintenance") {
+      setErrorMsg("This meeting room is currently under maintenance.");
+      return;
+    }
+
+    // Time & Duration Validations
+    if (durationMins <= 0) {
+      setErrorMsg("End time must be later than start time. Meeting duration must be greater than zero.");
+      return;
+    }
+    if (durationMins < 15) {
+      setErrorMsg("Meeting duration must be at least 15 minutes.");
+      return;
+    }
+    if (durationMins > 240) {
+      setErrorMsg("Meeting duration cannot exceed 4 hours.");
+      return;
+    }
+
     const startIso = `${date}T${startTime}:00`;
     const endIso = `${date}T${endTime}:00`;
+    const startDateObj = new Date(startIso);
+    const endDateObj = new Date(endIso);
+    const now = new Date();
 
-    if (new Date(startIso) >= new Date(endIso)) {
-      setErrorMsg("Start time must be strictly before end time.");
+    if (endDateObj <= now) {
+      setErrorMsg("Cannot book a meeting room for a past time slot.");
       return;
     }
 
@@ -99,7 +127,7 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
     const totalCount = attendeeIds.length + 1; // Organizer included
 
     if (activeRoomObj && totalCount > activeRoomObj.capacity) {
-      setErrorMsg(`Selected room capacity (${activeRoomObj.capacity}) cannot accommodate all ${totalCount} attendees.`);
+      setErrorMsg(`Selected room cannot accommodate all attendees. Room capacity is ${activeRoomObj.capacity}.`);
       return;
     }
 
@@ -110,8 +138,8 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
         title: title.trim(),
         description: description.trim(),
         meeting_type: meetingType,
-        start_time: new Date(startIso).toISOString(),
-        end_time: new Date(endIso).toISOString(),
+        start_time: startDateObj.toISOString(),
+        end_time: endDateObj.toISOString(),
         attendees: attendeeIds,
       };
 
@@ -123,7 +151,14 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
       onClose();
     } catch (err) {
       setLoading(false);
-      setErrorMsg(err.response?.data?.detail || "Failed to create room booking. Please check availability.");
+      const detail = err.response?.data?.detail;
+      let msg = "Failed to create room booking.";
+      if (err.response?.status === 409) {
+        msg = detail || "Sorry, this room is already booked for the selected time slot. Please select another time or room.";
+      } else if (typeof detail === "string") {
+        msg = detail;
+      }
+      setErrorMsg(msg);
     }
   };
 
@@ -160,8 +195,18 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
                 required
               >
                 {rooms.map((r) => (
-                  <MenuItem key={r.id || r._id} value={r.id || r._id}>
-                    {r.room_name} ({r.room_code}) — Cap: {r.capacity} — Floor {r.floor}
+                  <MenuItem key={r.id || r._id} value={r.id || r._id} disabled={r.status === "Maintenance"}>
+                    <Box display="flex" justifyContent="space-between" width="100%" alignItems="center">
+                      <Typography variant="body2" fontWeight={600}>
+                        {r.room_name} ({r.room_code})
+                      </Typography>
+                      <Chip
+                        label={r.status === "Maintenance" ? "Maintenance" : `Cap: ${r.capacity}`}
+                        size="small"
+                        color={r.status === "Maintenance" ? "warning" : "default"}
+                        sx={{ height: 20, fontSize: "0.65rem", fontWeight: 700 }}
+                      />
+                    </Box>
                   </MenuItem>
                 ))}
               </TextField>
@@ -233,6 +278,33 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
               />
             </Grid>
 
+            {/* Duration Info Preview */}
+            <Grid item xs={12}>
+              <Paper elevation={0} sx={{ p: 1.5, bgcolor: durationMins > 0 && durationMins <= 240 ? "#F0F9FF" : "#FEF2F2", borderRadius: "10px", border: "1px solid #E2E8F0" }}>
+                <Typography variant="caption" fontWeight={700} color={durationMins > 0 && durationMins <= 240 ? "#0284C7" : "#DC2626"}>
+                  Meeting Duration: {durationMins > 0 ? `${Math.floor(durationMins / 60)}h ${durationMins % 60}m` : "Invalid interval"}
+                  {activeRoomObj && ` • Max capacity: ${activeRoomObj.capacity} participants`}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            {/* Attendees Autocomplete */}
+            <Grid item xs={12}>
+              <Autocomplete
+                multiple
+                options={employees}
+                getOptionLabel={(option) => `${option.first_name} ${option.last_name} (${option.department || "Employee"})`}
+                value={selectedAttendees}
+                onChange={(e, newValue) => setSelectedAttendees(newValue)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Attendees" placeholder="Add colleagues..." />
+                )}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                Total Participants: {selectedAttendees.length + 1} (Organizer included)
+              </Typography>
+            </Grid>
+
             {/* Description / Agenda */}
             <Grid item xs={12}>
               <TextField
@@ -257,11 +329,12 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
           <Button
             type="submit"
             variant="contained"
-            disabled={loading}
+            disabled={loading || activeRoomObj?.status === "Maintenance"}
             sx={{
               borderRadius: "10px",
               fontWeight: 700,
-              background: "linear-gradient(135deg, #1976D2 0%, #1565C0 100%)",
+              bgcolor: "#1976D2",
+              "&:hover": { bgcolor: "#1565C0" },
               px: 3,
             }}
           >

@@ -61,12 +61,12 @@ export function AuthLayout({ children }) {
 
       {/* Centered Content Container */}
       <Container
-        maxWidth="xs"
-        disableGutters
+        maxWidth="sm"
         sx={{
           width: "100%",
           display: "flex",
           justifyContent: "center",
+          px: { xs: 1, sm: 2 },
         }}
       >
         {children}

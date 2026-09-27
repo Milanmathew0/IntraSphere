@@ -254,6 +254,8 @@ export default function Login() {
         elevation={0}
         sx={{
           width: "100%",
+          maxWidth: 440,
+          mx: "auto",
           borderRadius: "20px",
           backgroundColor: "#FFFFFF",
           border: "1px solid #E2E8F0",

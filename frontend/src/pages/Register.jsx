@@ -271,6 +271,8 @@ export default function Register() {
         elevation={0}
         sx={{
           width: "100%",
+          maxWidth: 460,
+          mx: "auto",
           borderRadius: "20px",
           backgroundColor: "#FFFFFF",
           border: "1px solid #E2E8F0",

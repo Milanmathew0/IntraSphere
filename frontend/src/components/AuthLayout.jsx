@@ -22,16 +22,19 @@ export function AuthLayout({ children }) {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          gap: 1.5,
+          justifyContent: "center",
+          gap: 1.2,
           mb: 3.5,
+          textAlign: "center",
         }}
       >
         <Box
           sx={{
-            width: 44,
-            height: 44,
-            borderRadius: "12px",
+            width: 48,
+            height: 48,
+            borderRadius: "14px",
             bgcolor: "#F97316",
             display: "flex",
             alignItems: "center",
@@ -39,9 +42,9 @@ export function AuthLayout({ children }) {
             boxShadow: "0 4px 14px rgba(249, 115, 22, 0.35)",
           }}
         >
-          <SparklesIcon sx={{ color: "#FFFFFF", fontSize: 24 }} />
+          <SparklesIcon sx={{ color: "#FFFFFF", fontSize: 26 }} />
         </Box>
-        <Box>
+        <Box sx={{ textAlign: "center" }}>
           <Typography
             variant="h5"
             fontWeight={800}
@@ -52,7 +55,7 @@ export function AuthLayout({ children }) {
           </Typography>
           <Typography
             variant="caption"
-            sx={{ color: "#64748B", fontWeight: 600, fontSize: "0.75rem" }}
+            sx={{ color: "#64748B", fontWeight: 600, fontSize: "0.78rem", mt: 0.3, display: "block" }}
           >
             Smart Office System
           </Typography>

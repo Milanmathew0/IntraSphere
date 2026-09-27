@@ -282,7 +282,7 @@ export default function Register() {
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           {/* Header Title */}
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3.5, textAlign: "center" }}>
             <Typography
               variant="h5"
               fontWeight={800}

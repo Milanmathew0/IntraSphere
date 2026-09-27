@@ -53,17 +53,29 @@ export default function EmployeeSidebar({
     .substring(0, 2)
     .toUpperCase();
 
-  const sidebarSections = [
+  const baseSections = [
     { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
     { label: "My Attendance", route: "/attendance", icon: <EventAvailable fontSize="small" />, tabId: "attendance" },
     { label: "Leave Application", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
     { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
     { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+  ];
+
+  if (["Admin", "Manager"].includes(employeeRole)) {
+    baseSections.push({ label: "Employee Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" });
+  }
+  if (["Admin", "Facility Manager"].includes(employeeRole)) {
+    baseSections.push({ label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" });
+  }
+
+  baseSections.push(
     { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
     { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
     { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
-    { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
-  ];
+    { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" }
+  );
+
+  const sidebarSections = baseSections;
 
   const handleNavClick = (item) => {
     if (onTabChange) {

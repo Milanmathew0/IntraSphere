@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import GlassCard from "../components/dashboard/GlassCard";
+import AppLayout from "../components/layout/AppLayout";
 import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 
 export default function UserDashboard() {
@@ -100,57 +101,8 @@ export default function UserDashboard() {
   const selectedDept = departmentsData[activeDeptTab] || departmentsData["Engineering"];
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#FAFAFA",
-        color: "#09090B",
-        position: "relative",
-        overflowX: "hidden",
-        fontFamily: "'Inter', sans-serif",
-        pb: 8,
-      }}
-    >
-      {/* Top Header Banner */}
-      <Box
-        sx={{
-          bgcolor: "#09090B",
-          color: "#FFFFFF",
-          pt: 1.5,
-          pb: 8,
-          px: { xs: 2, sm: 4, md: 6 },
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, cursor: "pointer" }} onClick={() => navigate("/")}>
-              <Box
-                sx={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: "12px",
-                  bgcolor: "#18181B",
-                  border: "1px solid #27272A",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ShieldCheck size={22} color="#FFFFFF" />
-              </Box>
-              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF">
-                IntraSphere
-              </Typography>
-            </Box>
-
-            <UserProfileHeader
-              user={{ ...user, role: "User" }}
-              onLogout={handleLogout}
-            />
-          </Box>
-        </Container>
-      </Box>
+    <AppLayout activeTabOverride="dashboard">
+      <Box sx={{ width: "100%" }}>
 
         {/* Hero Greeting Row */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 2 }}>
@@ -554,15 +506,12 @@ export default function UserDashboard() {
         <Alert
           onClose={() => setToast((prev) => ({ ...prev, open: false }))}
           severity={toast.severity}
-          sx={{
-            width: "100%",
-            borderRadius: "14px",
-            boxShadow: "0 8px 32px rgba(15, 23, 42, 0.15)",
-          }}
+          sx={{ width: "100%", borderRadius: "12px" }}
         >
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+      </Box>
+    </AppLayout>
   );
 }

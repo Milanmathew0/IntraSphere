@@ -10,7 +10,9 @@ import {
   Snackbar,
   Switch,
   FormControlLabel,
+  Paper,
 } from "@mui/material";
+import AppLayout from "../components/layout/AppLayout";
 import {
   Home,
   LayoutGrid,
@@ -216,18 +218,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #F5F3EE 0%, #EAE7DF 100%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        py: { xs: 2, md: 5 },
-        px: { xs: 1.5, md: 4 },
-        fontFamily: "'Inter', sans-serif",
-      }}
-    >
+    <AppLayout activeTabOverride="profile">
       <input
         type="file"
         ref={fileInputRef}
@@ -236,287 +227,35 @@ export default function ProfilePage() {
         style={{ display: "none" }}
       />
 
-      {/* Main Container Card */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: 1240,
-          bgcolor: "#FFFFFF",
-          borderRadius: { xs: "20px", md: "32px" },
-          boxShadow: "0 24px 60px rgba(15, 23, 42, 0.08), 0 4px 16px rgba(0,0,0,0.02)",
-          display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          overflow: "hidden",
-          minHeight: { md: 680 },
-          border: "1px solid rgba(226, 232, 240, 0.8)",
-        }}
-      >
-        {/* Far Left Navigation Sidebar */}
-        <Box
-          sx={{
-            width: { xs: "100%", md: 100 },
-            bgcolor: "#FFFFFF",
-            borderRight: { md: "1px solid #F1F5F9" },
-            borderBottom: { xs: "1px solid #F1F5F9", md: "none" },
-            py: { xs: 1.5, md: 3 },
-            px: { xs: 2, md: 1 },
-            display: "flex",
-            flexDirection: { xs: "row", md: "column" },
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: { xs: 1, md: 2.5 },
-          }}
-        >
-          {/* Logo */}
-          <Box
-            onClick={() => navigate("/dashboard")}
-            sx={{
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              bgcolor: "#FFF4ED",
-              border: "1.5px solid #FFD8C2",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              "&:hover": { transform: "scale(1.05)" },
-            }}
-          >
-            <Box
-              sx={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                border: "4px solid #ED6C02",
-                borderRightColor: "transparent",
-                transform: "rotate(-45deg)",
-              }}
-            />
-          </Box>
-
-          {/* Navigation Icons */}
-          <Stack
-            direction={{ xs: "row", md: "column" }}
-            spacing={{ xs: 1, md: 2 }}
-            alignItems="center"
-            sx={{
-              overflowX: { xs: "auto", md: "visible" },
-              width: "100%",
-              justifyContent: "center",
-              py: { xs: 0.5, md: 0 },
-            }}
-          >
-            <Tooltip title="Home / Dashboard" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("home")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <Home size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Home
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Workspaces & Tables" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("table")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <LayoutGrid size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Table
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Meeting Rooms" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("menu")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <Utensils size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Menu
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Leave Requests" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("order")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <ShoppingBag size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Order
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Activity History" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("history")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <Clock size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  History
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Reports & Analytics" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("report")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <PieChart size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Report
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Notifications" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("alert")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  position: "relative",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <Bell size={20} />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: -1,
-                    right: 6,
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    bgcolor: "#EF4444",
-                  }}
-                />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Alert
-                </Typography>
-              </Box>
-            </Tooltip>
-
-            <Tooltip title="Settings" placement="right">
-              <Box
-                onClick={() => handleSidebarNav("settings")}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  transition: "all 0.2s ease",
-                  "&:hover": { color: "#ED6C02" },
-                }}
-              >
-                <Settings size={20} />
-                <Typography variant="caption" sx={{ fontSize: "0.68rem", fontWeight: 500, mt: 0.3 }}>
-                  Settings
-                </Typography>
-              </Box>
-            </Tooltip>
-          </Stack>
-
-          {/* Bottom Active Profile Tab Pill */}
-          <Box
-            onClick={() => handleSidebarNav("profile")}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              cursor: "pointer",
-              bgcolor: "#FFF0E6",
-              borderRadius: "16px",
-              px: 1.2,
-              py: 0.8,
-              border: "1px solid #FFD8C2",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <Avatar
-              src={formData.avatarUrl}
-              sx={{ width: 30, height: 30, mb: 0.3, border: "1.5px solid #ED6C02" }}
-            >
-              {formData.firstName.charAt(0)}
-            </Avatar>
-            <Typography
-              variant="caption"
-              sx={{ fontSize: "0.68rem", fontWeight: 700, color: "#ED6C02" }}
-            >
-              Profile
-            </Typography>
-          </Box>
+      <Box sx={{ width: "100%" }}>
+        {/* Header Title */}
+        <Box mb={3}>
+          <Typography variant="h5" fontWeight={800} color="#0F172A" letterSpacing={-0.5}>
+            My Profile & Account Settings
+          </Typography>
+          <Typography variant="body2" color="#64748B" mt={0.25}>
+            Manage your personal profile, credentials, preferences, and password.
+          </Typography>
         </Box>
 
+        {/* Main Container Card */}
+        <Paper
+          elevation={0}
+          sx={{
+            width: "100%",
+            bgcolor: "#FFFFFF",
+            borderRadius: "20px",
+            border: "1px solid #E2E8F0",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            p: { xs: 2, md: 3 },
+          }}
+        >
         {/* Main Content Area: Side-by-Side Flex Box */}
         <Box
           sx={{
             flex: 1,
-            p: { xs: 2.5, sm: 4, md: 4.5 },
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             alignItems: "flex-start",
@@ -1357,7 +1096,6 @@ export default function ProfilePage() {
             )}
           </Box>
         </Box>
-      </Box>
 
       <Snackbar
         open={toast.open}
@@ -1377,6 +1115,8 @@ export default function ProfilePage() {
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+        </Paper>
+      </Box>
+    </AppLayout>
   );
 }

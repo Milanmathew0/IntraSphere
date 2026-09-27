@@ -21,6 +21,7 @@ import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import PeopleIcon from "@mui/icons-material/People";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import { useNavigate } from "react-router-dom";
+import AppLayout from "../components/layout/AppLayout";
 
 import { useAuth } from "../context/AuthContext";
 import UserProfileHeader from "../components/dashboard/UserProfileHeader";
@@ -104,113 +105,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#F8FAFC",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: "'Inter', sans-serif",
-      }}
-    >
-      {/* HEADER BANNER */}
-      <Box
-        sx={{
-          bgcolor: "#0F172A",
-          color: "#FFFFFF",
-          pt: 1.8,
-          pb: 3.5,
-          px: { xs: 2, sm: 4, md: 6 },
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            {/* Branding Logo */}
-            <Box
-              sx={{ display: "flex", alignItems: "center", gap: 1.5, cursor: "pointer" }}
-              onClick={() => navigate("/admin-dashboard")}
-            >
-              <Box
-                sx={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: "12px",
-                  bgcolor: "#1E293B",
-                  border: "1px solid #334155",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <AdminPanelSettingsIcon style={{ color: "#38BDF8", fontSize: 26 }} />
-              </Box>
-              <Box>
-                <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF" sx={{ lineHeight: 1.2 }}>
-                  IntraSphere
-                </Typography>
-                <Typography variant="caption" fontWeight={600} color="#94A3B8">
-                  Admin Control Center
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Right Side Header Controls */}
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Tooltip title="Refresh Stats">
-                <IconButton onClick={fetchDashboardStats} sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}>
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="System Notifications">
-                <IconButton sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}>
-                  <NotificationsIcon />
-                </IconButton>
-              </Tooltip>
-
-              <Button
-                variant="contained"
-                startIcon={<MeetingRoomIcon />}
-                onClick={() => navigate("/meeting-rooms")}
-                sx={{
-                  bgcolor: "#1E293B",
-                  color: "#FFFFFF",
-                  border: "1px solid #334155",
-                  "&:hover": { bgcolor: "#334155" },
-                  fontWeight: 700,
-                  borderRadius: "50px",
-                  textTransform: "none",
-                  px: 2.5,
-                  display: { xs: "none", sm: "inline-flex" },
-                }}
-              >
-                Meeting Rooms
-              </Button>
-
-              <Button
-                variant="contained"
-                startIcon={<PeopleIcon />}
-                onClick={() => navigate("/employees")}
-                sx={{
-                  bgcolor: "#1976D2",
-                  color: "#FFFFFF",
-                  "&:hover": { bgcolor: "#1565C0" },
-                  fontWeight: 700,
-                  borderRadius: "50px",
-                  textTransform: "none",
-                  px: 2.5,
-                  display: { xs: "none", md: "inline-flex" },
-                }}
-              >
-                Employees
-              </Button>
-
-              <UserProfileHeader user={{ ...user, role: "Admin" }} onLogout={handleLogout} />
-            </Stack>
-          </Box>
-        </Container>
-      </Box>
+    <AppLayout activeTabOverride="dashboard">
+      <Box sx={{ width: "100%" }}>
 
       {/* MAIN CONTENT CONTAINER */}
       <Container maxWidth="xl" sx={{ mt: 3.5, mb: 6, flexGrow: 1 }}>
@@ -369,6 +265,7 @@ export default function AdminDashboard() {
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+      </Box>
+    </AppLayout>
   );
 }

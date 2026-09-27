@@ -29,6 +29,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AppLayout from "../components/layout/AppLayout";
 
 import { useAuth } from "../context/AuthContext";
 import EmployeeProfileSection from "../components/dashboard/EmployeeProfileSection";
@@ -159,206 +160,38 @@ export default function ManagerDashboard() {
   const currentTabInfo = navTabs.find((t) => t.id === activeTab) || navTabs[0];
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA", display: "flex", fontFamily: "'Inter', sans-serif" }}>
-      {/* 1. LEFT PERMANENT SIDEBAR */}
-      <Box
-        sx={{
-          width: { xs: 80, md: 250 },
-          bgcolor: "#09090B",
-          color: "#FFFFFF",
-          display: "flex",
-          flexDirection: "column",
-          p: 2.5,
-          boxShadow: "4px 0 25px rgba(0,0,0,0.08)",
-          zIndex: 10,
-          flexShrink: 0
-        }}
-      >
-        {/* Brand Header */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4, px: 1 }}>
-          <Box
-            sx={{
-              bgcolor: "#18181B",
-              border: "1px solid #27272A",
-              px: 2,
-              py: 0.8,
-              borderRadius: "50px",
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <ShieldCheck size={18} color="#FFFFFF" />
-            <Typography variant="subtitle1" fontWeight={900} letterSpacing={-0.3} color="#FFFFFF" sx={{ display: { xs: "none", md: "block" } }}>
-              IntraSphere
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Sidebar Navigation Menu */}
-        <Typography variant="caption" sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}>
-          MAIN MENU
-        </Typography>
-
-        <Stack spacing={0.75} sx={{ mb: 4 }}>
-          {navTabs.map((item) => {
-            const isActive = activeTab === item.id;
-            const IconComponent = item.icon;
-            return (
-              <Box
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  bgcolor: isActive ? "#FFFFFF" : "transparent",
-                  color: isActive ? "#09090B" : "#A1A1AA",
-                  fontWeight: isActive ? 800 : 500,
-                  fontSize: "14px",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    bgcolor: isActive ? "#FFFFFF" : "#18181B",
-                    color: "#FFFFFF"
-                  }
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <IconComponent size={18} />
-                  <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-                    {item.label}
-                  </Typography>
-                </Box>
-                {isActive && <ChevronRight size={16} sx={{ display: { xs: "none", md: "block" } }} />}
-              </Box>
-            );
-          })}
-        </Stack>
-
-        {/* HR Operations Section */}
-        <Typography variant="caption" sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}>
-          QUICK ACTIONS
-        </Typography>
-
-        <Stack spacing={0.75}>
-          <Box
-            onClick={() => navigate("/meeting-rooms")}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              px: 2,
-              py: 1.25,
-              borderRadius: "12px",
-              cursor: "pointer",
-              color: "#FFFFFF",
-              fontWeight: 700,
-              fontSize: "14px",
-              bgcolor: "#18181B",
-              border: "1px solid #27272A",
-              "&:hover": { bgcolor: "#27272A" }
-            }}
-          >
-            <Building size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-              Meeting Rooms
-            </Typography>
-          </Box>
-
-          <Box
-            onClick={() => setIsAddModalOpen(true)}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              px: 2,
-              py: 1.25,
-              borderRadius: "12px",
-              cursor: "pointer",
-              color: "#FFFFFF",
-              fontWeight: 700,
-              fontSize: "14px",
-              bgcolor: "#18181B",
-              border: "1px solid #27272A",
-              "&:hover": { bgcolor: "#27272A" }
-            }}
-          >
-            <Plus size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-              Add Employee
-            </Typography>
-          </Box>
-        </Stack>
-
-        {/* Logout at Bottom */}
-        <Box sx={{ mt: "auto", pt: 2, borderTop: "1px solid #27272A" }}>
-          <Box
-            onClick={handleLogout}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              px: 2,
-              py: 1.25,
-              borderRadius: "12px",
-              cursor: "pointer",
-              color: "#A1A1AA",
-              fontWeight: 600,
-              fontSize: "14px",
-              "&:hover": { bgcolor: "#18181B", color: "#FFFFFF" }
-            }}
-          >
-            <LogOut size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-              Logout
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-
-      {/* 2. MAIN WORKSPACE CANVAS AREA */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: { xs: 2, md: 4 }, overflowX: "hidden" }}>
-        {/* Top Header Row (Title on left, Search/Bell/Avatar on right) */}
+    <AppLayout activeTabOverride="dashboard">
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        {/* Top Header Title Row */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
           <Box>
-            <Typography variant="h5" fontWeight={900} color="#09090B" letterSpacing={-0.5}>
-              {currentTabInfo.label}
+            <Typography variant="h5" fontWeight={800} color="#0F172A" letterSpacing={-0.5}>
+              Manager Portal – {currentTabInfo.label}
             </Typography>
-            <Typography variant="body2" color="#71717A" mt={0.25}>
+            <Typography variant="body2" color="#64748B" mt={0.25}>
               {currentTabInfo.subtitle}
             </Typography>
           </Box>
 
-          {/* Right Header Action Icons */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <IconButton
-              sx={{
-                bgcolor: "#FFFFFF",
-                border: "1px solid #E4E4E7",
-                color: "#09090B",
-                "&:hover": { bgcolor: "#F4F4F5" }
-              }}
-            >
-              <Search size={18} />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                bgcolor: "#FFFFFF",
-                border: "1px solid #E4E4E7",
-                color: "#09090B",
-                "&:hover": { bgcolor: "#F4F4F5" }
-              }}
-            >
-              <Bell size={18} />
-            </IconButton>
-
-            <UserProfileHeader user={{ ...user, role: "Manager" }} onLogout={handleLogout} />
-          </Box>
+          <Button
+            variant="contained"
+            startIcon={<Plus size={18} />}
+            onClick={() => setIsAddModalOpen(true)}
+            sx={{
+              borderRadius: "10px",
+              px: 2.5,
+              py: 1,
+              bgcolor: "#1976D2",
+              color: "#FFFFFF",
+              textTransform: "none",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+              "&:hover": { bgcolor: "#1565C0" },
+            }}
+          >
+            Add Employee
+          </Button>
         </Box>
 
         {/* Hero Quick Stat Metrics Row */}
@@ -587,7 +420,7 @@ export default function ManagerDashboard() {
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </AppLayout>
   );
 }
 

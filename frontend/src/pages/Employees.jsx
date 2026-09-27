@@ -5,30 +5,18 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Tabs,
-  Tab,
-  Grid,
   Button,
   Chip,
-  Avatar,
   Snackbar,
   Stack,
-  Divider,
 } from "@mui/material";
-import {
-  UserCheck,
-  UserX,
-  Users,
-  CheckCircle2,
-  XCircle,
-  FileText,
-} from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AppLayout from "../components/layout/AppLayout";
 import EmployeeGrid from "../components/Employee/EmployeeGrid";
 import api from "../api/axios";
 import AddEmployeeModal from "../components/Employee/AddEmployeeModal";
-import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 
 export default function Employees() {
   const navigate = useNavigate();
@@ -65,122 +53,100 @@ export default function Employees() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <CircularProgress
-        sx={{ display: "block", mx: "auto", mt: 6, color: "#10B981" }}
-      />
+      <AppLayout activeTabOverride="employees">
+        <Box display="flex" justifyContent="center" alignItems="center" py={12}>
+          <CircularProgress size={40} sx={{ color: "#1976D2" }} />
+        </Box>
+      </AppLayout>
     );
+  }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#F4F6F0",
-        fontFamily: "'Inter', sans-serif",
-        pb: 6,
-      }}
-    >
-      {/* Top Deep Forest Emerald Header Banner */}
-      <Box
-        sx={{
-          background:
-            "linear-gradient(135deg, #022C22 0%, #064E3B 55%, #047857 100%)",
-          color: "#FFFFFF",
-          pt: 3,
-          pb: 6,
-          px: { xs: 2, sm: 4, md: 6 },
-          boxShadow: "0 10px 30px rgba(2, 44, 34, 0.25)",
-          mb: -3,
-        }}
-      >
+    <AppLayout activeTabOverride="employees">
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        {/* Header Bar */}
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
           flexWrap="wrap"
           gap={2}
+          mb={3.5}
         >
           <Box>
-            <Typography
-              variant="h4"
-              fontWeight={900}
-              letterSpacing={-0.5}
-              color="#FFFFFF"
-            >
-              Employee & Onboarding Directory
+            <Typography variant="h5" fontWeight={800} color="#0F172A" letterSpacing={-0.5}>
+              Employee Directory & Workforce
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: "rgba(255, 255, 255, 0.8)", mt: 0.5 }}
-            >
-              Oversee active workforce records, process incoming onboarding
-              access requests, and manage company roles.
+            <Typography variant="body2" color="#64748B" mt={0.25}>
+              Oversee active workforce records, process onboarding requests, and manage roles.
             </Typography>
           </Box>
-          <Box display="flex" gap={2} alignItems="center">
+
+          <Stack direction="row" spacing={2} alignItems="center">
             <Chip
-              icon={<Users size={16} color="#10B981" />}
+              icon={<Users size={16} color="#1976D2" />}
               label={`${employees.length} Active Staff`}
               sx={{
-                bgcolor: "rgba(255, 255, 255, 0.15)",
-                color: "#FFFFFF",
-                fontWeight: 800,
-                fontSize: "0.88rem",
-                py: 2,
-                px: 1,
-                borderRadius: "50px",
-                border: "1px solid rgba(255, 255, 255, 0.25)",
+                bgcolor: "#EFF6FF",
+                color: "#1E40AF",
+                fontWeight: 700,
+                fontSize: "0.82rem",
+                borderRadius: "8px",
+                border: "1px solid #DBEAFE",
+                py: 1.8,
               }}
             />
             <Button
               variant="contained"
+              startIcon={<UserPlus size={18} />}
               onClick={() => setIsAddModalOpen(true)}
               sx={{
-                bgcolor: "#10B981",
-                color: "white",
-                fontWeight: "bold",
-                borderRadius: "50px",
+                bgcolor: "#1976D2",
+                color: "#FFFFFF",
+                fontWeight: 700,
+                borderRadius: "10px",
+                textTransform: "none",
+                px: 2.5,
+                py: 1,
+                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
                 "&:hover": {
-                  bgcolor: "#059669",
+                  bgcolor: "#1565C0",
                 },
               }}
             >
               Add Employee
             </Button>
-            <UserProfileHeader
-              user={user}
-              onLogout={() => {
-                logout();
-                navigate("/login");
-              }}
-            />
-          </Box>
+          </Stack>
         </Box>
-      </Box>
 
-      <AddEmployeeModal
-        open={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={fetchEmployees}
-      />
+        {/* Modal for adding employee */}
+        <AddEmployeeModal
+          open={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={() => {
+            fetchEmployees();
+            showToast("Employee added successfully!");
+          }}
+        />
 
-      <Box
-        sx={{ px: { xs: 2, sm: 4, md: 6 }, position: "relative", zIndex: 5 }}
-      >
         {/* Error Alert */}
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
+          <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>
             {error}
           </Alert>
         )}
 
-        {/* Active Employees Directory */}
+        {/* Directory Card */}
         <Paper
+          elevation={0}
           sx={{
-            p: 2,
+            p: 3,
             borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+            bgcolor: "#FFFFFF",
+            border: "1px solid #E2E8F0",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.02)",
           }}
         >
           <EmployeeGrid employees={employees} />
@@ -202,6 +168,6 @@ export default function Employees() {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </AppLayout>
   );
 }

@@ -42,6 +42,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 
+import AppLayout from "../components/layout/AppLayout";
 import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 import DeskCard from "../components/Workspace/DeskCard";
 import DeskDetailsModal from "../components/Workspace/DeskDetailsModal";
@@ -220,189 +221,8 @@ export default function WorkspaceReservation() {
   ];
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA", display: "flex", fontFamily: "'Inter', sans-serif" }}>
-      {/* 1. LEFT PERMANENT SIDEBAR (Jet Obsidian Black `#09090B`) */}
-      <Box
-        sx={{
-          width: { xs: 80, md: 250 },
-          bgcolor: "#09090B",
-          color: "#FFFFFF",
-          display: "flex",
-          flexDirection: "column",
-          p: 2.5,
-          boxShadow: "4px 0 25px rgba(0,0,0,0.12)",
-          zIndex: 10,
-          flexShrink: 0,
-        }}
-      >
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4, px: 1, cursor: "pointer" }}
-          onClick={() => navigate("/dashboard")}
-        >
-          <Box
-            sx={{
-              bgcolor: "#FFFFFF",
-              color: "#09090B",
-              px: 2,
-              py: 0.8,
-              borderRadius: "50px",
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              boxShadow: "0 4px 14px rgba(255, 255, 255, 0.2)",
-            }}
-          >
-            <Sparkles size={18} color="#09090B" />
-            <Typography
-              variant="subtitle1"
-              fontWeight={900}
-              letterSpacing={-0.3}
-              color="#09090B"
-              sx={{ display: { xs: "none", md: "block" } }}
-            >
-              IntraSphere
-            </Typography>
-          </Box>
-        </Box>
-
-        <Typography
-          variant="caption"
-          sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}
-        >
-          EMPLOYEE PORTAL
-        </Typography>
-
-        <Stack spacing={0.75} sx={{ mb: 4 }}>
-          {navTabs.map((item) => {
-            const isActive = !!item.active;
-            const IconComponent = item.icon;
-            return (
-              <Box
-                key={item.id}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  bgcolor: isActive ? "#FFFFFF" : "transparent",
-                  color: isActive ? "#09090B" : "#A1A1AA",
-                  fontWeight: isActive ? 700 : 500,
-                  fontSize: "14px",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    bgcolor: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.1)",
-                    color: "#FFFFFF",
-                  },
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <IconComponent size={18} />
-                  <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-                    {item.label}
-                  </Typography>
-                </Box>
-                {isActive && <ChevronRight size={16} sx={{ display: { xs: "none", md: "block" } }} />}
-              </Box>
-            );
-          })}
-        </Stack>
-
-        <Typography
-          variant="caption"
-          sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}
-        >
-          QUICK REQUESTS
-        </Typography>
-
-        <Stack spacing={0.75}>
-          <Box
-            onClick={() => setBookingModal({ open: true, desk: desks[0] || null })}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              px: 2,
-              py: 1.25,
-              borderRadius: "12px",
-              cursor: "pointer",
-              color: "#FFFFFF",
-              fontWeight: 600,
-              fontSize: "14px",
-              bgcolor: "#27272A",
-              border: "1px solid #3F3F46",
-              "&:hover": { bgcolor: "#3F3F46" },
-            }}
-          >
-            <Plus size={16} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-              Reserve Desk
-            </Typography>
-          </Box>
-
-          {isFacilityOrAdmin && (
-            <>
-              <Box
-                onClick={() => setMgmtModal({ open: true, desk: null })}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  bgcolor: "#1976D2",
-                  "&:hover": { bgcolor: "#1565C0" },
-                }}
-              >
-                <Wrench size={16} />
-                <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-                  Add Hot Desk
-                </Typography>
-              </Box>
-
-              <Box
-                onClick={() => setAnalyticsModal(true)}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  bgcolor: "#27272A",
-                  border: "1px solid #3F3F46",
-                  "&:hover": { bgcolor: "#3F3F46" },
-                }}
-              >
-                <BarChart3 size={16} />
-                <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
-                  Workspace Utilization
-                </Typography>
-              </Box>
-            </>
-          )}
-        </Stack>
-      </Box>
-
-      {/* 2. MAIN CONTENT AREA */}
-      <Box sx={{ flexGrow: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-        {/* Top User Profile Header */}
-        <UserProfileHeader />
-
-        <Container maxWidth="xl" sx={{ mt: 3, mb: 6, px: { xs: 2, md: 4 } }}>
-          {/* Main Title & Action Bar */}
+    <AppLayout activeTabOverride="workspaces">
+      {/* Main Title & Action Bar */}
           <Box
             sx={{
               display: "flex",
@@ -809,8 +629,6 @@ export default function WorkspaceReservation() {
               )}
             </Paper>
           )}
-        </Container>
-      </Box>
 
       {/* MODALS */}
       <DeskDetailsModal
@@ -854,6 +672,6 @@ export default function WorkspaceReservation() {
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </AppLayout>
   );
 }

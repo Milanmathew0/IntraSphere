@@ -1,146 +1,139 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Paper,
   Typography,
   Stack,
-  IconButton,
   Button,
-  Chip,
+  IconButton,
 } from "@mui/material";
 import {
-  MoreVert,
-  LocationOn,
-  CalendarToday,
-  VideoCameraFront,
   Groups,
+  Videocam,
+  MeetingRoom,
+  MoreVert,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-export default function TodaySchedule() {
+export default function TodaySchedule({ scheduleItems = [] }) {
   const navigate = useNavigate();
 
-  const scheduleItems = [
+  const defaultSchedule = [
     {
       id: 1,
       time: "09:00 - 10:00 AM",
       title: "Team Stand-up",
       subtitle: "Microsoft Teams",
-      subtitleType: "teams",
-      iconBg: "#E0F2FE",
-      iconColor: "#0284C7",
-      dotColor: "#2563EB",
+      icon: <Videocam fontSize="small" />,
+      color: { bg: "#DBEAFE", text: "#2563EB", dot: "#2563EB" },
     },
     {
       id: 2,
       time: "11:00 - 12:00 PM",
       title: "Project Discussion",
       subtitle: "Conference Room A",
-      subtitleType: "location",
-      iconBg: "#DCFCE7",
-      iconColor: "#16A34A",
-      dotColor: "#2563EB",
+      icon: <MeetingRoom fontSize="small" />,
+      color: { bg: "#D1FAE5", text: "#059669", dot: "#10B981" },
     },
     {
       id: 3,
       time: "02:00 - 04:00 PM",
       title: "Client Review Meeting",
       subtitle: "Meeting Room 2",
-      subtitleType: "location",
-      iconBg: "#FEE2E2",
-      iconColor: "#DC2626",
-      dotColor: "#2563EB",
+      icon: <Groups fontSize="small" />,
+      color: { bg: "#FEE2E2", text: "#DC2626", dot: "#2563EB" },
     },
   ];
+
+  const displayItems = scheduleItems.length > 0 ? scheduleItems : defaultSchedule;
 
   return (
     <Paper
       elevation={0}
       sx={{
         p: 2.5,
-        borderRadius: "18px",
+        borderRadius: "20px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
+        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        boxSizing: "border-box",
       }}
     >
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+        <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ fontSize: "1.05rem" }}>
           Today's Schedule
         </Typography>
         <Button
           size="small"
           onClick={() => navigate("/meeting-rooms")}
           sx={{
-            color: "#2563EB",
             fontWeight: 700,
-            fontSize: "0.78rem",
+            color: "#2563EB",
             textTransform: "none",
+            fontSize: "0.78rem",
             p: 0,
-            minWidth: 0,
+            "&:hover": { bgcolor: "transparent" },
           }}
         >
           View All
         </Button>
       </Box>
 
-      {/* Timeline Container */}
+      {/* Timeline List */}
       <Stack spacing={2} sx={{ position: "relative" }}>
         {/* Vertical Connecting Line */}
         <Box
           sx={{
             position: "absolute",
-            left: 145,
-            top: 20,
-            bottom: 20,
+            left: 6,
+            top: 15,
+            bottom: 15,
             width: 2,
             bgcolor: "#E2E8F0",
             zIndex: 0,
           }}
         />
 
-        {scheduleItems.map((item) => (
-          <Box
-            key={item.id}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "relative",
-              zIndex: 1,
-            }}
-          >
-            {/* Time + Blue Dot */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 155 }}>
-              <Typography variant="caption" fontWeight={600} color="#64748B" sx={{ fontSize: "0.78rem" }}>
-                {item.time}
-              </Typography>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: item.dotColor,
-                  flexShrink: 0,
-                }}
-              />
-            </Box>
-
-            {/* Content Box */}
-            <Paper
-              elevation={0}
+        {displayItems.map((item, idx) => (
+          <Box key={item.id || idx} sx={{ display: "flex", alignItems: "center", gap: 1.5, position: "relative", zIndex: 1 }}>
+            {/* Timeline Dot */}
+            <Box
               sx={{
-                flex: 1,
-                p: 1.2,
-                px: 1.5,
-                borderRadius: "12px",
-                bgcolor: "#F8FAFC",
-                border: "1px solid #E2E8F0",
+                width: 10,
+                height: 10,
+                borderRadius: "50%",
+                bgcolor: item.color?.dot || "#2563EB",
+                boxShadow: "0 0 0 3px #FFFFFF",
+                flexShrink: 0,
+              }}
+            />
+
+            {/* Time String */}
+            <Typography
+              variant="caption"
+              fontWeight={600}
+              color="#64748B"
+              sx={{ width: 120, flexShrink: 0, fontSize: "0.76rem" }}
+            >
+              {item.time}
+            </Typography>
+
+            {/* Item Card Container */}
+            <Box
+              sx={{
+                flexGrow: 1,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                ml: 1,
+                p: 1.2,
+                borderRadius: "12px",
+                bgcolor: "#F8FAFC",
+                border: "1px solid #F1F5F9",
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
@@ -149,37 +142,21 @@ export default function TodaySchedule() {
                     width: 32,
                     height: 32,
                     borderRadius: "8px",
-                    bgcolor: item.iconBg,
-                    color: item.iconColor,
+                    bgcolor: item.color?.bg || "#DBEAFE",
+                    color: item.color?.text || "#2563EB",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  {item.subtitleType === "teams" ? (
-                    <CalendarToday sx={{ fontSize: 16 }} />
-                  ) : (
-                    <Groups sx={{ fontSize: 16 }} />
-                  )}
+                  {item.icon || <Groups fontSize="small" />}
                 </Box>
                 <Box>
-                  <Typography variant="body2" fontWeight={700} color="#0F172A" sx={{ fontSize: "0.82rem", lineHeight: 1.1 }}>
+                  <Typography variant="body2" fontWeight={800} color="#0A1628" sx={{ fontSize: "0.82rem", lineHeight: 1.1 }}>
                     {item.title}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    color="#64748B"
-                    sx={{ fontSize: "0.72rem", display: "flex", alignItems: "center", gap: 0.4, mt: 0.3 }}
-                  >
-                    {item.subtitleType === "teams" ? (
-                      <Box component="span" sx={{ color: "#7C3AED", fontWeight: 600 }}>
-                        {item.subtitle}
-                      </Box>
-                    ) : (
-                      <>
-                        <LocationOn sx={{ fontSize: 12, color: "#EC4899" }} /> {item.subtitle}
-                      </>
-                    )}
+                  <Typography variant="caption" color="#64748B" sx={{ fontSize: "0.7rem" }}>
+                    {item.subtitle || item.location}
                   </Typography>
                 </Box>
               </Box>
@@ -187,7 +164,7 @@ export default function TodaySchedule() {
               <IconButton size="small" sx={{ color: "#94A3B8" }}>
                 <MoreVert fontSize="small" />
               </IconButton>
-            </Paper>
+            </Box>
           </Box>
         ))}
       </Stack>

@@ -5,12 +5,16 @@ import {
   Typography,
   Button,
   Stack,
-  CircularProgress,
-  IconButton,
   Select,
   MenuItem,
+  CircularProgress,
+  Tooltip,
 } from "@mui/material";
-import { Login, Logout, CheckCircle, Refresh } from "@mui/icons-material";
+import {
+  Login,
+  Logout,
+  CheckCircle,
+} from "@mui/icons-material";
 import api from "../../api/axios";
 
 export default function AttendanceOverview({ user, onAttendanceChange, showToast }) {
@@ -94,13 +98,13 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
   const hasCheckedIn = Boolean(todayRecord && todayRecord.check_in);
   const hasCheckedOut = Boolean(todayRecord && todayRecord.check_out);
 
-  // Grouped Bar Data for W1 - W5 matching reference image
-  const chartWeeks = [
-    { label: "W1", present: 5, halfDay: 1, absent: 0 },
-    { label: "W2", present: 7, halfDay: 2, absent: 0 },
-    { label: "W3", present: 8, halfDay: 3, absent: 1 },
-    { label: "W4", present: 9, halfDay: 2, absent: 0 },
-    { label: "W5", present: 8, halfDay: 1, absent: 1 },
+  // Sample weekly bar data matching reference image
+  const weeklyBars = [
+    { week: "W1", present: 6, halfDay: 2, absent: 0 },
+    { week: "W2", present: 7, halfDay: 0, absent: 0 },
+    { week: "W3", present: 8, halfDay: 0, absent: 1 },
+    { week: "W4", present: 8, halfDay: 2, absent: 0 },
+    { week: "W5", present: 7, halfDay: 1, absent: 0 },
   ];
 
   return (
@@ -108,15 +112,20 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
       elevation={0}
       sx={{
         p: 2.5,
-        borderRadius: "18px",
+        borderRadius: "20px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
+        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        boxSizing: "border-box",
       }}
     >
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+        <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ fontSize: "1.05rem" }}>
           Attendance Overview
         </Typography>
 
@@ -128,172 +137,183 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             height: 32,
             fontSize: "0.78rem",
             fontWeight: 600,
-            color: "#475569",
             borderRadius: "8px",
             bgcolor: "#F8FAFC",
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E2E8F0" },
+            borderColor: "#E2E8F0",
+            "& .MuiSelect-select": { py: 0.5, px: 1.2 },
           }}
         >
           <MenuItem value="September 2026">September 2026</MenuItem>
           <MenuItem value="August 2026">August 2026</MenuItem>
+          <MenuItem value="July 2026">July 2026</MenuItem>
         </Select>
       </Box>
 
-      {/* Legend */}
-      <Stack direction="row" spacing={2.5} alignItems="center" mb={2.5}>
+      {/* Legend Row */}
+      <Stack direction="row" spacing={2.5} sx={{ mb: 2 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
           <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#2563EB" }} />
-          <Typography variant="caption" fontWeight={600} color="#475569">
+          <Typography variant="caption" color="#475569" fontWeight={600} sx={{ fontSize: "0.75rem" }}>
             Present
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
           <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#F59E0B" }} />
-          <Typography variant="caption" fontWeight={600} color="#475569">
+          <Typography variant="caption" color="#475569" fontWeight={600} sx={{ fontSize: "0.75rem" }}>
             Half Day
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
           <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#EF4444" }} />
-          <Typography variant="caption" fontWeight={600} color="#475569">
+          <Typography variant="caption" color="#475569" fontWeight={600} sx={{ fontSize: "0.75rem" }}>
             Absent
           </Typography>
         </Box>
       </Stack>
 
-      {/* Custom Bar Chart Canvas matching reference image */}
-      <Box sx={{ height: 160, display: "flex", alignItems: "flex-end", position: "relative", pt: 2, pb: 1 }}>
-        {/* Y-Axis Grid Lines */}
-        <Box sx={{ position: "absolute", left: 24, right: 0, top: 0, bottom: 24, display: "flex", flexDirection: "column", justifyContent: "space-between", pointerEvents: "none" }}>
-          {[10, 8, 6, 4, 2, 0].map((val) => (
-            <Box key={val} sx={{ borderTop: "1px dashed #F1F5F9", width: "100%", position: "relative" }}>
-              <Typography variant="caption" color="#94A3B8" sx={{ position: "absolute", left: -24, top: -8, fontSize: "0.7rem" }}>
-                {val}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+      {/* Bar Chart Container */}
+      <Box sx={{ position: "relative", height: 170, mb: 1, px: 1 }}>
+        {/* Y Axis Grid Lines */}
+        {[10, 8, 6, 4, 2, 0].map((val) => (
+          <Box
+            key={val}
+            sx={{
+              position: "absolute",
+              top: `${((10 - val) / 10) * 80}%`,
+              left: 0,
+              right: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="caption" color="#94A3B8" sx={{ width: 20, fontSize: "0.68rem" }}>
+              {val}
+            </Typography>
+            <Box sx={{ flexGrow: 1, borderTop: "1px dashed #F1F5F9", ml: 1 }} />
+          </Box>
+        ))}
 
-        {/* Grouped Bars */}
-        <Box sx={{ ml: 4, width: "100%", height: 130, display: "flex", justifyContent: "space-around", alignItems: "flex-end", zIndex: 1 }}>
-          {chartWeeks.map((w, idx) => (
-            <Box key={idx} sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
-              <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.6, height: 110 }}>
-                {/* Present Bar (Blue) */}
-                <Box
-                  sx={{
-                    width: 12,
-                    height: `${(w.present / 10) * 100}%`,
-                    bgcolor: "#2563EB",
-                    borderRadius: "4px 4px 0 0",
-                    transition: "height 0.3s ease",
-                  }}
-                />
-                {/* Half Day Bar (Yellow) */}
-                {w.halfDay > 0 && (
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: `${(w.halfDay / 10) * 100}%`,
-                      bgcolor: "#F59E0B",
-                      borderRadius: "4px 4px 0 0",
-                    }}
-                  />
+        {/* Vertical Grouped Bars */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            bottom: 24,
+            left: 30,
+            right: 0,
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "flex-end",
+          }}
+        >
+          {weeklyBars.map((w, idx) => (
+            <Box key={idx} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.6, height: 130 }}>
+                {/* Present Bar */}
+                {w.present > 0 && (
+                  <Tooltip title={`Present: ${w.present} days`}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: `${(w.present / 10) * 100}%`,
+                        bgcolor: "#2563EB",
+                        borderRadius: "4px 4px 0 0",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                  </Tooltip>
                 )}
-                {/* Absent Bar (Red) */}
+                {/* Half Day Bar */}
+                {w.halfDay > 0 && (
+                  <Tooltip title={`Half Day: ${w.halfDay} days`}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: `${(w.halfDay / 10) * 100}%`,
+                        bgcolor: "#F59E0B",
+                        borderRadius: "4px 4px 0 0",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                {/* Absent Bar */}
                 {w.absent > 0 && (
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: `${(w.absent / 10) * 100}%`,
-                      bgcolor: "#EF4444",
-                      borderRadius: "4px 4px 0 0",
-                    }}
-                  />
+                  <Tooltip title={`Absent: ${w.absent} days`}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: `${(w.absent / 10) * 100}%`,
+                        bgcolor: "#EF4444",
+                        borderRadius: "4px 4px 0 0",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                  </Tooltip>
                 )}
               </Box>
-              <Typography variant="caption" fontWeight={600} color="#64748B" sx={{ fontSize: "0.72rem" }}>
-                {w.label}
+              <Typography variant="caption" color="#64748B" fontWeight={600} sx={{ mt: 1, fontSize: "0.72rem" }}>
+                {w.week}
               </Typography>
             </Box>
           ))}
         </Box>
       </Box>
 
-      {/* Backend Action Controls */}
-      <Box sx={{ mt: 2, pt: 2, borderTop: "1px solid #F1F5F9", display: "flex", gap: 1.5 }}>
+      {/* Fast Check-In/Out Buttons Toolbar at bottom of card */}
+      <Box sx={{ borderTop: "1px solid #F1F5F9", pt: 1.5, display: "flex", gap: 1.5, alignItems: "center" }}>
         {!hasCheckedIn && (
           <Button
             variant="contained"
+            size="small"
             fullWidth
             disabled={actionLoading}
             onClick={handleCheckIn}
-            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Login />}
+            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Login fontSize="small" />}
             sx={{
-              py: 1,
-              borderRadius: "10px",
-              fontWeight: 700,
-              fontSize: "0.85rem",
               bgcolor: "#2563EB",
               color: "#FFFFFF",
+              fontWeight: 700,
+              fontSize: "0.8rem",
+              borderRadius: "10px",
               textTransform: "none",
-              boxShadow: "none",
+              boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)",
               "&:hover": { bgcolor: "#1D4ED8" },
             }}
           >
-            {actionLoading ? "Checking in..." : "Check In Now"}
+            {actionLoading ? "Processing..." : "Check In Now"}
           </Button>
         )}
 
         {hasCheckedIn && !hasCheckedOut && (
           <Button
             variant="contained"
+            size="small"
             fullWidth
             disabled={actionLoading}
             onClick={handleCheckOut}
-            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Logout />}
+            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Logout fontSize="small" />}
             sx={{
-              py: 1,
-              borderRadius: "10px",
-              fontWeight: 700,
-              fontSize: "0.85rem",
-              bgcolor: "#EF4444",
+              bgcolor: "#0A1628",
               color: "#FFFFFF",
+              fontWeight: 700,
+              fontSize: "0.8rem",
+              borderRadius: "10px",
               textTransform: "none",
-              boxShadow: "none",
-              "&:hover": { bgcolor: "#DC2626" },
+              "&:hover": { bgcolor: "#1E293B" },
             }}
           >
-            {actionLoading ? "Checking out..." : "Check Out Now"}
+            {actionLoading ? "Processing..." : "Check Out Now"}
           </Button>
         )}
 
         {hasCheckedIn && hasCheckedOut && (
-          <Box
-            sx={{
-              w: "100%",
-              width: "100%",
-              py: 1,
-              px: 2,
-              borderRadius: "10px",
-              bgcolor: "#DCFCE7",
-              textAlign: "center",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 0.8,
-            }}
-          >
-            <CheckCircle sx={{ fontSize: 18, color: "#15803D" }} />
-            <Typography variant="body2" fontWeight={700} color="#15803D">
-              Shift Completed for Today
+          <Box sx={{ width: "100%", textAlign: "center" }}>
+            <Typography variant="caption" fontWeight={700} color="#059669" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+              <CheckCircle sx={{ fontSize: 16 }} /> Today's Shift Logged & Completed
             </Typography>
           </Box>
         )}
-
-        <IconButton size="small" onClick={fetchTodayAttendance} sx={{ border: "1px solid #E2E8F0" }}>
-          <Refresh fontSize="small" />
-        </IconButton>
       </Box>
     </Paper>
   );

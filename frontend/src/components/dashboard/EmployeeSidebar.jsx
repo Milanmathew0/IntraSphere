@@ -6,7 +6,6 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
   Typography,
   Badge,
   IconButton,
@@ -21,7 +20,6 @@ import {
   Campaign,
   Notifications,
   PersonOutlined,
-  AutoAwesome as SparklesIcon,
   Close,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -32,11 +30,10 @@ export default function EmployeeSidebar({
   onMobileClose,
   activeTab,
   onTabChange,
-  unreadNotificationsCount = 3,
+  notificationsCount = 3,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
 
   const sidebarSections = [
     { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
@@ -51,7 +48,7 @@ export default function EmployeeSidebar({
       route: "/notifications",
       icon: <Notifications fontSize="small" />,
       tabId: "notifications",
-      badge: unreadNotificationsCount,
+      badge: notificationsCount,
     },
     { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
   ];
@@ -80,8 +77,8 @@ export default function EmployeeSidebar({
       sx={{
         width: 240,
         height: "100%",
-        bgcolor: "#0B132B", // Matching reference image deep dark navy
-        color: "#F8FAFC",
+        bgcolor: "#0A1628", // Exact Dark Navy Blue from reference
+        color: "#FFFFFF",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -113,20 +110,24 @@ export default function EmployeeSidebar({
                 boxShadow: "0 4px 12px rgba(37, 99, 235, 0.4)",
               }}
             >
-              <SparklesIcon sx={{ color: "#FFFFFF", fontSize: 22 }} />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M9 22v-4h6v4" />
+                <path d="M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01" />
+              </svg>
             </Box>
             <Box>
               <Typography
                 variant="subtitle1"
                 fontWeight={800}
                 color="#FFFFFF"
-                sx={{ letterSpacing: "-0.3px", lineHeight: 1.1, fontSize: "1.1rem" }}
+                sx={{ letterSpacing: "-0.3px", lineHeight: 1.1, fontSize: "1.05rem" }}
               >
                 IntraSphere
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.68rem" }}
+                sx={{ color: "#7C8BA1", fontWeight: 500, fontSize: "0.68rem" }}
               >
                 Smart Office Management
               </Typography>
@@ -134,7 +135,10 @@ export default function EmployeeSidebar({
           </Box>
 
           {mobileOpen && (
-            <IconButton onClick={onMobileClose} sx={{ color: "#94A3B8" }}>
+            <IconButton
+              onClick={onMobileClose}
+              sx={{ color: "#7C8BA1", "&:hover": { color: "#FFFFFF" } }}
+            >
               <Close fontSize="small" />
             </IconButton>
           )}
@@ -144,20 +148,21 @@ export default function EmployeeSidebar({
         <Typography
           variant="caption"
           sx={{
-            color: "#64748B",
+            color: "#475569",
             fontWeight: 700,
             fontSize: "0.68rem",
-            letterSpacing: "0.5px",
+            letterSpacing: 1,
             px: 1.5,
             mb: 1.5,
             display: "block",
+            textTransform: "uppercase",
           }}
         >
           Employee Portal
         </Typography>
 
-        {/* Menu Items List */}
-        <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+        {/* Navigation Menu List */}
+        <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.8 }}>
           {sidebarSections.map((item) => {
             const active = isItemActive(item);
             return (
@@ -166,10 +171,11 @@ export default function EmployeeSidebar({
                   onClick={() => handleNavClick(item)}
                   sx={{
                     borderRadius: "12px",
-                    px: 1.6,
-                    py: 1.0,
+                    px: 1.8,
+                    py: 1.1,
                     bgcolor: active ? "#2563EB" : "transparent",
                     color: active ? "#FFFFFF" : "#94A3B8",
+                    boxShadow: active ? "0 4px 14px rgba(37, 99, 235, 0.4)" : "none",
                     transition: "all 0.2s ease",
                     "&:hover": {
                       bgcolor: active ? "#2563EB" : "rgba(255, 255, 255, 0.06)",
@@ -183,43 +189,36 @@ export default function EmployeeSidebar({
                       color: active ? "#FFFFFF" : "#94A3B8",
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography
+                    {item.badge ? (
+                      <Badge
+                        badgeContent={item.badge}
+                        color="error"
                         sx={{
-                          fontSize: "0.86rem",
-                          fontWeight: active ? 700 : 500,
-                          lineHeight: 1.2,
-                          color: active ? "#FFFFFF" : "inherit",
+                          "& .MuiBadge-badge": {
+                            fontSize: "0.65rem",
+                            fontWeight: 700,
+                            height: 16,
+                            minWidth: 16,
+                            px: 0.5,
+                            bgcolor: "#EF4444",
+                          },
                         }}
                       >
-                        {item.label}
-                      </Typography>
-                    }
-                  />
-
-                  {/* Red Badge for Notifications */}
-                  {item.badge > 0 && (
-                    <Box
-                      sx={{
-                        width: 18,
-                        height: 18,
-                        borderRadius: "50%",
-                        bgcolor: "#EF4444",
-                        color: "#FFFFFF",
-                        fontSize: "0.68rem",
-                        fontWeight: 800,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        ml: 1,
-                      }}
-                    >
-                      {item.badge}
-                    </Box>
-                  )}
+                        {item.icon}
+                      </Badge>
+                    ) : (
+                      item.icon
+                    )}
+                  </ListItemIcon>
+                  <Typography
+                    sx={{
+                      fontSize: "0.85rem",
+                      fontWeight: active ? 700 : 500,
+                      color: active ? "#FFFFFF" : "#94A3B8",
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
                 </ListItemButton>
               </ListItem>
             );
@@ -227,27 +226,29 @@ export default function EmployeeSidebar({
         </List>
       </Box>
 
-      {/* Bottom Architecture Building Card (Matching reference image) */}
+      {/* Bottom Sidebar Image Card */}
       <Box
         sx={{
-          borderRadius: "14px",
-          overflow: "hidden",
+          mt: 3,
+          borderRadius: "16px",
+          height: 140,
           position: "relative",
-          height: 130,
-          background: "linear-gradient(180deg, rgba(11, 19, 43, 0.2) 0%, rgba(11, 19, 43, 0.9) 100%), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=400&auto=format&fit=crop') center/cover",
-          p: 1.8,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, rgba(10, 22, 40, 0.2) 0%, rgba(10, 22, 40, 0.95) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          p: 2,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
-          mt: 2,
+          boxSizing: "border-box",
         }}
       >
         <Typography
           variant="subtitle2"
           fontWeight={800}
           color="#FFFFFF"
-          sx={{ lineHeight: 1.2, fontSize: "0.9rem" }}
+          sx={{ lineHeight: 1.2, fontSize: "0.88rem" }}
         >
           Smart People
         </Typography>
@@ -255,7 +256,7 @@ export default function EmployeeSidebar({
           variant="subtitle2"
           fontWeight={800}
           color="#60A5FA"
-          sx={{ lineHeight: 1.2, fontSize: "0.9rem" }}
+          sx={{ lineHeight: 1.2, fontSize: "0.88rem" }}
         >
           Smarter Workspaces
         </Typography>
@@ -281,6 +282,7 @@ export default function EmployeeSidebar({
             bottom: 0,
             width: 240,
             zIndex: 1200,
+            boxShadow: "4px 0 20px rgba(10, 22, 40, 0.08)",
           }}
         >
           {sidebarContent}
@@ -297,7 +299,7 @@ export default function EmployeeSidebar({
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: 240,
-            bgcolor: "#0B132B",
+            bgcolor: "#0A1628",
           },
         }}
       >

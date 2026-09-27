@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 
-// Import Custom Dashboard Components
+// Import Enterprise Reference Components
 import EmployeeSidebar from "../components/dashboard/EmployeeSidebar";
 import EmployeeHeader from "../components/dashboard/EmployeeHeader";
 import WelcomeBanner from "../components/dashboard/WelcomeBanner";
@@ -21,7 +21,7 @@ import UpcomingMeetings from "../components/dashboard/UpcomingMeetings";
 import RecentAnnouncements from "../components/dashboard/RecentAnnouncements";
 import EmployeeNotifications from "../components/dashboard/EmployeeNotifications";
 
-// Tab Full Views
+// Modular views for sub-tab navigation
 import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
 import WorkspaceReservationCard from "../components/dashboard/WorkspaceReservationCard";
 import EmergencyMeetingRooms from "../components/dashboard/EmergencyMeetingRooms";
@@ -53,7 +53,7 @@ export default function EmployeeDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#F5F8FC", // Matching reference light canvas
+        bgcolor: "#F4F7FC", // Match exact canvas background color
         display: "flex",
         fontFamily: "'Inter', sans-serif",
       }}
@@ -64,9 +64,10 @@ export default function EmployeeDashboard() {
         onMobileClose={() => setMobileOpen(false)}
         activeTab={activeTab}
         onTabChange={(tabId) => setActiveTab(tabId)}
+        notificationsCount={3}
       />
 
-      {/* 2. Main Content Container */}
+      {/* 2. Main Area */}
       <Box
         sx={{
           flexGrow: 1,
@@ -75,7 +76,7 @@ export default function EmployeeDashboard() {
           minWidth: 0,
         }}
       >
-        {/* Header */}
+        {/* Top Header Bar */}
         <EmployeeHeader
           onMobileToggle={() => setMobileOpen(!mobileOpen)}
           notificationsCount={3}
@@ -84,64 +85,67 @@ export default function EmployeeDashboard() {
           onNotificationClick={() => setActiveTab("notifications")}
         />
 
-        {/* Dashboard Content */}
-        <Box sx={{ p: { xs: 2, sm: 3, md: 3.5 }, flexGrow: 1 }}>
+        {/* Dashboard Canvas Area */}
+        <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 }, flexGrow: 1 }}>
           {activeTab === "dashboard" && (
-            <Stack spacing={2.5}>
-              {/* BLOCK 1: TOP SECTION (Banner + 4 Summary Cards on Left | Calendar on Right) */}
-              <Grid container spacing={2.5} alignItems="stretch">
-                {/* Left Area (72.5% width): Banner + 4 Summary Cards */}
-                <Grid xs={12} lg={8.7}>
-                  <Stack spacing={2.5} sx={{ height: "100%", justifyContent: "space-between" }}>
-                    <WelcomeBanner user={user} />
-                    <EmployeeSummaryCards
-                      user={user}
-                      onNavigateTab={(tab) => setActiveTab(tab)}
-                    />
-                  </Stack>
-                </Grid>
+            <Grid container spacing={2.5}>
+              {/* Left & Center Main Section (Width ~74% / 8.8 grid cols on desktop) */}
+              <Grid xs={12} lg={8.8}>
+                <Stack spacing={2.5}>
+                  {/* Row 1: Welcome Banner */}
+                  <WelcomeBanner user={user} />
 
-                {/* Right Area (27.5% width): Calendar */}
-                <Grid xs={12} lg={3.3}>
-                  <EmployeeCalendar />
-                </Grid>
-              </Grid>
-
-              {/* BLOCK 2: MIDDLE ROW (Today's Schedule | Quick Actions | Upcoming Meetings) */}
-              <Grid container spacing={2.5} alignItems="stretch">
-                <Grid xs={12} md={6} lg={4.35}>
-                  <TodaySchedule />
-                </Grid>
-                <Grid xs={12} md={6} lg={4.35}>
-                  <QuickActions onActionClick={(id) => setActiveTab(id)} />
-                </Grid>
-                <Grid xs={12} lg={3.3}>
-                  <UpcomingMeetings />
-                </Grid>
-              </Grid>
-
-              {/* BLOCK 3: BOTTOM ROW (Attendance Overview | Recent Announcements | My Notifications) */}
-              <Grid container spacing={2.5} alignItems="stretch">
-                <Grid xs={12} md={6} lg={4.35}>
-                  <AttendanceOverview
+                  {/* Row 2: 4 Summary Cards */}
+                  <EmployeeSummaryCards
                     user={user}
-                    onAttendanceChange={handleAttendanceChange}
-                    showToast={showToast}
+                    onNavigateTab={(tab) => setActiveTab(tab)}
                   />
-                </Grid>
-                <Grid xs={12} md={6} lg={4.35}>
-                  <RecentAnnouncements />
-                </Grid>
-                <Grid xs={12} lg={3.3}>
-                  <EmployeeNotifications />
-                </Grid>
+
+                  {/* Row 3: Today's Schedule & Quick Actions */}
+                  <Grid container spacing={2.5}>
+                    <Grid xs={12} md={6}>
+                      <TodaySchedule />
+                    </Grid>
+                    <Grid xs={12} md={6}>
+                      <QuickActions onActionClick={(id) => setActiveTab(id)} />
+                    </Grid>
+                  </Grid>
+
+                  {/* Row 4: Attendance Overview (Bar Chart) & Recent Announcements */}
+                  <Grid container spacing={2.5}>
+                    <Grid xs={12} md={6}>
+                      <AttendanceOverview
+                        user={user}
+                        onAttendanceChange={handleAttendanceChange}
+                        showToast={showToast}
+                      />
+                    </Grid>
+                    <Grid xs={12} md={6}>
+                      <RecentAnnouncements />
+                    </Grid>
+                  </Grid>
+                </Stack>
               </Grid>
-            </Stack>
+
+              {/* Right Column Section (Width ~26% / 3.2 grid cols on desktop) */}
+              <Grid xs={12} lg={3.2}>
+                <Stack spacing={2.5}>
+                  {/* Calendar Widget */}
+                  <EmployeeCalendar />
+
+                  {/* Upcoming Meetings */}
+                  <UpcomingMeetings />
+
+                  {/* My Notifications */}
+                  <EmployeeNotifications />
+                </Stack>
+              </Grid>
+            </Grid>
           )}
 
-          {/* Sub-Tab Views for Dedicated Operations */}
+          {/* Sub-Tab Embedded Views */}
           {activeTab === "attendance" && (
-            <Stack spacing={3.5}>
+            <Stack spacing={3}>
               <AttendanceOverview
                 user={user}
                 onAttendanceChange={handleAttendanceChange}
@@ -154,52 +158,32 @@ export default function EmployeeDashboard() {
             </Stack>
           )}
 
-          {activeTab === "leave" && (
-            <Box>
-              <LeaveApplicationCard />
-            </Box>
-          )}
+          {activeTab === "leave" && <LeaveApplicationCard />}
 
-          {activeTab === "meeting-rooms" && (
-            <Stack spacing={3.5}>
-              <EmergencyMeetingRooms />
-            </Stack>
-          )}
+          {activeTab === "meeting-rooms" && <EmergencyMeetingRooms />}
 
-          {activeTab === "workspaces" && (
-            <Stack spacing={3.5}>
-              <WorkspaceReservationCard />
-            </Stack>
-          )}
+          {activeTab === "workspaces" && <WorkspaceReservationCard />}
 
           {activeTab === "my-bookings" && (
-            <Stack spacing={3.5}>
+            <Stack spacing={3}>
               <UpcomingMeetings />
               <TodaySchedule />
             </Stack>
           )}
 
-          {activeTab === "announcements" && (
-            <Box sx={{ maxW: 900, mx: "auto" }}>
-              <RecentAnnouncements />
-            </Box>
-          )}
+          {activeTab === "announcements" && <RecentAnnouncements />}
 
           {activeTab === "notifications" && (
-            <Box sx={{ maxW: 800, mx: "auto" }}>
+            <Box sx={{ maxWidth: 800, mx: "auto" }}>
               <EmployeeNotifications />
             </Box>
           )}
 
-          {activeTab === "profile" && (
-            <Box>
-              <EmployeeProfileSection />
-            </Box>
-          )}
+          {activeTab === "profile" && <EmployeeProfileSection />}
         </Box>
       </Box>
 
-      {/* Global Toast */}
+      {/* Global Toast Alert */}
       <Snackbar
         open={toast.open}
         autoHideDuration={4000}

@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, IconButton, Stack } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 
 export default function EmployeeCalendar() {
@@ -22,55 +27,63 @@ export default function EmployeeCalendar() {
     setCurrentDate(new Date(year, month + 1, 1));
   };
 
-  // Build grid for September 2026
-  // Sun 30, Mon 31 from previous month if needed, or 29 29 fading
-  const prevMonthFaded = [29, 29];
-  const daysInSeptember = 30;
-  const activeDate = 27; // Highlighted 27th
+  // Compute days in month and starting day offset (Sun = 0)
+  const firstDayOfMonth = new Date(year, month, 1);
+  const startDayIndex = firstDayOfMonth.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const nextMonthFaded = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  // Previous month trailing days
+  const prevMonthDays = new Date(year, month, 0).getDate();
+
+  const calendarCells = [];
+
+  // Add trailing days from previous month
+  for (let i = startDayIndex - 1; i >= 0; i--) {
+    calendarCells.push({ day: prevMonthDays - i, isCurrentMonth: false });
+  }
+
+  // Add current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    calendarCells.push({ day: d, isCurrentMonth: true });
+  }
+
+  // Add leading days for next month to complete 5 or 6 rows
+  const remainingCells = 35 - calendarCells.length;
+  for (let d = 1; d <= (remainingCells > 0 ? remainingCells : remainingCells + 7); d++) {
+    calendarCells.push({ day: d, isCurrentMonth: false });
+  }
+
+  const todayDateNum = 27; // Highlight 27 as in image
 
   return (
     <Paper
       elevation={0}
       sx={{
         p: 2.5,
-        borderRadius: "18px",
+        borderRadius: "20px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
-        height: "100%",
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
+        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
       }}
     >
-      {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <IconButton size="small" onClick={handlePrevMonth} sx={{ color: "#64748B" }}>
+      {/* Calendar Header matching reference */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <IconButton size="small" onClick={handlePrevMonth} sx={{ color: "#475569" }}>
           <ChevronLeft fontSize="small" />
         </IconButton>
-        <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+        <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ fontSize: "1rem" }}>
           {monthNames[month]} {year}
         </Typography>
-        <IconButton size="small" onClick={handleNextMonth} sx={{ color: "#64748B" }}>
+        <IconButton size="small" onClick={handleNextMonth} sx={{ color: "#475569" }}>
           <ChevronRight fontSize="small" />
         </IconButton>
-      </Stack>
+      </Box>
 
-      {/* Days Header */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          textAlign: "center",
-          mb: 1,
-        }}
-      >
-        {dayNames.map((d, i) => (
+      {/* Weekday Header */}
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", mb: 1.2 }}>
+        {dayNames.map((d, idx) => (
           <Typography
-            key={i}
+            key={idx}
             variant="caption"
             fontWeight={600}
             color="#94A3B8"
@@ -81,59 +94,34 @@ export default function EmployeeCalendar() {
         ))}
       </Box>
 
-      {/* Dates Grid */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: 0.5,
-          textAlign: "center",
-        }}
-      >
-        {/* Prev month faded */}
-        {prevMonthFaded.map((d, i) => (
-          <Box key={`prev-${i}`} sx={{ height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Typography variant="caption" color="#CBD5E1" sx={{ fontSize: "0.8rem" }}>
-              {d}
-            </Typography>
-          </Box>
-        ))}
-
-        {/* Current Month Days */}
-        {Array.from({ length: daysInSeptember }, (_, i) => i + 1).map((d) => {
-          const isSelected = d === activeDate;
+      {/* Calendar Days Grid */}
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0.8, textAlign: "center" }}>
+        {calendarCells.map((cell, idx) => {
+          const isToday = cell.isCurrentMonth && cell.day === todayDateNum;
           return (
             <Box
-              key={`day-${d}`}
+              key={idx}
               sx={{
                 height: 32,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 borderRadius: "50%",
-                cursor: "pointer",
-                bgcolor: isSelected ? "#2563EB" : "transparent",
-                color: isSelected ? "#FFFFFF" : "#0F172A",
-                fontWeight: isSelected ? 700 : 500,
+                bgcolor: isToday ? "#1D4ED8" : "transparent",
+                color: isToday ? "#FFFFFF" : cell.isCurrentMonth ? "#0A1628" : "#CBD5E1",
+                fontWeight: isToday ? 800 : cell.isCurrentMonth ? 600 : 400,
                 fontSize: "0.82rem",
+                cursor: "pointer",
+                boxShadow: isToday ? "0 4px 10px rgba(29, 78, 216, 0.35)" : "none",
                 "&:hover": {
-                  bgcolor: isSelected ? "#2563EB" : "#F1F5F9",
+                  bgcolor: isToday ? "#1D4ED8" : "#F1F5F9",
                 },
               }}
             >
-              {d}
+              {cell.day}
             </Box>
           );
         })}
-
-        {/* Next month faded */}
-        {nextMonthFaded.map((d, i) => (
-          <Box key={`next-${i}`} sx={{ height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Typography variant="caption" color="#CBD5E1" sx={{ fontSize: "0.8rem" }}>
-              {d}
-            </Typography>
-          </Box>
-        ))}
       </Box>
     </Paper>
   );

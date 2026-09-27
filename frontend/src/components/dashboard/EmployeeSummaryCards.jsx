@@ -8,10 +8,10 @@ import {
   Skeleton,
 } from "@mui/material";
 import {
-  Check,
+  CheckCircle,
   AccessTime,
-  CalendarToday,
-  BookmarkBorder,
+  CalendarMonth,
+  Bookmark,
   ChevronRight,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +33,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
 
   useEffect(() => {
     let isMounted = true;
-    const fetchMetrics = async () => {
+    const fetchSummaryMetrics = async () => {
       setLoading(true);
       try {
         const attRes = await api.get("/api/v1/attendance/today");
@@ -87,7 +87,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
             ).length;
           }
 
-          if (isMounted) setActiveBookingsCount(meetingCount + deskCount || 3);
+          if (isMounted) setActiveBookingsCount(meetingCount + deskCount > 0 ? meetingCount + deskCount : 3);
         } catch {
           if (isMounted) setActiveBookingsCount(3);
         }
@@ -98,7 +98,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
       }
     };
 
-    fetchMetrics();
+    fetchSummaryMetrics();
     return () => {
       isMounted = false;
     };
@@ -123,136 +123,190 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
   const hasCheckedIn = Boolean(todayAttendance && todayAttendance.check_in);
   const hasCheckedOut = Boolean(todayAttendance && todayAttendance.check_out);
 
+  const checkInTimeDisplay = hasCheckedIn ? formatPunchTime(todayAttendance.check_in) : "09:12 AM";
+  const checkOutTimeDisplay = hasCheckedOut ? formatPunchTime(todayAttendance.check_out) : "--:--";
+
   const cardsData = [
     {
       title: "Check-In",
-      icon: <Check sx={{ fontSize: 20, color: "#FFFFFF" }} />,
-      iconBg: "#10B981", // Soft emerald green circle
-      data: hasCheckedIn ? formatPunchTime(todayAttendance.check_in) : "09:12 AM",
-      badge: "Present",
-      badgeBg: "#DCFCE7",
-      badgeColor: "#15803D",
-      hasChevron: true,
-      onClick: () => onNavigateTab ? onNavigateTab("attendance") : navigate("/attendance"),
+      icon: (
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "10px",
+            bgcolor: "#D1FAE5",
+            color: "#10B981",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CheckCircle sx={{ fontSize: 20 }} />
+        </Box>
+      ),
+      value: checkInTimeDisplay,
+      statusBadge: (
+        <Chip
+          label="Present"
+          size="small"
+          sx={{
+            height: 22,
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            bgcolor: "#D1FAE5",
+            color: "#059669",
+            borderRadius: "6px",
+            "& .MuiChip-label": { px: 1 },
+          }}
+        />
+      ),
+      onAction: () => (onNavigateTab ? onNavigateTab("attendance") : navigate("/attendance")),
     },
     {
       title: "Check-Out",
-      icon: <AccessTime sx={{ fontSize: 20, color: "#FFFFFF" }} />,
-      iconBg: "#EF4444", // Soft red/coral circle
-      data: hasCheckedOut ? formatPunchTime(todayAttendance.check_out) : "--:--",
-      badge: "Not Checked Out",
-      badgeBg: "#FEE2E2",
-      badgeColor: "#B91C1C",
-      hasChevron: false,
-      onClick: () => onNavigateTab ? onNavigateTab("attendance") : navigate("/attendance"),
+      icon: (
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "10px",
+            bgcolor: "#FEE2E2",
+            color: "#EF4444",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <AccessTime sx={{ fontSize: 20 }} />
+        </Box>
+      ),
+      value: checkOutTimeDisplay,
+      statusBadge: (
+        <Chip
+          label="Not Checked Out"
+          size="small"
+          sx={{
+            height: 22,
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            bgcolor: "#FEE2E2",
+            color: "#DC2626",
+            borderRadius: "6px",
+            "& .MuiChip-label": { px: 1 },
+          }}
+        />
+      ),
+      onAction: () => (onNavigateTab ? onNavigateTab("attendance") : navigate("/attendance")),
     },
     {
       title: "Leave Balance",
-      icon: <CalendarToday sx={{ fontSize: 18, color: "#FFFFFF" }} />,
-      iconBg: "#2563EB", // Blue circle
-      data: `${leaveBalance} Days`,
-      subtitle: "out of 18 days",
-      hasChevron: true,
-      onClick: () => navigate("/leave"),
+      icon: (
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "10px",
+            bgcolor: "#DBEAFE",
+            color: "#3B82F6",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CalendarMonth sx={{ fontSize: 20 }} />
+        </Box>
+      ),
+      value: `${leaveBalance} Days`,
+      statusBadge: (
+        <Typography variant="caption" color="#94A3B8" fontWeight={500}>
+          out of 18 days
+        </Typography>
+      ),
+      onAction: () => navigate("/leave"),
     },
     {
       title: "My Bookings",
-      icon: <BookmarkBorder sx={{ fontSize: 20, color: "#FFFFFF" }} />,
-      iconBg: "#2563EB", // Blue circle
-      data: `${activeBookingsCount}`,
-      subtitle: "Upcoming",
-      hasChevron: true,
-      onClick: () => navigate("/meeting-rooms"),
+      icon: (
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "10px",
+            bgcolor: "#DBEAFE",
+            color: "#2563EB",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Bookmark sx={{ fontSize: 20 }} />
+        </Box>
+      ),
+      value: `${activeBookingsCount}`,
+      statusBadge: (
+        <Typography variant="caption" color="#94A3B8" fontWeight={500}>
+          Upcoming
+        </Typography>
+      ),
+      onAction: () => navigate("/meeting-rooms"),
     },
   ];
 
   return (
-    <Grid container spacing={2.5}>
+    <Grid container spacing={2}>
       {cardsData.map((card, idx) => (
         <Grid xs={12} sm={6} md={3} key={idx}>
           <Paper
             elevation={0}
-            onClick={card.onClick}
+            onClick={card.onAction}
             sx={{
               p: 2.2,
-              borderRadius: "18px",
+              borderRadius: "16px",
               bgcolor: "#FFFFFF",
               border: "1px solid #E2E8F0",
-              boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
+              boxShadow: "0 2px 8px rgba(10, 22, 40, 0.02)",
               cursor: "pointer",
               transition: "all 0.2s ease",
               position: "relative",
-              height: 120,
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
               "&:hover": {
                 borderColor: "#CBD5E1",
-                boxShadow: "0 6px 20px rgba(15, 23, 42, 0.06)",
+                boxShadow: "0 6px 16px rgba(10, 22, 40, 0.06)",
+                transform: "translateY(-1px)",
               },
             }}
           >
-            {/* Top Row: Icon + Title + Chevron */}
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
-                <Box
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    bgcolor: card.iconBg,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {card.icon}
-                </Box>
-                <Typography variant="body2" fontWeight={600} color="#475569" sx={{ fontSize: "0.85rem" }}>
-                  {card.title}
-                </Typography>
-              </Box>
-
-              {card.hasChevron && (
-                <ChevronRight sx={{ color: "#94A3B8", fontSize: 20 }} />
-              )}
+            {/* Header: Icon & Title */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, mb: 1.5 }}>
+              {card.icon}
+              <Typography variant="body2" fontWeight={700} color="#475569" sx={{ fontSize: "0.85rem" }}>
+                {card.title}
+              </Typography>
             </Box>
 
-            {/* Bottom Row: Main Number & Badge/Subtitle */}
+            {/* Value & Badge */}
             <Box>
               <Typography
                 variant="h5"
                 fontWeight={800}
-                color="#0F172A"
-                sx={{ fontSize: "1.4rem", lineHeight: 1.1 }}
+                color="#0A1628"
+                sx={{ fontSize: "1.4rem", lineHeight: 1.2, mb: 0.6 }}
               >
-                {card.data}
+                {card.value}
               </Typography>
-
-              {card.badge && (
-                <Chip
-                  label={card.badge}
-                  size="small"
-                  sx={{
-                    mt: 0.6,
-                    height: 20,
-                    fontSize: "0.68rem",
-                    fontWeight: 700,
-                    bgcolor: card.badgeBg,
-                    color: card.badgeColor,
-                    borderRadius: "6px",
-                    "& .MuiChip-label": { px: 0.8 },
-                  }}
-                />
-              )}
-
-              {card.subtitle && (
-                <Typography variant="caption" color="#94A3B8" sx={{ fontSize: "0.75rem", fontWeight: 500, display: "block", mt: 0.3 }}>
-                  {card.subtitle}
-                </Typography>
-              )}
+              {card.statusBadge}
             </Box>
+
+            {/* Chevron Right Arrow */}
+            <ChevronRight
+              sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 14,
+                color: "#94A3B8",
+                fontSize: 20,
+              }}
+            />
           </Paper>
         </Grid>
       ))}

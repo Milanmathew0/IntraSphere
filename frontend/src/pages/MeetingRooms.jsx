@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Container,
-  Grid,
   Typography,
   Paper,
   Button,
@@ -11,38 +9,24 @@ import {
   TextField,
   MenuItem,
   Chip,
-  IconButton,
-  Tooltip,
   Snackbar,
   Alert,
   CircularProgress,
   Stack,
-  Divider,
 } from "@mui/material";
 import {
-  Sparkles,
   Calendar,
   Clock,
-  User,
-  Users,
   Building,
-  LayoutDashboard,
-  Settings,
   Plus,
   Search,
-  Bell,
-  ChevronRight,
-  LogOut,
-  ShieldCheck,
-  CheckCircle2,
-  Wrench,
+  Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 
 import AppLayout from "../components/layout/AppLayout";
-import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 import RoomCard from "../components/MeetingRooms/RoomCard";
 import RoomDetailsModal from "../components/MeetingRooms/RoomDetailsModal";
 import BookingModal from "../components/MeetingRooms/BookingModal";
@@ -125,171 +109,124 @@ export default function MeetingRooms() {
     fetchRooms();
   }, [searchTerm, minCapacity, locationFilter, statusFilter]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   const userRole = user?.role || "Employee";
   const isFacilityOrAdmin = ["Admin", "Facility Manager"].includes(userRole);
 
-  const currentDateFormatted = new Date().toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-
-  // Sidebar Menu Items matching Dashboard
-  const navTabs = [
-    {
-      id: 0,
-      label: "My Dashboard & Overview",
-      subtitle: "Personal attendance, schedule overview, and quick operations.",
-      icon: LayoutDashboard,
-      path: "/dashboard",
-    },
-    {
-      id: 1,
-      label: "Daily Attendance Log",
-      subtitle: "Track check-in status and inspect your monthly attendance history.",
-      icon: Clock,
-      path: "/dashboard",
-    },
-    {
-      id: 2,
-      label: "My Leave Applications",
-      subtitle: "Submit new leave requests and track your approval status.",
-      icon: Calendar,
-      path: "/leave",
-    },
-    {
-      id: 3,
-      label: "Workspaces & Rooms",
-      subtitle: "Find and book the right space for your next meeting.",
-      icon: Building,
-      path: "/meeting-rooms",
-      active: true,
-    },
-    {
-      id: 4,
-      label: "My Profile Settings",
-      subtitle: "View personal credentials and account details.",
-      icon: Settings,
-      path: "/dashboard",
-    },
-  ];
-
   return (
     <AppLayout activeTabOverride="meeting-rooms">
-      {/* Top Header Row */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="#0F172A" sx={{ letterSpacing: "-0.5px" }}>
-            Meeting Rooms & Conference Spaces
-          </Typography>
-          <Typography variant="body2" color="#64748B" sx={{ mt: 0.25 }}>
-            Find and book conference rooms, call pods, and war rooms.
-          </Typography>
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        {/* Top Header Row */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
+          <Box>
+            <Typography variant="h5" fontWeight={800} color="#0F172A" sx={{ letterSpacing: "-0.5px" }}>
+              Meeting Rooms & Conference Spaces
+            </Typography>
+            <Typography variant="body2" color="#64748B" sx={{ mt: 0.25 }}>
+              Find and book conference rooms, call pods, and war rooms.
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<Plus size={18} />}
+            onClick={() => setBookingModal({ open: true, room: null })}
+            sx={{
+              borderRadius: "10px",
+              px: 2.5,
+              py: 1,
+              bgcolor: "#1976D2",
+              color: "#FFFFFF",
+              textTransform: "none",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+              "&:hover": { bgcolor: "#1565C0" },
+            }}
+          >
+            Book a Room
+          </Button>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<Plus size={18} />}
-          onClick={() => setBookingModal({ open: true, room: null })}
+        {/* SUMMARY STAT CARDS GRID */}
+        <Box
           sx={{
-            borderRadius: "12px",
-            px: 2.5,
-            py: 1,
-            bgcolor: "#1976D2",
-            color: "#FFFFFF",
-            textTransform: "none",
-            fontWeight: 700,
-            fontSize: "0.88rem",
-            boxShadow: "0 4px 14px rgba(25, 118, 210, 0.35)",
-            "&:hover": { bgcolor: "#1565C0" },
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(4, 1fr)",
+            },
+            gap: 2.5,
+            mb: 3.5,
           }}
         >
-          Book a Room
-        </Button>
-      </Box>
-
-        {/* SUMMARY STAT CARDS GRID */}
-        <Grid container spacing={2.5} mb={3.5}>
           {/* Card 1: Available Now */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E4E4E7" }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="caption" fontWeight={700} color="#71717A">
-                  AVAILABLE NOW
-                </Typography>
-                <Chip size="small" label="Live" sx={{ bgcolor: "rgba(46, 125, 50, 0.1)", color: "#2E7D32", fontWeight: 700 }} />
-              </Box>
-              <Typography variant="h4" fontWeight={800} color="#09090B">
-                {stats.available_now}
+          <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Typography variant="caption" fontWeight={700} color="#64748B">
+                AVAILABLE NOW
               </Typography>
-              <Typography variant="caption" color="#71717A">
-                Ready for instant booking
-              </Typography>
-            </Paper>
-          </Grid>
+              <Chip size="small" label="Live" sx={{ bgcolor: "#DCFCE7", color: "#15803D", border: "1px solid #BBF7D0", fontWeight: 700 }} />
+            </Box>
+            <Typography variant="h4" fontWeight={800} color="#0F172A">
+              {stats.available_now}
+            </Typography>
+            <Typography variant="caption" color="#64748B">
+              Ready for instant booking
+            </Typography>
+          </Paper>
 
           {/* Card 2: Booked Today */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E4E4E7" }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="caption" fontWeight={700} color="#71717A">
-                  BOOKED TODAY
-                </Typography>
-                <Clock size={16} color="#09090B" />
-              </Box>
-              <Typography variant="h4" fontWeight={800} color="#09090B">
-                {stats.booked_today}
+          <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Typography variant="caption" fontWeight={700} color="#64748B">
+                BOOKED TODAY
               </Typography>
-              <Typography variant="caption" color="#71717A">
-                Scheduled meetings today
-              </Typography>
-            </Paper>
-          </Grid>
+              <Clock size={16} color="#1976D2" />
+            </Box>
+            <Typography variant="h4" fontWeight={800} color="#0F172A">
+              {stats.booked_today}
+            </Typography>
+            <Typography variant="caption" color="#64748B">
+              Scheduled meetings today
+            </Typography>
+          </Paper>
 
           {/* Card 3: My Upcoming Meetings */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E4E4E7" }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="caption" fontWeight={700} color="#71717A">
-                  MY UPCOMING
-                </Typography>
-                <Calendar size={16} color="#09090B" />
-              </Box>
-              <Typography variant="h4" fontWeight={800} color="#09090B">
-                {stats.my_upcoming}
+          <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Typography variant="caption" fontWeight={700} color="#64748B">
+                MY UPCOMING
               </Typography>
-              <Typography variant="caption" color="#71717A">
-                Your future reservations
-              </Typography>
-            </Paper>
-          </Grid>
+              <Calendar size={16} color="#1976D2" />
+            </Box>
+            <Typography variant="h4" fontWeight={800} color="#0F172A">
+              {stats.my_upcoming}
+            </Typography>
+            <Typography variant="caption" color="#64748B">
+              Your future reservations
+            </Typography>
+          </Paper>
 
           {/* Card 4: Total Rooms */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E4E4E7" }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="caption" fontWeight={700} color="#71717A">
-                  TOTAL ROOMS
-                </Typography>
-                <Building size={16} color="#09090B" />
-              </Box>
-              <Typography variant="h4" fontWeight={800} color="#09090B">
-                {stats.total_rooms}
+          <Paper elevation={0} sx={{ p: 2.5, borderRadius: "16px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Typography variant="caption" fontWeight={700} color="#64748B">
+                TOTAL ROOMS
               </Typography>
-              <Typography variant="caption" color="#71717A">
-                Active office conference spaces
-              </Typography>
-            </Paper>
-          </Grid>
-        </Grid>
+              <Building size={16} color="#1976D2" />
+            </Box>
+            <Typography variant="h4" fontWeight={800} color="#0F172A">
+              {stats.total_rooms}
+            </Typography>
+            <Typography variant="caption" color="#64748B">
+              Active office conference spaces
+            </Typography>
+          </Paper>
+        </Box>
 
         {/* CONTENT NAVIGATION TABS */}
-        <Paper elevation={0} sx={{ borderRadius: "16px", p: 1, mb: 3, border: "1px solid #E4E4E7", bgcolor: "#FFFFFF" }}>
+        <Paper elevation={0} sx={{ borderRadius: "14px", p: 0.8, mb: 3, border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
           <Tabs
             value={activeTab}
             onChange={(e, val) => setActiveTab(val)}
@@ -297,12 +234,25 @@ export default function MeetingRooms() {
             indicatorColor="primary"
             variant="scrollable"
             scrollButtons="auto"
+            sx={{
+              "& .MuiTab-root": {
+                fontWeight: 700,
+                textTransform: "none",
+                fontSize: "0.88rem",
+                borderRadius: "10px",
+                minHeight: 42,
+                color: "#64748B",
+                "&.Mui-selected": {
+                  color: "#1976D2",
+                },
+              },
+            }}
           >
-            <Tab icon={<Building size={18} />} iconPosition="start" label="Room Directory" sx={{ textTransform: "none", fontWeight: 700 }} />
-            <Tab icon={<Calendar size={18} />} iconPosition="start" label="Schedule Timeline" sx={{ textTransform: "none", fontWeight: 700 }} />
-            <Tab icon={<Clock size={18} />} iconPosition="start" label="My Bookings" sx={{ textTransform: "none", fontWeight: 700 }} />
+            <Tab icon={<Building size={18} />} iconPosition="start" label="Room Directory" />
+            <Tab icon={<Calendar size={18} />} iconPosition="start" label="Schedule Timeline" />
+            <Tab icon={<Clock size={18} />} iconPosition="start" label="My Bookings" />
             {isFacilityOrAdmin && (
-              <Tab icon={<Settings size={18} />} iconPosition="start" label="Room Management" sx={{ textTransform: "none", fontWeight: 700 }} />
+              <Tab icon={<Settings size={18} />} iconPosition="start" label="Room Management" />
             )}
           </Tabs>
         </Paper>
@@ -311,93 +261,94 @@ export default function MeetingRooms() {
         {activeTab === 0 && (
           <Box>
             {/* Search & Filters Toolbar */}
-            <Paper elevation={0} sx={{ p: 2.5, mb: 3.5, borderRadius: "16px", border: "1px solid #E4E4E7", bgcolor: "#FFFFFF" }}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Search room name, code or location..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                      startAdornment: <Search size={18} color="#71717A" style={{ marginRight: 8 }} />,
-                    }}
-                  />
-                </Grid>
+            <Paper elevation={0} sx={{ p: 2.5, mb: 3.5, borderRadius: "16px", border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "2fr repeat(3, 1fr) 1fr",
+                  },
+                  gap: 2,
+                  alignItems: "center",
+                }}
+              >
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Search room name, code or location..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: <Search size={18} color="#64748B" style={{ marginRight: 8 }} />,
+                  }}
+                />
 
-                <Grid item xs={6} sm={3} md={2}>
-                  <TextField
-                    select
-                    fullWidth
-                    size="small"
-                    label="Min Capacity"
-                    value={minCapacity}
-                    onChange={(e) => setMinCapacity(e.target.value)}
-                  >
-                    <MenuItem value="">Any Capacity</MenuItem>
-                    <MenuItem value="4">4+ People</MenuItem>
-                    <MenuItem value="8">8+ People</MenuItem>
-                    <MenuItem value="12">12+ People</MenuItem>
-                    <MenuItem value="20">20+ People</MenuItem>
-                  </TextField>
-                </Grid>
+                <TextField
+                  select
+                  fullWidth
+                  size="small"
+                  label="Min Capacity"
+                  value={minCapacity}
+                  onChange={(e) => setMinCapacity(e.target.value)}
+                >
+                  <MenuItem value="">Any Capacity</MenuItem>
+                  <MenuItem value="4">4+ People</MenuItem>
+                  <MenuItem value="8">8+ People</MenuItem>
+                  <MenuItem value="12">12+ People</MenuItem>
+                  <MenuItem value="20">20+ People</MenuItem>
+                </TextField>
 
-                <Grid item xs={6} sm={3} md={2}>
-                  <TextField
-                    select
-                    fullWidth
-                    size="small"
-                    label="Location"
-                    value={locationFilter}
-                    onChange={(e) => setLocationFilter(e.target.value)}
-                  >
-                    <MenuItem value="All">All Locations</MenuItem>
-                    <MenuItem value="North Wing">North Wing</MenuItem>
-                    <MenuItem value="South Tower">South Tower</MenuItem>
-                    <MenuItem value="Central Atrium">Central Atrium</MenuItem>
-                    <MenuItem value="East Wing">East Wing</MenuItem>
-                  </TextField>
-                </Grid>
+                <TextField
+                  select
+                  fullWidth
+                  size="small"
+                  label="Location"
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                >
+                  <MenuItem value="All">All Locations</MenuItem>
+                  <MenuItem value="North Wing">North Wing</MenuItem>
+                  <MenuItem value="South Tower">South Tower</MenuItem>
+                  <MenuItem value="Central Atrium">Central Atrium</MenuItem>
+                  <MenuItem value="East Wing">East Wing</MenuItem>
+                </TextField>
 
-                <Grid item xs={6} sm={3} md={2}>
-                  <TextField
-                    select
-                    fullWidth
-                    size="small"
-                    label="Status"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <MenuItem value="All">All Statuses</MenuItem>
-                    <MenuItem value="Available">Available</MenuItem>
-                    <MenuItem value="Maintenance">Under Maintenance</MenuItem>
-                  </TextField>
-                </Grid>
+                <TextField
+                  select
+                  fullWidth
+                  size="small"
+                  label="Status"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <MenuItem value="All">All Statuses</MenuItem>
+                  <MenuItem value="Available">Available</MenuItem>
+                  <MenuItem value="Maintenance">Under Maintenance</MenuItem>
+                </TextField>
 
-                <Grid item xs={6} sm={3} md={2}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setMinCapacity("");
-                      setLocationFilter("All");
-                      setStatusFilter("All");
-                    }}
-                    sx={{ borderRadius: "8px", py: 0.9, fontWeight: 700, borderColor: "#E4E4E7", color: "#09090B" }}
-                  >
-                    Reset Filters
-                  </Button>
-                </Grid>
-              </Grid>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setMinCapacity("");
+                    setLocationFilter("All");
+                    setStatusFilter("All");
+                  }}
+                  sx={{ borderRadius: "8px", py: 0.9, fontWeight: 700, borderColor: "#E2E8F0", color: "#475569" }}
+                >
+                  Reset
+                </Button>
+              </Box>
             </Paper>
 
             {/* Room Cards Grid */}
             {loading ? (
               <Box display="flex" justifyContent="center" py={8}>
-                <CircularProgress size={40} sx={{ color: "#09090B" }} />
+                <CircularProgress size={40} sx={{ color: "#1976D2" }} />
               </Box>
             ) : rooms.length === 0 ? (
               <Box textAlign="center" py={8}>
@@ -410,17 +361,27 @@ export default function MeetingRooms() {
                 </Typography>
               </Box>
             ) : (
-              <Grid container spacing={3} alignItems="stretch">
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    lg: "repeat(3, 1fr)",
+                    xl: "repeat(4, 1fr)",
+                  },
+                  gap: 3,
+                }}
+              >
                 {rooms.map((room) => (
-                  <Grid item key={room.id} xs={12} sm={6} lg={4} xl={3}>
-                    <RoomCard
-                      room={room}
-                      onSelectRoom={(r) => setDetailsModal({ open: true, room: r })}
-                      onBookRoom={(r) => setBookingModal({ open: true, room: r })}
-                    />
-                  </Grid>
+                  <RoomCard
+                    key={room.id}
+                    room={room}
+                    onSelectRoom={(r) => setDetailsModal({ open: true, room: r })}
+                    onBookRoom={(r) => setBookingModal({ open: true, room: r })}
+                  />
                 ))}
-              </Grid>
+              </Box>
             )}
           </Box>
         )}
@@ -449,13 +410,13 @@ export default function MeetingRooms() {
 
         {/* Tab 3: Room Management (Facility Manager / Admin) */}
         {activeTab === 3 && isFacilityOrAdmin && (
-          <Paper elevation={0} sx={{ p: 3, borderRadius: "20px", border: "1px solid #E4E4E7", bgcolor: "#FFFFFF" }}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: "16px", border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Box>
-                <Typography variant="h6" fontWeight={800} color="#09090B">
+                <Typography variant="h6" fontWeight={800} color="#0F172A">
                   Facility Manager Room Management
                 </Typography>
-                <Typography variant="body2" color="#71717A">
+                <Typography variant="body2" color="#64748B">
                   Configure meeting room capacity, facilities, and maintenance status.
                 </Typography>
               </Box>
@@ -463,45 +424,47 @@ export default function MeetingRooms() {
                 variant="contained"
                 startIcon={<Plus size={16} />}
                 onClick={() => setRoomMgmtModal({ open: true, room: null })}
-                sx={{ borderRadius: "10px", fontWeight: 700, bgcolor: "#09090B", color: "#FFFFFF" }}
+                sx={{ borderRadius: "10px", fontWeight: 700, bgcolor: "#1976D2", color: "#FFFFFF", "&:hover": { bgcolor: "#1565C0" } }}
               >
                 Add New Room
               </Button>
             </Box>
 
-            <Grid container spacing={2}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(3, 1fr)",
+                },
+                gap: 2,
+              }}
+            >
               {rooms.map((r) => (
-                <Grid item key={r.id} xs={12} sm={6} md={4}>
-                  <Paper p={2} sx={{ p: 2, borderRadius: "14px", border: "1px solid #E4E4E7" }}>
-                    <Typography variant="subtitle1" fontWeight={800}>
-                      {r.room_name} ({r.room_code})
-                    </Typography>
-                    <Typography variant="caption" color="#71717A" display="block">
-                      Floor {r.floor} • {r.location} • Cap: {r.capacity}
-                    </Typography>
-                    <Stack direction="row" spacing={1} mt={1.5}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => setRoomMgmtModal({ open: true, room: r })}
-                        sx={{ borderRadius: "6px" }}
-                      >
-                        Edit
-                      </Button>
-                    </Stack>
-                  </Paper>
-                </Grid>
+                <Paper key={r.id} elevation={0} sx={{ p: 2, borderRadius: "14px", border: "1px solid #E2E8F0" }}>
+                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A">
+                    {r.room_name} ({r.room_code})
+                  </Typography>
+                  <Typography variant="caption" color="#64748B" display="block">
+                    Floor {r.floor} • {r.location} • Cap: {r.capacity}
+                  </Typography>
+                  <Stack direction="row" spacing={1} mt={1.5}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setRoomMgmtModal({ open: true, room: r })}
+                      sx={{ borderRadius: "6px", textTransform: "none", fontWeight: 700 }}
+                    >
+                      Edit Room
+                    </Button>
+                  </Stack>
+                </Paper>
               ))}
-            </Grid>
+            </Box>
           </Paper>
         )}
-
-        {/* FOOTER */}
-        <Box component="footer" sx={{ py: 2.5, mt: "auto", textAlign: "center", borderTop: "1px solid #E4E4E7", bgcolor: "#FFFFFF", borderRadius: "12px" }}>
-          <Typography variant="caption" color="text.secondary">
-            © 2026 IntraSphere – Smart Office Management System
-          </Typography>
-        </Box>
+      </Box>
 
       {/* MODALS */}
       <RoomDetailsModal

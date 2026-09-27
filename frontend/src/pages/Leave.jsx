@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Container,
-  Grid,
   Typography,
   Paper,
   Button,
@@ -14,46 +12,27 @@ import {
   TableCell,
   TableBody,
   Chip,
-  IconButton,
-  Tooltip,
   Snackbar,
   Alert,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   MenuItem,
   Stack,
+  LinearProgress,
 } from "@mui/material";
 import {
-  Sparkles,
   Calendar,
   Plus,
   CheckCircle2,
-  XCircle,
-  Clock,
-  ShieldCheck,
   Filter,
-  FileText,
   Settings,
   UserCheck,
-  RefreshCw,
-  Ban,
-  ArrowUpRight,
-  LayoutDashboard,
-  Building,
   ChevronRight,
-  LogOut,
-  Search,
-  Bell,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import AppLayout from "../components/layout/AppLayout";
-import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 import ApplyLeaveModal from "../components/Leave/ApplyLeaveModal";
 import LeaveApprovalDialog from "../components/Leave/LeaveApprovalDialog";
 
@@ -75,7 +54,7 @@ export default function Leave() {
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [holidays, setHolidays] = useState([]);
 
-  // Category Filter State for My Leave Dashboard (Monochrome Filter: All, Casual, Sick, etc.)
+  // Category Filter State for My Leave Dashboard (All, Casual, Sick, etc.)
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("All");
 
   // Filter States (for HR/Admin Org Register)
@@ -88,11 +67,6 @@ export default function Leave() {
   // Modals & Dialogs
   const [openApplyModal, setOpenApplyModal] = useState(false);
   const [selectedApprovalReq, setSelectedApprovalReq] = useState(null);
-  const [openAdjustModal, setOpenAdjustModal] = useState(false);
-  const [adjustEmpId, setAdjustEmpId] = useState("");
-  const [adjustLeaveTypeId, setAdjustLeaveTypeId] = useState("");
-  const [adjustAllocated, setAdjustAllocated] = useState("");
-  const [adjustReason, setAdjustReason] = useState("");
 
   // Toast State
   const [toast, setToast] = useState({
@@ -173,7 +147,7 @@ export default function Leave() {
     }
   };
 
-  // Black & White / Monochrome Status Chips
+  // Enterprise Color Status Chips
   const getStatusChip = (status) => {
     switch (status) {
       case "Approved":
@@ -182,9 +156,10 @@ export default function Leave() {
             label="Approved"
             size="small"
             sx={{
-              bgcolor: "#09090B",
-              color: "#FFFFFF",
-              fontWeight: 800,
+              bgcolor: "#DCFCE7",
+              color: "#15803D",
+              border: "1px solid #BBF7D0",
+              fontWeight: 700,
               borderRadius: "8px",
               px: 1,
             }}
@@ -194,13 +169,13 @@ export default function Leave() {
       case "Awaiting":
         return (
           <Chip
-            label="Awaiting"
+            label="Awaiting Approval"
             size="small"
             sx={{
-              bgcolor: "#F4F4F5",
-              color: "#09090B",
-              border: "1px solid #E4E4E7",
-              fontWeight: 800,
+              bgcolor: "#FEF3C7",
+              color: "#B45309",
+              border: "1px solid #FDE68A",
+              fontWeight: 700,
               borderRadius: "8px",
               px: 1,
             }}
@@ -213,9 +188,10 @@ export default function Leave() {
             label="Declined"
             size="small"
             sx={{
-              bgcolor: "#27272A",
-              color: "#FFFFFF",
-              fontWeight: 800,
+              bgcolor: "#FEE2E2",
+              color: "#B91C1C",
+              border: "1px solid #FCA5A5",
+              fontWeight: 700,
               borderRadius: "8px",
               px: 1,
             }}
@@ -227,9 +203,9 @@ export default function Leave() {
             label="Cancelled"
             size="small"
             sx={{
-              bgcolor: "#F4F4F5",
-              color: "#71717A",
-              border: "1px solid #E4E4E7",
+              bgcolor: "#F1F5F9",
+              color: "#64748B",
+              border: "1px solid #E2E8F0",
               fontWeight: 700,
               borderRadius: "8px",
               px: 1,
@@ -240,51 +216,6 @@ export default function Leave() {
         return <Chip label={status} size="small" sx={{ fontWeight: 700, borderRadius: "8px" }} />;
     }
   };
-
-  const currentDateFormatted = new Date().toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-
-  const navTabs = [
-    {
-      id: 0,
-      label: "My Dashboard & Overview",
-      subtitle: "Personal attendance, schedule overview, and quick operations.",
-      icon: LayoutDashboard,
-      path: "/dashboard",
-    },
-    {
-      id: 1,
-      label: "Daily Attendance Log",
-      subtitle: "Track check-in status and inspect your monthly attendance history.",
-      icon: Clock,
-      path: "/dashboard",
-    },
-    {
-      id: 2,
-      label: "My Leave Applications",
-      subtitle: "Submit new leave requests and track your approval status.",
-      icon: Calendar,
-      path: "/leave",
-      active: true,
-    },
-    {
-      id: 3,
-      label: "Workspaces & Rooms",
-      subtitle: "Find and book the right space for your next meeting.",
-      icon: Building,
-      path: "/meeting-rooms",
-    },
-    {
-      id: 4,
-      label: "My Profile Settings",
-      subtitle: "View personal credentials and account details.",
-      icon: Settings,
-      path: "/dashboard",
-    },
-  ];
 
   // Helper to format date display for leave cards (e.g., Wed, 16 Dec)
   const formatCardDate = (startStr, endStr, totalDays, isHalfDay) => {
@@ -336,7 +267,7 @@ export default function Leave() {
               Leaves & Time Off
             </Typography>
             <Typography variant="body2" color="#64748B" mt={0.25}>
-              Track your applications, remaining balances, and workforce status.
+              Track your leave balance, submit new applications, and inspect status.
             </Typography>
           </Box>
 
@@ -365,10 +296,10 @@ export default function Leave() {
         <Paper
           elevation={0}
           sx={{
-            p: 1,
-            borderRadius: "16px",
+            p: 0.8,
+            borderRadius: "14px",
             mb: 3,
-            border: "1px solid #E4E4E7",
+            border: "1px solid #E2E8F0",
             bgcolor: "#FFFFFF",
           }}
         >
@@ -377,35 +308,44 @@ export default function Leave() {
             onChange={(e, val) => setActiveTab(val)}
             variant="scrollable"
             scrollButtons="auto"
+            sx={{
+              "& .MuiTab-root": {
+                fontWeight: 700,
+                textTransform: "none",
+                fontSize: "0.88rem",
+                borderRadius: "10px",
+                minHeight: 42,
+                color: "#64748B",
+                "&.Mui-selected": {
+                  color: "#1976D2",
+                },
+              },
+            }}
           >
             <Tab
               icon={<Calendar size={18} />}
               iconPosition="start"
               label="My Leave Dashboard"
-              sx={{ fontWeight: 700, textTransform: "none" }}
             />
             {isManagerOrAdmin && (
               <Tab
                 icon={<UserCheck size={18} />}
                 iconPosition="start"
                 label={`Pending Approvals (${pendingApprovals.length})`}
-                sx={{ fontWeight: 700, textTransform: "none" }}
               />
             )}
             {isHROrAdmin && (
               <Tab
                 icon={<Filter size={18} />}
                 iconPosition="start"
-                label="All Organization Requests"
-                sx={{ fontWeight: 700, textTransform: "none" }}
+                label="Organization Register"
               />
             )}
             {isHROrAdmin && (
               <Tab
                 icon={<Settings size={18} />}
                 iconPosition="start"
-                label="Policy & Balances Management"
-                sx={{ fontWeight: 700, textTransform: "none" }}
+                label="Policy & Quota Settings"
               />
             )}
           </Tabs>
@@ -414,23 +354,43 @@ export default function Leave() {
         {/* TAB 0: My Leave Dashboard */}
         {activeTab === 0 && (
           <Stack spacing={3.5}>
-            {/* Summary Quota Cards Grid (Black & White Style) */}
-            <Grid container spacing={2.5}>
+            {/* Summary Quota Cards */}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(4, 1fr)",
+                },
+                gap: 2.5,
+              }}
+            >
               {balances
                 .filter((b) => {
                   const name = b.leave_type_name?.toLowerCase() || "";
                   return !name.includes("unpaid") && !name.includes("earned");
                 })
-                .map((b) => (
-                  <Grid item xs={12} sm={6} md={3} key={b._id}>
+                .map((b) => {
+                  const remaining = b.remaining || 0;
+                  const allocated = b.allocated || 1;
+                  const percent = Math.min(100, Math.round((remaining / allocated) * 100));
+
+                  return (
                     <Paper
+                      key={b._id}
                       elevation={0}
                       sx={{
                         p: 2.5,
                         borderRadius: "16px",
                         bgcolor: "#FFFFFF",
-                        border: "1px solid #E4E4E7",
-                        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
+                        border: "1px solid #E2E8F0",
+                        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.02)",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          borderColor: "#1976D2",
+                          boxShadow: "0 6px 20px rgba(25, 118, 210, 0.08)",
+                        },
                       }}
                     >
                       <Box
@@ -439,32 +399,51 @@ export default function Leave() {
                         alignItems="center"
                         mb={1.5}
                       >
-                        <Typography variant="subtitle1" fontWeight={800} color="#09090B">
+                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A">
                           {b.leave_type_name}
                         </Typography>
                         <Chip
-                          label={`${b.year}`}
+                          label={`FY ${b.year}`}
                           size="small"
-                          sx={{ bgcolor: "#F4F4F5", color: "#09090B", fontWeight: 700 }}
+                          sx={{
+                            bgcolor: "#EFF6FF",
+                            color: "#1E40AF",
+                            border: "1px solid #DBEAFE",
+                            fontWeight: 700,
+                            fontSize: "0.72rem",
+                          }}
                         />
                       </Box>
 
-                      <Typography variant="h4" fontWeight={900} color="#09090B" mb={0.5}>
+                      <Typography variant="h4" fontWeight={800} color="#0F172A" mb={1}>
                         {b.remaining}{" "}
-                        <Typography component="span" variant="body2" color="#71717A" fontWeight={600}>
-                          / {b.allocated} Days
+                        <Typography component="span" variant="body2" color="#64748B" fontWeight={600}>
+                          / {b.allocated} Days Left
                         </Typography>
                       </Typography>
 
+                      <LinearProgress
+                        variant="determinate"
+                        value={percent}
+                        sx={{
+                          height: 6,
+                          borderRadius: 3,
+                          bgcolor: "#F1F5F9",
+                          "& .MuiLinearProgress-bar": {
+                            bgcolor: percent > 25 ? "#1976D2" : "#EF4444",
+                            borderRadius: 3,
+                          },
+                        }}
+                      />
                     </Paper>
-                  </Grid>
-                ))}
-            </Grid>
+                  );
+                })}
+            </Box>
 
-            {/* MONOCHROME LEAVE CATEGORY FILTER BAR (Matching User Screenshot: All, Casual, Sick) */}
-            <Paper elevation={0} sx={{ p: 1.5, borderRadius: "16px", border: "1px solid #E4E4E7", bgcolor: "#FFFFFF" }}>
+            {/* LEAVE CATEGORY FILTER BAR */}
+            <Paper elevation={0} sx={{ p: 1.2, borderRadius: "14px", border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
               <Stack direction="row" spacing={1.5} alignItems="center">
-                <Typography variant="body2" fontWeight={700} color="#71717A" sx={{ mr: 1, pl: 1 }}>
+                <Typography variant="body2" fontWeight={700} color="#64748B" sx={{ mr: 1, pl: 1 }}>
                   Category:
                 </Typography>
                 {["All", "Casual", "Sick"].map((cat) => {
@@ -480,11 +459,13 @@ export default function Leave() {
                         py: 0.6,
                         fontWeight: 700,
                         textTransform: "none",
-                        bgcolor: isSelected ? "#09090B" : "#F4F4F5",
-                        color: isSelected ? "#FFFFFF" : "#09090B",
-                        border: isSelected ? "1px solid #09090B" : "1px solid #E4E4E7",
+                        fontSize: "0.82rem",
+                        bgcolor: isSelected ? "#1976D2" : "#F8FAFC",
+                        color: isSelected ? "#FFFFFF" : "#475569",
+                        border: isSelected ? "1px solid #1976D2" : "1px solid #E2E8F0",
+                        boxShadow: isSelected ? "0 4px 12px rgba(25, 118, 210, 0.3)" : "none",
                         "&:hover": {
-                          bgcolor: isSelected ? "#27272A" : "#E4E4E7",
+                          bgcolor: isSelected ? "#1565C0" : "#F1F5F9",
                         },
                       }}
                     >
@@ -495,18 +476,18 @@ export default function Leave() {
               </Stack>
             </Paper>
 
-            {/* MONOCHROME LEAVE CARDS GROUPED BY MONTH (Matching Attached Design) */}
+            {/* LEAVE CARDS GROUPED BY MONTH */}
             {loading ? (
               <Box display="flex" justifyContent="center" py={6}>
-                <CircularProgress size={36} sx={{ color: "#09090B" }} />
+                <CircularProgress size={36} sx={{ color: "#1976D2" }} />
               </Box>
             ) : Object.keys(groupedRequests).length === 0 ? (
-              <Paper elevation={0} sx={{ p: 6, textAlign: "center", borderRadius: "16px", border: "1px solid #E4E4E7", bgcolor: "#FFFFFF" }}>
-                <Calendar size={44} color="#A1A1AA" style={{ marginBottom: 12 }} />
-                <Typography variant="h6" fontWeight={700} color="#09090B">
-                  No leave applications found.
+              <Paper elevation={0} sx={{ p: 6, textAlign: "center", borderRadius: "16px", border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
+                <Calendar size={44} color="#94A3B8" style={{ marginBottom: 12 }} />
+                <Typography variant="h6" fontWeight={700} color="#0F172A">
+                  No leave applications found
                 </Typography>
-                <Typography variant="body2" color="#71717A" mt={0.5}>
+                <Typography variant="body2" color="#64748B" mt={0.5}>
                   Click 'Apply for Leave' to submit your first application.
                 </Typography>
               </Paper>
@@ -515,7 +496,7 @@ export default function Leave() {
                 {Object.entries(groupedRequests).map(([monthLabel, requests]) => (
                   <Box key={monthLabel}>
                     {/* Month Group Header */}
-                    <Typography variant="subtitle2" fontWeight={800} color="#71717A" mb={1.5} sx={{ pl: 0.5 }}>
+                    <Typography variant="subtitle2" fontWeight={800} color="#64748B" mb={1.5} sx={{ pl: 0.5 }}>
                       {monthLabel}
                     </Typography>
 
@@ -529,19 +510,19 @@ export default function Leave() {
                             p: 2.5,
                             borderRadius: "16px",
                             bgcolor: "#FFFFFF",
-                            border: "1px solid #E4E4E7",
+                            border: "1px solid #E2E8F0",
                             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.02)",
                             transition: "all 0.2s ease",
                             "&:hover": {
-                              borderColor: "#09090B",
-                              boxShadow: "0 6px 18px rgba(0, 0, 0, 0.06)",
+                              borderColor: "#1976D2",
+                              boxShadow: "0 4px 20px rgba(25, 118, 210, 0.08)",
                             },
                           }}
                         >
-                          <Box display="flex" justifyContent="space-between" alignItems="center">
+                          <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
                             <Box flexGrow={1}>
-                              {/* Application Type Subtitle (e.g., Half Day Application / Full Day Application / 3 Days Application) */}
-                              <Typography variant="caption" fontWeight={700} color="#71717A">
+                              {/* Application Type Subtitle */}
+                              <Typography variant="caption" fontWeight={700} color="#64748B">
                                 {req.is_half_day
                                   ? "Half Day Application"
                                   : req.total_days === 1
@@ -550,7 +531,7 @@ export default function Leave() {
                               </Typography>
 
                               {/* Dates Title */}
-                              <Typography variant="h6" fontWeight={900} color="#09090B" mt={0.25} mb={0.5}>
+                              <Typography variant="h6" fontWeight={800} color="#0F172A" mt={0.25} mb={0.5}>
                                 {formatCardDate(req.start_date, req.end_date, req.total_days, req.is_half_day)}
                               </Typography>
 
@@ -560,16 +541,16 @@ export default function Leave() {
                                   label={req.leave_type_name}
                                   size="small"
                                   sx={{
-                                    bgcolor: "#F4F4F5",
-                                    color: "#09090B",
+                                    bgcolor: "#EFF6FF",
+                                    color: "#1E40AF",
                                     fontWeight: 700,
                                     fontSize: "0.75rem",
                                     height: 22,
-                                    border: "1px solid #E4E4E7",
+                                    border: "1px solid #DBEAFE",
                                   }}
                                 />
                                 {req.is_half_day && (
-                                  <Typography variant="caption" color="#71717A" fontWeight={600}>
+                                  <Typography variant="caption" color="#64748B" fontWeight={600}>
                                     • {req.half_day_session} Session
                                   </Typography>
                                 )}
@@ -577,7 +558,7 @@ export default function Leave() {
                             </Box>
 
                             {/* Status Chip & Actions */}
-                            <Stack direction="row" spacing={2} alignItems="center">
+                            <Stack direction="row" spacing={1.5} alignItems="center">
                               {getStatusChip(req.status)}
 
                               {req.status === "Pending" && (
@@ -589,9 +570,9 @@ export default function Leave() {
                                     borderRadius: "8px",
                                     textTransform: "none",
                                     fontWeight: 700,
-                                    color: "#09090B",
-                                    borderColor: "#E4E4E7",
-                                    "&:hover": { borderColor: "#09090B", bgcolor: "#F4F4F5" },
+                                    color: "#EF4444",
+                                    borderColor: "#FCA5A5",
+                                    "&:hover": { borderColor: "#EF4444", bgcolor: "#FEE2E2" },
                                   }}
                                 >
                                   Withdraw
@@ -603,13 +584,15 @@ export default function Leave() {
                                   width: 32,
                                   height: 32,
                                   borderRadius: "50%",
-                                  bgcolor: "#F4F4F5",
+                                  bgcolor: "#F8FAFC",
+                                  border: "1px solid #E2E8F0",
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
+                                  color: "#1976D2",
                                 }}
                               >
-                                <ChevronRight size={18} color="#09090B" />
+                                <ChevronRight size={18} />
                               </Box>
                             </Stack>
                           </Box>
@@ -629,9 +612,9 @@ export default function Leave() {
             elevation={0}
             sx={{
               p: 3.5,
-              borderRadius: "20px",
+              borderRadius: "16px",
               bgcolor: "#FFFFFF",
-              border: "1px solid #E4E4E7",
+              border: "1px solid #E2E8F0",
             }}
           >
             <Box
@@ -641,40 +624,45 @@ export default function Leave() {
               mb={3}
             >
               <Box>
-                <Typography variant="h6" fontWeight={900} color="#09090B">
+                <Typography variant="h6" fontWeight={800} color="#0F172A">
                   Team Leave Approvals
                 </Typography>
-                <Typography variant="body2" color="#71717A">
+                <Typography variant="body2" color="#64748B">
                   Pending requests requiring your authorization.
                 </Typography>
               </Box>
 
               <Chip
                 label={`${pendingApprovals.length} Pending`}
-                sx={{ bgcolor: "#09090B", color: "#FFFFFF", fontWeight: 800 }}
+                sx={{
+                  bgcolor: "#EFF6FF",
+                  color: "#1E40AF",
+                  border: "1px solid #DBEAFE",
+                  fontWeight: 800,
+                }}
               />
             </Box>
 
             {pendingApprovals.length === 0 ? (
               <Box textAlign="center" py={6}>
-                <CheckCircle2 size={40} color="#09090B" style={{ marginBottom: 12 }} />
-                <Typography variant="h6" fontWeight={700} color="#09090B">
-                  No pending approvals.
+                <CheckCircle2 size={40} color="#10B981" style={{ marginBottom: 12 }} />
+                <Typography variant="h6" fontWeight={700} color="#0F172A">
+                  No pending approvals
                 </Typography>
-                <Typography variant="body2" color="#71717A" mt={0.5}>
+                <Typography variant="body2" color="#64748B" mt={0.5}>
                   All team leave requests have been reviewed!
                 </Typography>
               </Box>
             ) : (
-              <Table sx={{ border: "1px solid #E4E4E7", borderRadius: "12px" }}>
-                <TableHead sx={{ bgcolor: "#F4F4F5" }}>
+              <Table sx={{ border: "1px solid #E2E8F0", borderRadius: "12px" }}>
+                <TableHead sx={{ bgcolor: "#F8FAFC" }}>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 800 }}>Employee</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Leave Type</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Duration</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Days</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }}>Reason</TableCell>
-                    <TableCell sx={{ fontWeight: 800 }} align="right">
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Employee</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Leave Type</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Duration</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Days</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Reason</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "#475569" }} align="right">
                       Action
                     </TableCell>
                   </TableRow>
@@ -683,32 +671,32 @@ export default function Leave() {
                   {pendingApprovals.map((req) => (
                     <TableRow key={req._id} hover>
                       <TableCell>
-                        <Typography variant="subtitle2" fontWeight={800}>
+                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A">
                           {req.employee_name}
                         </Typography>
-                        <Typography variant="caption" color="#71717A">
+                        <Typography variant="caption" color="#64748B">
                           {req.employee_code} • {req.department}
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2" fontWeight={700}>
+                        <Typography variant="body2" fontWeight={700} color="#0F172A">
                           {req.leave_type_name}
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2" fontWeight={700}>
+                        <Typography variant="body2" fontWeight={600} color="#475569">
                           {req.start_date} to {req.end_date}
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2" fontWeight={800}>
+                        <Typography variant="body2" fontWeight={800} color="#0F172A">
                           {req.total_days} Day(s)
                         </Typography>
                       </TableCell>
                       <TableCell>
                         <Typography
                           variant="body2"
-                          color="#71717A"
+                          color="#64748B"
                           sx={{ maxWidth: 200 }}
                           noWrap
                         >
@@ -724,9 +712,9 @@ export default function Leave() {
                             borderRadius: "8px",
                             textTransform: "none",
                             fontWeight: 700,
-                            bgcolor: "#09090B",
+                            bgcolor: "#1976D2",
                             color: "#FFFFFF",
-                            "&:hover": { bgcolor: "#27272A" },
+                            "&:hover": { bgcolor: "#1565C0" },
                           }}
                         >
                           Review Request
@@ -746,9 +734,9 @@ export default function Leave() {
             elevation={0}
             sx={{
               p: 3.5,
-              borderRadius: "20px",
+              borderRadius: "16px",
               bgcolor: "#FFFFFF",
-              border: "1px solid #E4E4E7",
+              border: "1px solid #E2E8F0",
             }}
           >
             <Box
@@ -760,10 +748,10 @@ export default function Leave() {
               gap={2}
             >
               <Box>
-                <Typography variant="h6" fontWeight={900} color="#09090B">
+                <Typography variant="h6" fontWeight={800} color="#0F172A">
                   Organization Leave Register
                 </Typography>
-                <Typography variant="body2" color="#71717A">
+                <Typography variant="body2" color="#64748B">
                   Full audit log of company-wide leave applications.
                 </Typography>
               </Box>
@@ -785,15 +773,15 @@ export default function Leave() {
               </Stack>
             </Box>
 
-            <Table sx={{ border: "1px solid #E4E4E7", borderRadius: "12px" }}>
-              <TableHead sx={{ bgcolor: "#F4F4F5" }}>
+            <Table sx={{ border: "1px solid #E2E8F0", borderRadius: "12px" }}>
+              <TableHead sx={{ bgcolor: "#F8FAFC" }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800 }}>Employee</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Leave Type</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Duration</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Days</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Approved By</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Employee</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Leave Type</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Duration</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Days</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>Approved By</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -805,10 +793,10 @@ export default function Leave() {
                   .map((row) => (
                     <TableRow key={row._id} hover>
                       <TableCell>
-                        <Typography variant="subtitle2" fontWeight={800}>
+                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A">
                           {row.employee_name}
                         </Typography>
-                        <Typography variant="caption" color="#71717A">
+                        <Typography variant="caption" color="#64748B">
                           {row.department}
                         </Typography>
                       </TableCell>
@@ -819,7 +807,7 @@ export default function Leave() {
                       <TableCell>{row.total_days} Day(s)</TableCell>
                       <TableCell>{getStatusChip(row.status)}</TableCell>
                       <TableCell>
-                        <Typography variant="caption" color="#71717A">
+                        <Typography variant="caption" color="#64748B">
                           {row.approved_by_name || "N/A"}
                         </Typography>
                       </TableCell>
@@ -837,90 +825,92 @@ export default function Leave() {
               elevation={0}
               sx={{
                 p: 3.5,
-                borderRadius: "20px",
+                borderRadius: "16px",
                 bgcolor: "#FFFFFF",
-                border: "1px solid #E4E4E7",
+                border: "1px solid #E2E8F0",
               }}
             >
-              <Typography variant="h6" fontWeight={900} color="#09090B" mb={1}>
+              <Typography variant="h6" fontWeight={800} color="#0F172A" mb={1}>
                 Leave Policy Definitions
               </Typography>
-              <Typography variant="body2" color="#71717A" mb={3}>
+              <Typography variant="body2" color="#64748B" mb={3}>
                 Configured leave categories, annual quotas, and rollover policies.
               </Typography>
 
-              <Grid container spacing={3}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                  },
+                  gap: 3,
+                }}
+              >
                 {leaveTypes
                   .filter((t) => {
                     const name = t.name?.toLowerCase() || "";
                     return !name.includes("unpaid") && !name.includes("earned");
                   })
                   .map((t) => (
-                  <Grid item xs={12} sm={6} md={4} key={t._id}>
                     <Paper
+                      key={t._id}
                       elevation={0}
                       sx={{
                         p: 2.5,
                         borderRadius: "16px",
-                        bgcolor: "#F4F4F5",
-                        border: "1px solid #E4E4E7",
+                        bgcolor: "#F8FAFC",
+                        border: "1px solid #E2E8F0",
                       }}
                     >
                       <Typography
                         variant="subtitle1"
                         fontWeight={800}
-                        color="#09090B"
+                        color="#0F172A"
                       >
                         {t.name} ({t.code})
                       </Typography>
-                      <Typography variant="body2" color="#71717A" mb={2}>
+                      <Typography variant="body2" color="#64748B" mb={2}>
                         {t.description}
                       </Typography>
 
                       <Stack spacing={1}>
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="#71717A">
+                          <Typography variant="caption" color="#64748B">
                             Annual Quota:
                           </Typography>
-                          <Typography variant="caption" fontWeight={800}>
+                          <Typography variant="caption" fontWeight={800} color="#0F172A">
                             {t.default_allocated_days} Days / Year
                           </Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="#71717A">
+                          <Typography variant="caption" color="#64748B">
                             Max Consecutive:
                           </Typography>
-                          <Typography variant="caption" fontWeight={800}>
+                          <Typography variant="caption" fontWeight={800} color="#0F172A">
                             {t.maximum_consecutive_days || "Unlimited"} Days
                           </Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="#71717A">
+                          <Typography variant="caption" color="#64748B">
                             Requires Attachment:
                           </Typography>
                           <Typography
                             variant="caption"
                             fontWeight={800}
-                            color="#09090B"
+                            color="#0F172A"
                           >
                             {t.requires_attachment ? "Yes" : "No"}
                           </Typography>
                         </Box>
                       </Stack>
                     </Paper>
-                  </Grid>
                 ))}
-              </Grid>
+              </Box>
             </Paper>
           </Stack>
         )}
-
-        {/* FOOTER */}
-        <Box component="footer" sx={{ py: 2.5, mt: "auto", textAlign: "center", borderTop: "1px solid #E4E4E7", bgcolor: "#FFFFFF", borderRadius: "12px" }}>
-          <Typography variant="caption" color="text.secondary">
-            © 2026 IntraSphere – Smart Office Management System
-          </Typography>
-        </Box>
       </Box>
 
       {/* Apply Leave Modal */}
@@ -954,7 +944,7 @@ export default function Leave() {
         onClose={() => setToast((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert severity={toast.severity} sx={{ borderRadius: "14px", bgcolor: "#09090B", color: "#FFFFFF", "& .MuiAlert-icon": { color: "#FFFFFF" } }}>
+        <Alert severity={toast.severity} sx={{ borderRadius: "12px" }}>
           {toast.message}
         </Alert>
       </Snackbar>

@@ -32,13 +32,14 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
         width: "100%",
         minHeight: 170,
         borderRadius: "20px",
-        background: "linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #F97316 100%)",
-        color: "#FFFFFF",
+        background: "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FED7AA 100%)",
+        border: "1px solid #FFEDD5",
+        color: "#0F172A",
         p: { xs: 3, md: 4 },
         boxSizing: "border-box",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.12)",
+        boxShadow: "0 6px 24px rgba(249, 115, 22, 0.08)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -53,7 +54,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           width: 220,
           height: 220,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(249, 115, 22, 0.4) 0%, rgba(249, 115, 22, 0) 70%)",
+          background: "radial-gradient(circle, rgba(249, 115, 22, 0.25) 0%, rgba(249, 115, 22, 0) 70%)",
           pointerEvents: "none",
         }}
       />
@@ -65,7 +66,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           width: 280,
           height: 280,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, rgba(255, 255, 255, 0) 70%)",
+          background: "radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%)",
           pointerEvents: "none",
         }}
       />
@@ -84,25 +85,26 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           {/* Top Pill with Date */}
           <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
             <Chip
-              icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#FB923C" }} />}
+              icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#F97316" }} />}
               label={todayFormatted}
               size="small"
               sx={{
-                bgcolor: "rgba(255, 255, 255, 0.12)",
-                color: "#E2E8F0",
-                fontWeight: 600,
+                bgcolor: "#FFFFFF",
+                color: "#9A3412",
+                fontWeight: 700,
                 fontSize: "0.75rem",
                 borderRadius: "8px",
-                backdropFilter: "blur(4px)",
+                border: "1px solid #FFEDD5",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)",
               }}
             />
             <Chip
-              icon={<SparklesIcon sx={{ fontSize: "14px !important", color: "#FBBF24" }} />}
+              icon={<SparklesIcon sx={{ fontSize: "14px !important", color: "#D97706" }} />}
               label="IntraSphere SaaS Portal"
               size="small"
               sx={{
-                bgcolor: "rgba(251, 191, 36, 0.15)",
-                color: "#FCD34D",
+                bgcolor: "rgba(249, 115, 22, 0.12)",
+                color: "#C2410C",
                 fontWeight: 700,
                 fontSize: "0.72rem",
                 borderRadius: "8px",
@@ -115,7 +117,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           <Typography
             variant="h4"
             fontWeight={800}
-            color="#FFFFFF"
+            color="#0F172A"
             sx={{
               fontSize: { xs: "1.5rem", sm: "1.85rem", md: "2.1rem" },
               letterSpacing: "-0.5px",
@@ -129,7 +131,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           <Typography
             variant="body1"
             sx={{
-              color: "#94A3B8",
+              color: "#475569",
               mt: 0.75,
               fontWeight: 500,
               fontSize: { xs: "0.88rem", sm: "0.95rem" },
@@ -139,7 +141,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
             <Typography
               component="span"
               sx={{
-                color: "#CBD5E1",
+                color: "#78350F",
                 fontStyle: "italic",
                 display: { xs: "none", sm: "inline" },
               }}
@@ -164,10 +166,10 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
               borderRadius: "12px",
               textTransform: "none",
               fontSize: "0.88rem",
-              boxShadow: "0 4px 14px rgba(249, 115, 22, 0.4)",
+              boxShadow: "0 4px 14px rgba(249, 115, 22, 0.35)",
               "&:hover": {
                 bgcolor: "#EA580C",
-                boxShadow: "0 6px 20px rgba(249, 115, 22, 0.6)",
+                boxShadow: "0 6px 20px rgba(249, 115, 22, 0.5)",
               },
             }}
           >

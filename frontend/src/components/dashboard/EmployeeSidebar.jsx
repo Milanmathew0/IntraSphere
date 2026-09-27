@@ -107,8 +107,9 @@ export default function EmployeeSidebar({
       sx={{
         width: 250,
         height: "100%",
-        bgcolor: "#0F172A", // Professional Dark Navy Slate
-        color: "#F8FAFC",
+        bgcolor: "#FFFFFF", // Clean Pristine Light Theme Sidebar
+        color: "#0F172A",
+        borderRight: "1px solid #E2E8F0",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -137,7 +138,7 @@ export default function EmployeeSidebar({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 14px rgba(249, 115, 22, 0.4)",
+                boxShadow: "0 4px 14px rgba(249, 115, 22, 0.35)",
               }}
             >
               <SparklesIcon style={{ color: "#FFFFFF", fontSize: 22 }} />
@@ -146,14 +147,14 @@ export default function EmployeeSidebar({
               <Typography
                 variant="subtitle1"
                 fontWeight={800}
-                color="#FFFFFF"
+                color="#0F172A"
                 sx={{ letterSpacing: -0.3, lineHeight: 1.2 }}
               >
                 IntraSphere
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.7rem" }}
+                sx={{ color: "#64748B", fontWeight: 500, fontSize: "0.7rem" }}
               >
                 Smart Office System
               </Typography>
@@ -164,7 +165,7 @@ export default function EmployeeSidebar({
           {mobileOpen && (
             <IconButton
               onClick={onMobileClose}
-              sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}
+              sx={{ color: "#64748B", "&:hover": { color: "#0F172A" } }}
             >
               <Close fontSize="small" />
             </IconButton>
@@ -175,7 +176,7 @@ export default function EmployeeSidebar({
         <Typography
           variant="caption"
           sx={{
-            color: "#64748B",
+            color: "#94A3B8",
             fontWeight: 700,
             fontSize: "0.68rem",
             letterSpacing: 1.1,
@@ -201,20 +202,24 @@ export default function EmployeeSidebar({
                     px: 1.8,
                     py: 1.1,
                     bgcolor: active ? "#F97316" : "transparent",
-                    color: active ? "#FFFFFF" : "#94A3B8",
-                    boxShadow: active ? "0 4px 12px rgba(249, 115, 22, 0.35)" : "none",
+                    color: active ? "#FFFFFF" : "#475569",
+                    boxShadow: active ? "0 4px 14px rgba(249, 115, 22, 0.35)" : "none",
                     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": {
-                      bgcolor: active ? "#F97316" : "rgba(255, 255, 255, 0.08)",
-                      color: "#FFFFFF",
+                      bgcolor: active ? "#EA580C" : "#FFF7ED",
+                      color: active ? "#FFFFFF" : "#F97316",
                       transform: "translateX(3px)",
+                      "& .MuiListItemIcon-root": {
+                        color: active ? "#FFFFFF" : "#F97316",
+                      },
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 32,
-                      color: active ? "#FFFFFF" : "inherit",
+                      color: active ? "#FFFFFF" : "#64748B",
+                      transition: "color 0.2s ease",
                     }}
                   >
                     {item.icon}
@@ -224,7 +229,7 @@ export default function EmployeeSidebar({
                       <Typography
                         sx={{
                           fontSize: "0.86rem",
-                          fontWeight: active ? 700 : 500,
+                          fontWeight: active ? 700 : 600,
                           lineHeight: 1.2,
                           color: active ? "#FFFFFF" : "inherit",
                         }}
@@ -246,13 +251,13 @@ export default function EmployeeSidebar({
       </Box>
 
       {/* Footer Profile & Logout Card */}
-      <Box sx={{ pt: 2, borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+      <Box sx={{ pt: 2, borderTop: "1px solid #E2E8F0" }}>
         <Box
           sx={{
             p: 1.5,
             borderRadius: "14px",
-            bgcolor: "rgba(255, 255, 255, 0.05)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
+            bgcolor: "#FAF8F5",
+            border: "1px solid #E2E8F0",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -275,7 +280,7 @@ export default function EmployeeSidebar({
               <Typography
                 variant="body2"
                 fontWeight={700}
-                color="#FFFFFF"
+                color="#0F172A"
                 noWrap
                 sx={{ fontSize: "0.82rem" }}
               >
@@ -288,8 +293,9 @@ export default function EmployeeSidebar({
                   height: 18,
                   fontSize: "0.62rem",
                   fontWeight: 700,
-                  bgcolor: "rgba(249, 115, 22, 0.25)",
-                  color: "#FB923C",
+                  bgcolor: "#FFF7ED",
+                  color: "#C2410C",
+                  border: "1px solid #FFEDD5",
                   borderRadius: "4px",
                   "& .MuiChip-label": { px: 0.8 },
                 }}
@@ -302,9 +308,9 @@ export default function EmployeeSidebar({
               size="small"
               onClick={handleLogout}
               sx={{
-                color: "#F87171",
+                color: "#EF4444",
                 borderRadius: "8px",
-                "&:hover": { bgcolor: "rgba(239, 68, 68, 0.15)" },
+                "&:hover": { bgcolor: "#FEF2F2" },
               }}
             >
               <Logout fontSize="small" />
@@ -334,7 +340,7 @@ export default function EmployeeSidebar({
             bottom: 0,
             width: 250,
             zIndex: 1200,
-            boxShadow: "4px 0 20px rgba(15, 23, 42, 0.08)",
+            boxShadow: "2px 0 16px rgba(15, 23, 42, 0.04)",
           }}
         >
           {sidebarContent}
@@ -352,7 +358,8 @@ export default function EmployeeSidebar({
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: 250,
-            bgcolor: "#0F172A",
+            bgcolor: "#FFFFFF",
+            borderRight: "1px solid #E2E8F0",
           },
         }}
       >

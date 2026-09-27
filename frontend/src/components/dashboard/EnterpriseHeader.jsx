@@ -141,10 +141,11 @@ export default function EnterpriseHeader({ user, onLogout }) {
         position="static"
         elevation={0}
         sx={{
-          background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #C2410C 100%)",
-          color: "#FFFFFF",
+          bgcolor: "#FFFFFF",
+          color: "#0F172A",
+          borderBottom: "1px solid #E2E8F0",
           py: 0.5,
-          boxShadow: "0 6px 22px rgba(2, 44, 34, 0.2)",
+          boxShadow: "0 2px 10px rgba(15, 23, 42, 0.03)",
         }}
       >
         <Container maxWidth="xl">
@@ -165,7 +166,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
               >
                 <ShieldCheck size={22} color="#FFFFFF" />
               </Box>
-              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#FFFFFF">
+              <Typography variant="h6" fontWeight={900} letterSpacing={-0.5} color="#0F172A">
                 IntraSphere
               </Typography>
             </Box>
@@ -182,14 +183,13 @@ export default function EnterpriseHeader({ user, onLogout }) {
                   px: 2,
                   py: 0.8,
                   borderRadius: "50px",
-                  bgcolor: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  color: "#FFFFFF",
-                  backdropFilter: "blur(8px)",
+                  bgcolor: "#FAF8F5",
+                  border: "1px solid #E2E8F0",
+                  color: "#0F172A",
                 }}
               >
                 <Clock size={16} color="#F97316" />
-                <Typography variant="body2" fontWeight={700} color="#FFFFFF">
+                <Typography variant="body2" fontWeight={700} color="#0F172A">
                   {currentTimeStr}
                 </Typography>
               </Paper>
@@ -198,14 +198,14 @@ export default function EnterpriseHeader({ user, onLogout }) {
               <IconButton
                 onClick={handleNotificationClick}
                 sx={{
-                  bgcolor: unreadCount > 0 ? "rgba(239, 68, 68, 0.25)" : "rgba(255, 255, 255, 0.1)",
-                  border: unreadCount > 0 ? "1px solid rgba(239, 68, 68, 0.6)" : "1px solid rgba(255, 255, 255, 0.15)",
+                  bgcolor: unreadCount > 0 ? "#FEF2F2" : "#F8FAFC",
+                  border: unreadCount > 0 ? "1px solid #FCA5A5" : "1px solid #E2E8F0",
                   borderRadius: "50%",
                   p: 1,
-                  color: "#FFFFFF",
+                  color: unreadCount > 0 ? "#DC2626" : "#475569",
                   transition: "all 0.3s ease",
                   animation: unreadCount > 0 ? "pulseRing 2s infinite" : "none",
-                  "&:hover": { bgcolor: unreadCount > 0 ? "rgba(239, 68, 68, 0.35)" : "rgba(255, 255, 255, 0.2)" },
+                  "&:hover": { bgcolor: unreadCount > 0 ? "#FEE2E2" : "#F1F5F9", color: "#F97316" },
                   "@keyframes pulseRing": {
                     "0%": { boxShadow: "0 0 0 0 rgba(239, 68, 68, 0.7)" },
                     "70%": { boxShadow: "0 0 0 10px rgba(239, 68, 68, 0)" },
@@ -224,7 +224,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
                     },
                   }}
                 >
-                  <Bell size={18} color={unreadCount > 0 ? "#FECACA" : "#FFFFFF"} />
+                  <Bell size={18} color={unreadCount > 0 ? "#DC2626" : "#475569"} />
                 </Badge>
               </IconButton>
 

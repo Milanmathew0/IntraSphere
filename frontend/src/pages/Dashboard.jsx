@@ -8,7 +8,7 @@ import FacilityManagerDashboard from "./FacilityManagerDashboard";
 
 export default function Dashboard() {
   const { role } = useAuth();
-  const userRole = role || localStorage.getItem("role") || "User";
+  const userRole = role || localStorage.getItem("role") || "Employee";
 
   if (userRole === "Admin") {
     return <AdminDashboard />;
@@ -22,9 +22,6 @@ export default function Dashboard() {
     return <ManagerDashboard />;
   }
 
-  if (userRole === "User") {
-    return <UserDashboard />;
-  }
-
+  // Both "User" and "Employee" load the new Employee Dashboard Portal
   return <EmployeeDashboard />;
 }

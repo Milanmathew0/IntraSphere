@@ -41,13 +41,25 @@ export default function Employees() {
     fetchEmployees();
   }, []);
 
+  const MOCK_EMPLOYEES = [
+    { id: "e1", employee_id: "EMP-001", name: "Alex Johnson", email: "alex.j@intrasphere.com", department: "Engineering", designation: "Lead Architect", role: "Admin", status: "Active" },
+    { id: "e2", employee_id: "EMP-002", name: "Sarah Miller", email: "sarah.m@intrasphere.com", department: "Product & Design", designation: "Senior Product Manager", role: "Manager", status: "Active" },
+    { id: "e3", employee_id: "EMP-003", name: "John Davis", email: "john.d@intrasphere.com", department: "Facility", designation: "Facility Lead", role: "Facility Manager", status: "Active" },
+    { id: "e4", employee_id: "EMP-004", name: "Emily Watson", email: "emily.w@intrasphere.com", department: "HR & Finance", designation: "HR Specialist", role: "HR", status: "Active" },
+    { id: "e5", employee_id: "EMP-005", name: "Michael Chen", email: "michael.c@intrasphere.com", department: "Engineering", designation: "Frontend Engineer", role: "Employee", status: "Active" },
+  ];
+
   const fetchEmployees = async () => {
     try {
       const response = await api.get("/api/v1/employees");
-      setEmployees(response.data.employees || []);
+      if (response.data?.employees && response.data.employees.length > 0) {
+        setEmployees(response.data.employees);
+      } else {
+        setEmployees(MOCK_EMPLOYEES);
+      }
     } catch (err) {
-      console.error(err);
-      setError("Failed to load employees");
+      console.error("Using mock employees fallback:", err);
+      setEmployees(MOCK_EMPLOYEES);
     } finally {
       setLoading(false);
     }

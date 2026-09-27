@@ -29,6 +29,9 @@ import {
   Compass,
   KeyRound,
   UserPlus,
+  MonitorCheck,
+  Calendar,
+  Layers,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -57,11 +60,12 @@ export default function LandingPage() {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: "24px",
+            borderRadius: "28px",
             p: 1,
-            boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
+            boxShadow: "0 30px 60px -12px rgba(15, 23, 42, 0.25)",
             border: "1px solid #E2E8F0",
-            bgcolor: "#FFFFFF",
+            bgcolor: "rgba(255, 255, 255, 0.96)",
+            backdropFilter: "blur(20px)",
           },
         }}
       >
@@ -71,44 +75,45 @@ export default function LandingPage() {
             onClick={handleCloseWelcome}
             sx={{
               position: "absolute",
-              top: 16,
-              right: 16,
+              top: 18,
+              right: 18,
               color: "#94A3B8",
+              bgcolor: "#F8FAFC",
               "&:hover": { color: "#0F172A", bgcolor: "#F1F5F9" },
             }}
           >
-            <X size={20} />
+            <X size={18} />
           </IconButton>
 
           {/* Welcome Header Badge */}
-          <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Box sx={{ textAlign: "center", mb: 3.5 }}>
             <Box
               sx={{
-                width: 60,
-                height: 60,
-                borderRadius: "18px",
+                width: 64,
+                height: 64,
+                borderRadius: "20px",
                 background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 mx: "auto",
                 mb: 2,
-                boxShadow: "0 8px 20px rgba(249, 115, 22, 0.35)",
+                boxShadow: "0 10px 25px rgba(249, 115, 22, 0.35)",
               }}
             >
-              <Sparkles size={32} color="#FFFFFF" />
+              <Sparkles size={34} color="#FFFFFF" />
             </Box>
             <Typography
               variant="h4"
               fontWeight={800}
               color="#0F172A"
-              letterSpacing={-0.5}
+              letterSpacing={-0.6}
               sx={{ mb: 1, fontSize: { xs: "1.5rem", sm: "1.85rem" } }}
             >
               Welcome to IntraSphere
             </Typography>
-            <Typography variant="body2" color="#64748B" fontWeight={500} sx={{ maxWidth: 420, mx: "auto" }}>
-              Your Enterprise Smart Office Portal for workspace booking, attendance, meeting rooms & HR automation.
+            <Typography variant="body2" color="#64748B" fontWeight={500} sx={{ maxWidth: 420, mx: "auto", lineHeight: 1.5 }}>
+              Your Enterprise Smart Office Portal for workspace booking, meeting rooms, attendance tracking & HR control.
             </Typography>
           </Box>
 
@@ -118,18 +123,18 @@ export default function LandingPage() {
               elevation={0}
               onClick={() => navigate("/login")}
               sx={{
-                p: 2.2,
-                borderRadius: "16px",
-                border: "1px solid #E2E8F0",
+                p: 2.5,
+                borderRadius: "18px",
+                border: "1px solid #FFEDD5",
                 bgcolor: "#FFFBF7",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 "&:hover": {
                   borderColor: "#F97316",
-                  boxShadow: "0 6px 18px rgba(249, 115, 22, 0.12)",
+                  boxShadow: "0 8px 22px rgba(249, 115, 22, 0.15)",
                   transform: "translateY(-2px)",
                 },
               }}
@@ -137,14 +142,15 @@ export default function LandingPage() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "12px",
-                    bgcolor: "#FFF7ED",
-                    color: "#F97316",
+                    width: 48,
+                    height: 48,
+                    borderRadius: "14px",
+                    bgcolor: "#F97316",
+                    color: "#FFFFFF",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
                   }}
                 >
                   <KeyRound size={22} />
@@ -153,8 +159,8 @@ export default function LandingPage() {
                   <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
                     Sign In to Portal
                   </Typography>
-                  <Typography variant="caption" color="#64748B">
-                    Access Employee, Manager & Admin dashboards
+                  <Typography variant="caption" color="#64748B" fontWeight={500}>
+                    Access Employee, Manager, HR & Admin portals
                   </Typography>
                 </Box>
               </Box>
@@ -165,18 +171,18 @@ export default function LandingPage() {
               elevation={0}
               onClick={() => navigate("/register")}
               sx={{
-                p: 2.2,
-                borderRadius: "16px",
+                p: 2.5,
+                borderRadius: "18px",
                 border: "1px solid #E2E8F0",
                 bgcolor: "#FFFFFF",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
                 "&:hover": {
                   borderColor: "#F97316",
-                  boxShadow: "0 6px 18px rgba(249, 115, 22, 0.12)",
+                  boxShadow: "0 8px 22px rgba(249, 115, 22, 0.15)",
                   transform: "translateY(-2px)",
                 },
               }}
@@ -184,11 +190,11 @@ export default function LandingPage() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box
                   sx={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "12px",
-                    bgcolor: "#FFF7ED",
-                    color: "#F97316",
+                    width: 48,
+                    height: 48,
+                    borderRadius: "14px",
+                    bgcolor: "#F1F5F9",
+                    color: "#0F172A",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -200,8 +206,8 @@ export default function LandingPage() {
                   <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
                     Create New Account
                   </Typography>
-                  <Typography variant="caption" color="#64748B">
-                    Register employee credentials for workspace access
+                  <Typography variant="caption" color="#64748B" fontWeight={500}>
+                    Register your corporate user profile
                   </Typography>
                 </Box>
               </Box>
@@ -209,20 +215,21 @@ export default function LandingPage() {
             </Paper>
           </Stack>
 
-          {/* Action Button */}
+          {/* Dismiss Action Button */}
           <Button
             variant="contained"
             fullWidth
             onClick={handleCloseWelcome}
             startIcon={<Compass size={18} />}
             sx={{
-              py: 1.4,
+              py: 1.5,
               borderRadius: "14px",
               bgcolor: "#0F172A",
               color: "#FFFFFF",
               fontWeight: 700,
               textTransform: "none",
               fontSize: "0.95rem",
+              boxShadow: "0 4px 14px rgba(15, 23, 42, 0.25)",
               "&:hover": { bgcolor: "#1E293B" },
             }}
           >
@@ -242,7 +249,7 @@ export default function LandingPage() {
           position: "sticky",
           top: 0,
           zIndex: 1000,
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.03)",
+          boxShadow: "0 2px 12px rgba(15, 23, 42, 0.04)",
         }}
       >
         <Container maxWidth="xl">
@@ -272,6 +279,25 @@ export default function LandingPage() {
                 </Typography>
               </Box>
             </Box>
+
+            {/* Navigation Links */}
+            <Stack direction="row" spacing={3} sx={{ display: { xs: "none", md: "flex" } }}>
+              {["Workspaces", "Meeting Rooms", "Attendance", "Administration"].map((item) => (
+                <Typography
+                  key={item}
+                  variant="body2"
+                  sx={{
+                    color: "#475569",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "color 0.2s",
+                    "&:hover": { color: "#F97316" },
+                  }}
+                >
+                  {item}
+                </Typography>
+              ))}
+            </Stack>
 
             {/* Header CTA Buttons */}
             <Stack direction="row" spacing={1.5}>
@@ -341,10 +367,10 @@ export default function LandingPage() {
         }}
       >
         <Container maxWidth="lg" sx={{ textAlign: "center" }}>
-          {/* Announcement Pill */}
+          {/* Announcement Badge */}
           <Chip
             icon={<Sparkles size={16} color="#F97316" />}
-            label="IntraSphere • AI-Powered Smart Office & Workforce Management"
+            label="IntraSphere • AI-Powered Smart Office & Operations System"
             sx={{
               bgcolor: "#FFF7ED",
               color: "#C2410C",
@@ -354,7 +380,8 @@ export default function LandingPage() {
               px: 1.5,
               borderRadius: "50px",
               border: "1px solid #FFEDD5",
-              mb: 3,
+              mb: 3.5,
+              boxShadow: "0 2px 10px rgba(249, 115, 22, 0.08)",
             }}
           />
 
@@ -379,14 +406,14 @@ export default function LandingPage() {
             sx={{
               color: "#64748B",
               fontWeight: 500,
-              maxWidth: 760,
+              maxWidth: 780,
               mx: "auto",
               mb: 5,
               lineHeight: 1.6,
               fontSize: { xs: "1rem", md: "1.15rem" },
             }}
           >
-            Unified employee directory, centralized HR provisioning, workspace desk booking, live presence tracking, and emergency meeting room reservation.
+            Streamline desk bookings, meeting rooms, attendance tracking, and facility management inside one clean, unified enterprise portal.
           </Typography>
 
           {/* Hero Action Buttons */}
@@ -435,8 +462,8 @@ export default function LandingPage() {
           </Stack>
 
           {/* Trust Badges */}
-          <Stack direction="row" spacing={3} justifyContent="center" flexWrap="wrap">
-            {["Role-Based Security", "Live Workspace Sync", "Google OAuth 2.0"].map((badge) => (
+          <Stack direction="row" spacing={3.5} justifyContent="center" flexWrap="wrap">
+            {["Role-Based Access Control", "Live Desk & Room Sync", "Google OAuth 2.0 Security"].map((badge) => (
               <Box key={badge} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <CheckCircle2 size={16} color="#F97316" />
                 <Typography variant="caption" fontWeight={600} color="#475569">
@@ -461,6 +488,8 @@ export default function LandingPage() {
                 bgcolor: "#FFFFFF",
                 boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
                 border: "1px solid #E2E8F0",
+                transition: "all 0.25s ease",
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 36px rgba(249, 115, 22, 0.1)" },
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
@@ -499,6 +528,8 @@ export default function LandingPage() {
                 bgcolor: "#FFFFFF",
                 boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
                 border: "1px solid #E2E8F0",
+                transition: "all 0.25s ease",
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 36px rgba(46, 125, 50, 0.1)" },
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
@@ -514,7 +545,7 @@ export default function LandingPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <UserCheck size={22} />
+                  <MonitorCheck size={22} />
                 </Box>
                 <Chip label="Real-time" size="small" sx={{ bgcolor: "#E8F5E9", color: "#2E7D32", fontWeight: 700 }} />
               </Box>
@@ -537,6 +568,8 @@ export default function LandingPage() {
                 bgcolor: "#FFFFFF",
                 boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
                 border: "1px solid #E2E8F0",
+                transition: "all 0.25s ease",
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 36px rgba(123, 31, 162, 0.1)" },
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
@@ -575,6 +608,8 @@ export default function LandingPage() {
                 bgcolor: "#FFFFFF",
                 boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
                 border: "1px solid #E2E8F0",
+                transition: "all 0.25s ease",
+                "&:hover": { transform: "translateY(-4px)", boxShadow: "0 14px 36px rgba(237, 108, 2, 0.1)" },
               }}
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>

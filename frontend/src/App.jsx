@@ -46,7 +46,7 @@ function App() {
             <Route
               path="/user-dashboard"
               element={
-                <ProtectedRoute allowedRoles={["User", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <UserDashboard />
                 </ProtectedRoute>
               }
@@ -54,7 +54,7 @@ function App() {
             <Route
               path="/employee-dashboard"
               element={
-                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               }
@@ -62,7 +62,7 @@ function App() {
             <Route
               path="/manager-dashboard"
               element={
-                <ProtectedRoute allowedRoles={["Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <ManagerDashboard />
                 </ProtectedRoute>
               }
@@ -70,7 +70,7 @@ function App() {
             <Route
               path="/admin-dashboard"
               element={
-                <ProtectedRoute allowedRoles={["Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -78,7 +78,7 @@ function App() {
             <Route
               path="/admin/dashboard"
               element={
-                <ProtectedRoute allowedRoles={["Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <AdminDashboard />
                 </ProtectedRoute>
               }
@@ -88,7 +88,7 @@ function App() {
             <Route
               path="/facility-manager"
               element={
-                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <FacilityManagerDashboard />
                 </ProtectedRoute>
               }
@@ -96,7 +96,7 @@ function App() {
             <Route
               path="/facility-management"
               element={
-                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <FacilityManagement />
                 </ProtectedRoute>
               }
@@ -104,7 +104,7 @@ function App() {
             <Route
               path="/facility-management/*"
               element={
-                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <FacilityManagement />
                 </ProtectedRoute>
               }
@@ -114,7 +114,7 @@ function App() {
             <Route
               path="/meeting-rooms"
               element={
-                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <MeetingRooms />
                 </ProtectedRoute>
               }
@@ -124,7 +124,7 @@ function App() {
             <Route
               path="/workspaces"
               element={
-                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <WorkspaceReservation />
                 </ProtectedRoute>
               }
@@ -132,7 +132,7 @@ function App() {
             <Route
               path="/workspace-reservation"
               element={
-                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <WorkspaceReservation />
                 </ProtectedRoute>
               }
@@ -142,17 +142,17 @@ function App() {
             <Route
               path="/leave"
               element={
-                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <Leave />
                 </ProtectedRoute>
               }
             />
 
-            {/* Employee Management Route (Restricted to Admin & Manager) */}
+            {/* Employee Management Route */}
             <Route
               path="/employees"
               element={
-                <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <Employees />
                 </ProtectedRoute>
               }
@@ -172,7 +172,7 @@ function App() {
             <Route
               path="/attendance"
               element={
-                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               }
@@ -180,7 +180,7 @@ function App() {
             <Route
               path="/my-bookings"
               element={
-                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               }
@@ -188,7 +188,7 @@ function App() {
             <Route
               path="/announcements"
               element={
-                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               }
@@ -196,7 +196,7 @@ function App() {
             <Route
               path="/notifications"
               element={
-                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               }

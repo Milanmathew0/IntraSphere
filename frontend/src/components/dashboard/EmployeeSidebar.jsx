@@ -59,21 +59,13 @@ export default function EmployeeSidebar({
     { label: "Leave Application", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
     { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
     { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
-  ];
-
-  if (["Admin", "Manager"].includes(employeeRole)) {
-    baseSections.push({ label: "Employee Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" });
-  }
-  if (["Admin", "Facility Manager"].includes(employeeRole)) {
-    baseSections.push({ label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" });
-  }
-
-  baseSections.push(
+    { label: "Employee Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" },
+    { label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" },
     { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
     { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
     { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
     { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" }
-  );
+  ];
 
   const sidebarSections = baseSections;
 
@@ -96,8 +88,8 @@ export default function EmployeeSidebar({
   };
 
   const isItemActive = (item) => {
-    if (activeTab) {
-      return activeTab === item.tabId;
+    if (activeTab && activeTab === item.tabId) {
+      return true;
     }
     return location.pathname === item.route;
   };

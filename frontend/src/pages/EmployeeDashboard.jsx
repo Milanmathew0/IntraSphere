@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Container,
@@ -34,10 +35,29 @@ import EmergencyMeetingRooms from "../components/dashboard/EmergencyMeetingRooms
 import EmployeeProfileSection from "../components/dashboard/EmployeeProfileSection";
 import AttendanceHistoryTable from "../components/dashboard/AttendanceHistoryTable";
 
+const getInitialTab = (pathname) => {
+  if (pathname.includes("/attendance")) return "attendance";
+  if (pathname.includes("/leave")) return "leave";
+  if (pathname.includes("/meeting-rooms")) return "meeting-rooms";
+  if (pathname.includes("/workspaces") || pathname.includes("/workspace-reservation")) return "workspaces";
+  if (pathname.includes("/my-bookings")) return "my-bookings";
+  if (pathname.includes("/announcements")) return "announcements";
+  if (pathname.includes("/notifications")) return "notifications";
+  if (pathname.includes("/profile")) return "profile";
+  return "dashboard";
+};
+
 export default function EmployeeDashboard() {
   const { user } = useAuth();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState(() => getInitialTab(location.pathname));
+
+  useEffect(() => {
+    const tab = getInitialTab(location.pathname);
+    setActiveTab(tab);
+  }, [location.pathname]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationsCount, setNotificationsCount] = useState(0);
   const [todayScheduleItems, setTodayScheduleItems] = useState([]);

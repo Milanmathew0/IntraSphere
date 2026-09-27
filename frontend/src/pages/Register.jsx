@@ -270,177 +270,230 @@ export default function Register() {
         elevation={0}
         sx={{
           width: "100%",
-          borderRadius: "16px",
+          borderRadius: "20px",
           backgroundColor: "#FFFFFF",
           border: "1px solid #E2E8F0",
-          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.05)",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease",
-          "&:hover": {
-            boxShadow: "0px 14px 36px rgba(0, 0, 0, 0.08)",
-          },
+          boxShadow: "0px 10px 30px rgba(15, 23, 42, 0.05)",
+          p: { xs: 1, sm: 1.5 },
         }}
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-          {/* Header Avatar & Title */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2.5 }}>
-            <Avatar
-              sx={{
-                bgcolor: "#2E7D32",
-                width: 48,
-                height: 48,
-                mb: 1.5,
-              }}
+          {/* Header Title */}
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              color="#0F172A"
+              sx={{ letterSpacing: -0.5, mb: 0.8 }}
             >
-              <PersonAddAlt1Icon />
-            </Avatar>
-
-            <Typography variant="h5" fontWeight="bold" align="center" color="#1E293B">
               Create Account
             </Typography>
-
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 0.5 }}>
-              Join IntraSphere Smart Office Portal
+            <Typography variant="body2" color="#64748B" fontWeight={500}>
+              Register your credentials to access IntraSphere.
             </Typography>
           </Box>
 
           {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
-            <TextField
-              label="Full Name / Username"
-              fullWidth
-              margin="dense"
-              value={username}
-              onChange={handleUsernameChange}
-              error={!!(touched.username && errors.username)}
-              helperText={touched.username && errors.username ? errors.username : ""}
-              placeholder="John Doe"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonOutlinedIcon color={touched.username && errors.username ? "error" : "action"} fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+            <Stack spacing={2}>
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.5, display: "block" }}>
+                  Full Name / Username
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  error={!!(touched.username && errors.username)}
+                  helperText={touched.username && errors.username ? errors.username : ""}
+                  placeholder="John Doe"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonOutlinedIcon sx={{ color: "#94A3B8", fontSize: 18 }} />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            <TextField
-              label="Email Address"
-              fullWidth
-              margin="dense"
-              value={email}
-              onChange={handleEmailChange}
-              error={!!(touched.email && errors.email)}
-              helperText={touched.email && errors.email ? errors.email : ""}
-              placeholder="name@company.com"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailOutlinedIcon color={touched.email && errors.email ? "error" : "action"} fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.5, display: "block" }}>
+                  Email Address
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!(touched.email && errors.email)}
+                  helperText={touched.email && errors.email ? errors.email : ""}
+                  placeholder="name@company.com"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailOutlinedIcon sx={{ color: "#94A3B8", fontSize: 18 }} />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            <TextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="dense"
-              value={password}
-              onChange={handlePasswordChange}
-              error={!!(touched.password && errors.password)}
-              helperText={touched.password && errors.password ? errors.password : ""}
-              placeholder="At least 8 characters"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon color={touched.password && errors.password ? "error" : "action"} fontSize="small" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                        size="small"
-                      >
-                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.5, display: "block" }}>
+                  Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  error={!!(touched.password && errors.password)}
+                  helperText={touched.password && errors.password ? errors.password : ""}
+                  placeholder="At least 8 characters"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockOutlinedIcon sx={{ color: "#94A3B8", fontSize: 18 }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            size="small"
+                            sx={{ color: "#94A3B8" }}
+                          >
+                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            <PasswordStrengthIndicator password={password} />
+              <PasswordStrengthIndicator password={password} />
 
-            <TextField
-              label="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              fullWidth
-              margin="dense"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              error={!!(touched.confirmPassword && errors.confirmPassword)}
-              helperText={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : ""}
-              placeholder="Re-enter password"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon color={touched.confirmPassword && errors.confirmPassword ? "error" : "action"} fontSize="small" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle confirm password visibility"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        edge="end"
-                        size="small"
-                      >
-                        {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.5, display: "block" }}>
+                  Confirm Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  error={!!(touched.confirmPassword && errors.confirmPassword)}
+                  helperText={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : ""}
+                  placeholder="Re-enter password"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "10px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockOutlinedIcon sx={{ color: "#94A3B8", fontSize: 18 }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle confirm password visibility"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                            size="small"
+                            sx={{ color: "#94A3B8" }}
+                          >
+                            {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            {/* Register Button */}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={loading}
-              size="large"
-              sx={{
-                mt: 2.5,
-                py: 1.3,
-                fontSize: "1rem",
-                fontWeight: 600,
-                backgroundColor: "#2E7D32",
-                "&:hover": { backgroundColor: "#1B5E20" },
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
-            </Button>
+              {/* Register Button */}
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                size="large"
+                sx={{
+                  mt: 1,
+                  py: 1.3,
+                  borderRadius: "12px",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  backgroundColor: "#F97316",
+                  boxShadow: "0 4px 14px rgba(249, 115, 22, 0.35)",
+                  "&:hover": { backgroundColor: "#EA580C" },
+                }}
+              >
+                {loading ? <CircularProgress size={22} color="inherit" /> : "Create Account"}
+              </Button>
+            </Stack>
 
             {/* Divider */}
             <Divider sx={{ my: 2.5 }}>
-              <Typography variant="caption" color="text.secondary" sx={{ px: 1, fontWeight: 600 }}>
-                OR SIGN UP WITH
+              <Typography
+                variant="caption"
+                color="#94A3B8"
+                sx={{ px: 1, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}
+              >
+                or continue with
               </Typography>
             </Divider>
 
             {/* Google Sign-In Button */}
-            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", my: 1 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", mb: 2 }}>
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => {
@@ -452,7 +505,7 @@ export default function Register() {
                 }}
                 theme="outline"
                 size="large"
-                shape="pill"
+                shape="rectangular"
                 width="100%"
                 text="signup_with"
               />
@@ -460,19 +513,19 @@ export default function Register() {
 
             {/* Login Link */}
             <Box textAlign="center" mt={2}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="#64748B" fontWeight={500}>
                 Already have an account?{" "}
                 <Link
                   component={RouterLink}
                   to="/login"
-                  color="primary"
                   sx={{
-                    fontWeight: 600,
+                    color: "#F97316",
+                    fontWeight: 700,
                     textDecoration: "none",
                     "&:hover": { textDecoration: "underline" },
                   }}
                 >
-                  Login
+                  Sign In
                 </Link>
               </Typography>
             </Box>

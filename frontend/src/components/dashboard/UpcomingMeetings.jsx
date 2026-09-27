@@ -1,239 +1,109 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Stack,
-  Chip,
-  Button,
-  Skeleton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Divider,
-} from "@mui/material";
-import {
-  Groups,
-  AccessTime,
-  LocationOn,
-  ArrowForward,
-  CheckCircle,
-} from "@mui/icons-material";
+import React from "react";
+import { Box, Paper, Typography, Stack, Button, IconButton } from "@mui/material";
+import { MoreVert, AccessTime, LocationOn } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import api from "../../api/axios";
 
 export default function UpcomingMeetings() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [meetings, setMeetings] = useState([]);
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
 
-  useEffect(() => {
-    const fetchMyMeetings = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get("/api/v1/meeting-bookings/my");
-        const list = Array.isArray(response.data) ? response.data : [];
-        // Filter out cancelled and sort by start time
-        const active = list
-          .filter((m) => m.status !== "Cancelled")
-          .slice(0, 5);
-        setMeetings(active);
-      } catch (err) {
-        console.error("Fetch upcoming meetings error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMyMeetings();
-  }, []);
-
-  const formatMeetingTime = (startStr, endStr) => {
-    if (!startStr) return "--:--";
-    try {
-      const startDt = new Date(startStr);
-      const endDt = endStr ? new Date(endStr) : null;
-      const datePart = startDt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const startTime = startDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      const endTime = endDt ? endDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
-      return `${datePart} • ${startTime} ${endTime ? `- ${endTime}` : ""}`;
-    } catch {
-      return startStr;
-    }
-  };
+  const meetings = [
+    {
+      id: 1,
+      title: "Team Stand-up",
+      time: "09:00 - 10:00 AM",
+      location: "",
+      borderBg: "#2563EB", // Blue vertical bar
+    },
+    {
+      id: 2,
+      title: "Project Discussion",
+      time: "11:00 - 12:00 PM",
+      location: "Conference Room A",
+      borderBg: "#16A34A", // Green vertical bar
+    },
+    {
+      id: 3,
+      title: "Client Review Meeting",
+      time: "02:00 - 04:00 PM",
+      location: "Meeting Room 2",
+      borderBg: "#EF4444", // Red vertical bar
+    },
+  ];
 
   return (
     <Paper
       elevation={0}
       sx={{
-        p: 3,
-        borderRadius: "20px",
+        p: 2.5,
+        borderRadius: "18px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.04)",
+        boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
       }}
     >
       {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
-          <Box
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: "10px",
-              bgcolor: "#E0F2FE",
-              color: "#0369A1",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Groups sx={{ fontSize: 20 }} />
-          </Box>
-          <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
-            Upcoming Meetings
-          </Typography>
-        </Box>
-
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+          Upcoming Meetings
+        </Typography>
         <Button
           size="small"
           onClick={() => navigate("/meeting-rooms")}
-          endIcon={<ArrowForward sx={{ fontSize: "14px !important" }} />}
           sx={{
+            color: "#2563EB",
             fontWeight: 700,
-            color: "#1976D2",
-            textTransform: "none",
             fontSize: "0.78rem",
+            textTransform: "none",
+            p: 0,
+            minWidth: 0,
           }}
         >
           View All
         </Button>
-      </Stack>
+      </Box>
 
       {/* List */}
-      {loading ? (
-        <Stack spacing={1.5}>
-          <Skeleton variant="rectangular" height={54} sx={{ borderRadius: "12px" }} />
-          <Skeleton variant="rectangular" height={54} sx={{ borderRadius: "12px" }} />
-        </Stack>
-      ) : meetings.length === 0 ? (
-        <Box
-          sx={{
-            py: 3,
-            px: 2,
-            textAlign: "center",
-            borderRadius: "14px",
-            bgcolor: "#F8FAFC",
-            border: "1px dashed #CBD5E1",
-          }}
-        >
-          <Typography variant="body2" color="#64748B" fontWeight={500}>
-            No upcoming meeting bookings scheduled.
-          </Typography>
-          <Button
-            size="small"
-            onClick={() => navigate("/meeting-rooms")}
-            sx={{ mt: 1, fontWeight: 700, color: "#1976D2", textTransform: "none" }}
+      <Stack spacing={1.5}>
+        {meetings.map((m) => (
+          <Paper
+            key={m.id}
+            elevation={0}
+            sx={{
+              p: 1.5,
+              borderRadius: "12px",
+              bgcolor: "#F8FAFC",
+              border: "1px solid #E2E8F0",
+              borderLeft: `4px solid ${m.borderBg}`, // Left color indicator bar
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            Book a Meeting Room
-          </Button>
-        </Box>
-      ) : (
-        <Stack spacing={1.5}>
-          {meetings.map((m) => (
-            <Paper
-              key={m._id || m.id}
-              elevation={0}
-              onClick={() => setSelectedMeeting(m)}
-              sx={{
-                p: 2,
-                borderRadius: "14px",
-                bgcolor: "#F8FAFC",
-                border: "1px solid #E2E8F0",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                "&:hover": {
-                  bgcolor: "#FFFFFF",
-                  borderColor: "#1976D2",
-                  boxShadow: "0 4px 14px rgba(25, 118, 210, 0.1)",
-                },
-              }}
-            >
-              <Box sx={{ overflow: "hidden", pr: 1 }}>
-                <Typography variant="body2" fontWeight={700} color="#0F172A" noWrap>
-                  {m.title || m.room_name || "Meeting"}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="#64748B"
-                  display="flex"
-                  alignItems="center"
-                  gap={0.6}
-                  mt={0.3}
-                >
-                  <AccessTime sx={{ fontSize: 13, color: "#1976D2" }} />
-                  {formatMeetingTime(m.start_time, m.end_time)}
-                </Typography>
-              </Box>
+            <Box>
+              <Typography variant="body2" fontWeight={700} color="#0F172A" sx={{ fontSize: "0.83rem", lineHeight: 1.1 }}>
+                {m.title}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="#64748B"
+                sx={{ fontSize: "0.72rem", display: "flex", alignItems: "center", gap: 0.5, mt: 0.4 }}
+              >
+                <AccessTime sx={{ fontSize: 12 }} /> {m.time}
+                {m.location && (
+                  <>
+                    <Box component="span" sx={{ mx: 0.3 }}>•</Box>
+                    <LocationOn sx={{ fontSize: 12, color: "#94A3B8" }} /> {m.location}
+                  </>
+                )}
+              </Typography>
+            </Box>
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  icon={<LocationOn sx={{ fontSize: "12px !important" }} />}
-                  label={m.room_name || "Meeting Room"}
-                  size="small"
-                  sx={{
-                    height: 24,
-                    fontSize: "0.7rem",
-                    fontWeight: 700,
-                    bgcolor: "#E0F2FE",
-                    color: "#0369A1",
-                    borderRadius: "6px",
-                  }}
-                />
-              </Stack>
-            </Paper>
-          ))}
-        </Stack>
-      )}
-
-      {/* Details Dialog */}
-      <Dialog
-        open={Boolean(selectedMeeting)}
-        onClose={() => setSelectedMeeting(null)}
-        PaperProps={{ sx: { borderRadius: "16px", p: 1, minWidth: 340 } }}
-      >
-        <DialogTitle sx={{ fontWeight: 700, pb: 1, color: "#0F172A" }}>
-          Meeting Booking Details
-        </DialogTitle>
-        <DialogContent dividers>
-          {selectedMeeting && (
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle1" fontWeight={800} color="#1976D2">
-                {selectedMeeting.title || "Meeting Booking"}
-              </Typography>
-              <Typography variant="body2" color="#475569">
-                <strong>Room:</strong> {selectedMeeting.room_name || "N/A"}
-              </Typography>
-              <Typography variant="body2" color="#475569">
-                <strong>Time:</strong> {formatMeetingTime(selectedMeeting.start_time, selectedMeeting.end_time)}
-              </Typography>
-              <Typography variant="body2" color="#475569">
-                <strong>Status:</strong> {selectedMeeting.status || "Confirmed"}
-              </Typography>
-            </Stack>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelectedMeeting(null)} sx={{ fontWeight: 700, color: "#475569" }}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <IconButton size="small" sx={{ color: "#94A3B8" }}>
+              <MoreVert fontSize="small" />
+            </IconButton>
+          </Paper>
+        ))}
+      </Stack>
     </Paper>
   );
 }

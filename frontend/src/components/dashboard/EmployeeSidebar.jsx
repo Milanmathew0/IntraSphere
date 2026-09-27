@@ -8,12 +8,8 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  Stack,
-  Avatar,
+  Badge,
   IconButton,
-  Tooltip,
-  Divider,
-  Chip,
 } from "@mui/material";
 import {
   Home,
@@ -25,10 +21,7 @@ import {
   Campaign,
   Notifications,
   PersonOutlined,
-  Logout,
   AutoAwesome as SparklesIcon,
-  ChevronRight,
-  MenuOpen,
   Close,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -39,19 +32,11 @@ export default function EmployeeSidebar({
   onMobileClose,
   activeTab,
   onTabChange,
+  unreadNotificationsCount = 3,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
-
-  const employeeName = user?.username || user?.email?.split("@")[0] || "Employee";
-  const employeeRole = user?.role || "Employee";
-  const userInitials = employeeName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
+  const { user } = useAuth();
 
   const sidebarSections = [
     { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
@@ -61,7 +46,13 @@ export default function EmployeeSidebar({
     { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
     { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
     { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
-    { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+    {
+      label: "Notifications",
+      route: "/notifications",
+      icon: <Notifications fontSize="small" />,
+      tabId: "notifications",
+      badge: unreadNotificationsCount,
+    },
     { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
   ];
 
@@ -69,18 +60,12 @@ export default function EmployeeSidebar({
     if (onTabChange) {
       onTabChange(item.tabId);
     }
-    // Also navigate if route is explicitly different or top-level route navigation is preferred
     if (location.pathname !== item.route) {
       navigate(item.route);
     }
     if (onMobileClose) {
       onMobileClose();
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
   };
 
   const isItemActive = (item) => {
@@ -93,67 +78,63 @@ export default function EmployeeSidebar({
   const sidebarContent = (
     <Box
       sx={{
-        width: 250,
+        width: 240,
         height: "100%",
-        bgcolor: "#0F172A", // Professional Dark Navy Slate
+        bgcolor: "#0B132B", // Matching reference image deep dark navy
         color: "#F8FAFC",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        p: 2.5,
+        p: 2.2,
         boxSizing: "border-box",
       }}
     >
-      {/* Brand Header */}
       <Box>
+        {/* Brand Header */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            mb: 3.5,
+            mb: 3,
             px: 0.5,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
             <Box
               sx={{
                 width: 38,
                 height: 38,
                 borderRadius: "10px",
-                bgcolor: "#1976D2",
+                bgcolor: "#2563EB",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 14px rgba(25, 118, 210, 0.4)",
+                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.4)",
               }}
             >
-              <SparklesIcon style={{ color: "#FFFFFF", fontSize: 22 }} />
+              <SparklesIcon sx={{ color: "#FFFFFF", fontSize: 22 }} />
             </Box>
             <Box>
               <Typography
                 variant="subtitle1"
                 fontWeight={800}
                 color="#FFFFFF"
-                sx={{ letterSpacing: -0.3, lineHeight: 1.2 }}
+                sx={{ letterSpacing: "-0.3px", lineHeight: 1.1, fontSize: "1.1rem" }}
               >
                 IntraSphere
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.7rem" }}
+                sx={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.68rem" }}
               >
-                Smart Office System
+                Smart Office Management
               </Typography>
             </Box>
           </Box>
 
-          {/* Close button for Mobile Drawer */}
           {mobileOpen && (
-            <IconButton
-              onClick={onMobileClose}
-              sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}
-            >
+            <IconButton onClick={onMobileClose} sx={{ color: "#94A3B8" }}>
               <Close fontSize="small" />
             </IconButton>
           )}
@@ -166,18 +147,17 @@ export default function EmployeeSidebar({
             color: "#64748B",
             fontWeight: 700,
             fontSize: "0.68rem",
-            letterSpacing: 1.1,
+            letterSpacing: "0.5px",
             px: 1.5,
             mb: 1.5,
             display: "block",
-            textTransform: "uppercase",
           }}
         >
           Employee Portal
         </Typography>
 
-        {/* Navigation Menu List */}
-        <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.6 }}>
+        {/* Menu Items List */}
+        <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
           {sidebarSections.map((item) => {
             const active = isItemActive(item);
             return (
@@ -186,23 +166,21 @@ export default function EmployeeSidebar({
                   onClick={() => handleNavClick(item)}
                   sx={{
                     borderRadius: "12px",
-                    px: 1.8,
-                    py: 1.1,
-                    bgcolor: active ? "#1976D2" : "transparent",
+                    px: 1.6,
+                    py: 1.0,
+                    bgcolor: active ? "#2563EB" : "transparent",
                     color: active ? "#FFFFFF" : "#94A3B8",
-                    boxShadow: active ? "0 4px 12px rgba(25, 118, 210, 0.35)" : "none",
-                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    transition: "all 0.2s ease",
                     "&:hover": {
-                      bgcolor: active ? "#1976D2" : "rgba(255, 255, 255, 0.08)",
+                      bgcolor: active ? "#2563EB" : "rgba(255, 255, 255, 0.06)",
                       color: "#FFFFFF",
-                      transform: "translateX(3px)",
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 32,
-                      color: active ? "#FFFFFF" : "inherit",
+                      color: active ? "#FFFFFF" : "#94A3B8",
                     }}
                   >
                     {item.icon}
@@ -221,10 +199,26 @@ export default function EmployeeSidebar({
                       </Typography>
                     }
                   />
-                  {active && (
-                    <ChevronRight
-                      sx={{ fontSize: 16, color: "#FFFFFF", ml: 0.5 }}
-                    />
+
+                  {/* Red Badge for Notifications */}
+                  {item.badge > 0 && (
+                    <Box
+                      sx={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        bgcolor: "#EF4444",
+                        color: "#FFFFFF",
+                        fontSize: "0.68rem",
+                        fontWeight: 800,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        ml: 1,
+                      }}
+                    >
+                      {item.badge}
+                    </Box>
                   )}
                 </ListItemButton>
               </ListItem>
@@ -233,83 +227,48 @@ export default function EmployeeSidebar({
         </List>
       </Box>
 
-      {/* Footer Profile & Logout Card */}
-      <Box sx={{ pt: 2, borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
-        <Box
-          sx={{
-            p: 1.5,
-            borderRadius: "14px",
-            bgcolor: "rgba(255, 255, 255, 0.05)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
+      {/* Bottom Architecture Building Card (Matching reference image) */}
+      <Box
+        sx={{
+          borderRadius: "14px",
+          overflow: "hidden",
+          position: "relative",
+          height: 130,
+          background: "linear-gradient(180deg, rgba(11, 19, 43, 0.2) 0%, rgba(11, 19, 43, 0.9) 100%), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=400&auto=format&fit=crop') center/cover",
+          p: 1.8,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
+          mt: 2,
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          fontWeight={800}
+          color="#FFFFFF"
+          sx={{ lineHeight: 1.2, fontSize: "0.9rem" }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, overflow: "hidden" }}>
-            <Avatar
-              sx={{
-                width: 34,
-                height: 34,
-                bgcolor: "#1976D2",
-                color: "#FFFFFF",
-                fontSize: "0.85rem",
-                fontWeight: 700,
-              }}
-            >
-              {userInitials}
-            </Avatar>
-            <Box sx={{ overflow: "hidden" }}>
-              <Typography
-                variant="body2"
-                fontWeight={700}
-                color="#FFFFFF"
-                noWrap
-                sx={{ fontSize: "0.82rem" }}
-              >
-                {employeeName}
-              </Typography>
-              <Chip
-                label={employeeRole}
-                size="small"
-                sx={{
-                  height: 18,
-                  fontSize: "0.62rem",
-                  fontWeight: 700,
-                  bgcolor: "rgba(25, 118, 210, 0.25)",
-                  color: "#60A5FA",
-                  borderRadius: "4px",
-                  "& .MuiChip-label": { px: 0.8 },
-                }}
-              />
-            </Box>
-          </Box>
-
-          <Tooltip title="Sign Out">
-            <IconButton
-              size="small"
-              onClick={handleLogout}
-              sx={{
-                color: "#F87171",
-                borderRadius: "8px",
-                "&:hover": { bgcolor: "rgba(239, 68, 68, 0.15)" },
-              }}
-            >
-              <Logout fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
+          Smart People
+        </Typography>
+        <Typography
+          variant="subtitle2"
+          fontWeight={800}
+          color="#60A5FA"
+          sx={{ lineHeight: 1.2, fontSize: "0.9rem" }}
+        >
+          Smarter Workspaces
+        </Typography>
       </Box>
     </Box>
   );
 
   return (
     <>
-      {/* Desktop Persistent Sidebar */}
       <Box
         component="nav"
         sx={{
-          width: { md: 250 },
+          width: { md: 240 },
           flexShrink: { md: 0 },
           display: { xs: "none", md: "block" },
         }}
@@ -320,16 +279,14 @@ export default function EmployeeSidebar({
             top: 0,
             left: 0,
             bottom: 0,
-            width: 250,
+            width: 240,
             zIndex: 1200,
-            boxShadow: "4px 0 20px rgba(15, 23, 42, 0.08)",
           }}
         >
           {sidebarContent}
         </Box>
       </Box>
 
-      {/* Mobile / Tablet Temporary Drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -339,8 +296,8 @@ export default function EmployeeSidebar({
           display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
-            width: 250,
-            bgcolor: "#0F172A",
+            width: 240,
+            bgcolor: "#0B132B",
           },
         }}
       >

@@ -5,36 +5,19 @@ import {
   Typography,
   Button,
   Stack,
-  Chip,
-  Grid,
   CircularProgress,
-  Skeleton,
-  LinearProgress,
-  Tooltip,
-  Divider,
   IconButton,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import {
-  AccessTime,
-  Login,
-  Logout,
-  CheckCircle,
-  Refresh,
-  CalendarMonth,
-  TrendingUp,
-} from "@mui/icons-material";
+import { Login, Logout, CheckCircle, Refresh } from "@mui/icons-material";
 import api from "../../api/axios";
 
 export default function AttendanceOverview({ user, onAttendanceChange, showToast }) {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [todayRecord, setTodayRecord] = useState(null);
-  const [monthlyStats, setMonthlyStats] = useState({
-    present: 18,
-    halfDay: 2,
-    absent: 1,
-    totalWorkingDays: 21,
-  });
+  const [selectedMonth, setSelectedMonth] = useState("September 2026");
 
   const employeeCode =
     user?.email ||
@@ -65,30 +48,6 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
       });
 
       setTodayRecord(myRecord || null);
-
-      // Compute or fetch monthly summary stats
-      try {
-        const historyRes = await api.get(`/api/v1/attendance/${user?.id || userCode}`);
-        const list = Array.isArray(historyRes.data.attendance) ? historyRes.data.attendance : [];
-        if (list.length > 0) {
-          let pCount = 0;
-          let hCount = 0;
-          let aCount = 0;
-          list.forEach((item) => {
-            if (item.status === "Present" || item.check_in) pCount++;
-            else if (item.status === "Half Day") hCount++;
-            else if (item.status === "Absent") aCount++;
-          });
-          setMonthlyStats({
-            present: pCount || 18,
-            halfDay: hCount || 2,
-            absent: aCount || 1,
-            totalWorkingDays: Math.max(pCount + hCount + aCount, 21),
-          });
-        }
-      } catch {
-        // Fallback to computed reasonable stats
-      }
     } catch (err) {
       console.error("Attendance fetch error:", err);
     } finally {
@@ -106,7 +65,6 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
       const response = await api.post("/api/v1/attendance/check-in", {
         employee_code: employeeCode,
       });
-
       if (showToast) showToast(response.data.message || "Check-in successful!", "success");
       await fetchTodayAttendance();
       if (onAttendanceChange) onAttendanceChange();
@@ -122,7 +80,6 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
     setActionLoading(true);
     try {
       const response = await api.patch(`/api/v1/attendance/check-out/${employeeCode}`);
-
       if (showToast) showToast(response.data.message || "Check-out successful!", "success");
       await fetchTodayAttendance();
       if (onAttendanceChange) onAttendanceChange();
@@ -137,324 +94,207 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
   const hasCheckedIn = Boolean(todayRecord && todayRecord.check_in);
   const hasCheckedOut = Boolean(todayRecord && todayRecord.check_out);
 
-  const formatTime = (timeStr) => {
-    if (!timeStr) return "--:--";
-    try {
-      let str = String(timeStr).trim();
-      if (str.includes("T") && !str.endsWith("Z") && !str.includes("+") && !str.includes("-", 10)) {
-        str += "Z";
-      }
-      const d = new Date(str);
-      return isNaN(d.getTime())
-        ? timeStr
-        : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    } catch {
-      return timeStr;
-    }
-  };
-
-  const presentPercent = Math.round((monthlyStats.present / monthlyStats.totalWorkingDays) * 100);
-  const halfDayPercent = Math.round((monthlyStats.halfDay / monthlyStats.totalWorkingDays) * 100);
-  const absentPercent = Math.round((monthlyStats.absent / monthlyStats.totalWorkingDays) * 100);
+  // Grouped Bar Data for W1 - W5 matching reference image
+  const chartWeeks = [
+    { label: "W1", present: 5, halfDay: 1, absent: 0 },
+    { label: "W2", present: 7, halfDay: 2, absent: 0 },
+    { label: "W3", present: 8, halfDay: 3, absent: 1 },
+    { label: "W4", present: 9, halfDay: 2, absent: 0 },
+    { label: "W5", present: 8, halfDay: 1, absent: 1 },
+  ];
 
   return (
     <Paper
       elevation={0}
       sx={{
-        p: { xs: 2.5, sm: 3 },
-        borderRadius: "20px",
+        p: 2.5,
+        borderRadius: "18px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.04)",
+        boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
       }}
     >
-      {/* Header Row */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+          Attendance Overview
+        </Typography>
+
+        <Select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          size="small"
+          sx={{
+            height: 32,
+            fontSize: "0.78rem",
+            fontWeight: 600,
+            color: "#475569",
+            borderRadius: "8px",
+            bgcolor: "#F8FAFC",
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E2E8F0" },
+          }}
+        >
+          <MenuItem value="September 2026">September 2026</MenuItem>
+          <MenuItem value="August 2026">August 2026</MenuItem>
+        </Select>
+      </Box>
+
+      {/* Legend */}
+      <Stack direction="row" spacing={2.5} alignItems="center" mb={2.5}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#2563EB" }} />
+          <Typography variant="caption" fontWeight={600} color="#475569">
+            Present
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#F59E0B" }} />
+          <Typography variant="caption" fontWeight={600} color="#475569">
+            Half Day
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "#EF4444" }} />
+          <Typography variant="caption" fontWeight={600} color="#475569">
+            Absent
+          </Typography>
+        </Box>
+      </Stack>
+
+      {/* Custom Bar Chart Canvas matching reference image */}
+      <Box sx={{ height: 160, display: "flex", alignItems: "flex-end", position: "relative", pt: 2, pb: 1 }}>
+        {/* Y-Axis Grid Lines */}
+        <Box sx={{ position: "absolute", left: 24, right: 0, top: 0, bottom: 24, display: "flex", flexDirection: "column", justifyContent: "space-between", pointerEvents: "none" }}>
+          {[10, 8, 6, 4, 2, 0].map((val) => (
+            <Box key={val} sx={{ borderTop: "1px dashed #F1F5F9", width: "100%", position: "relative" }}>
+              <Typography variant="caption" color="#94A3B8" sx={{ position: "absolute", left: -24, top: -8, fontSize: "0.7rem" }}>
+                {val}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Grouped Bars */}
+        <Box sx={{ ml: 4, width: "100%", height: 130, display: "flex", justifyContent: "space-around", alignItems: "flex-end", zIndex: 1 }}>
+          {chartWeeks.map((w, idx) => (
+            <Box key={idx} sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
+              <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.6, height: 110 }}>
+                {/* Present Bar (Blue) */}
+                <Box
+                  sx={{
+                    width: 12,
+                    height: `${(w.present / 10) * 100}%`,
+                    bgcolor: "#2563EB",
+                    borderRadius: "4px 4px 0 0",
+                    transition: "height 0.3s ease",
+                  }}
+                />
+                {/* Half Day Bar (Yellow) */}
+                {w.halfDay > 0 && (
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: `${(w.halfDay / 10) * 100}%`,
+                      bgcolor: "#F59E0B",
+                      borderRadius: "4px 4px 0 0",
+                    }}
+                  />
+                )}
+                {/* Absent Bar (Red) */}
+                {w.absent > 0 && (
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: `${(w.absent / 10) * 100}%`,
+                      bgcolor: "#EF4444",
+                      borderRadius: "4px 4px 0 0",
+                    }}
+                  />
+                )}
+              </Box>
+              <Typography variant="caption" fontWeight={600} color="#64748B" sx={{ fontSize: "0.72rem" }}>
+                {w.label}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      {/* Backend Action Controls */}
+      <Box sx={{ mt: 2, pt: 2, borderTop: "1px solid #F1F5F9", display: "flex", gap: 1.5 }}>
+        {!hasCheckedIn && (
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={actionLoading}
+            onClick={handleCheckIn}
+            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Login />}
+            sx={{
+              py: 1,
+              borderRadius: "10px",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              bgcolor: "#2563EB",
+              color: "#FFFFFF",
+              textTransform: "none",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#1D4ED8" },
+            }}
+          >
+            {actionLoading ? "Checking in..." : "Check In Now"}
+          </Button>
+        )}
+
+        {hasCheckedIn && !hasCheckedOut && (
+          <Button
+            variant="contained"
+            fullWidth
+            disabled={actionLoading}
+            onClick={handleCheckOut}
+            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : <Logout />}
+            sx={{
+              py: 1,
+              borderRadius: "10px",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              bgcolor: "#EF4444",
+              color: "#FFFFFF",
+              textTransform: "none",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#DC2626" },
+            }}
+          >
+            {actionLoading ? "Checking out..." : "Check Out Now"}
+          </Button>
+        )}
+
+        {hasCheckedIn && hasCheckedOut && (
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: "12px",
-              bgcolor: "#1976D2",
-              color: "#FFFFFF",
+              w: "100%",
+              width: "100%",
+              py: 1,
+              px: 2,
+              borderRadius: "10px",
+              bgcolor: "#DCFCE7",
+              textAlign: "center",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              gap: 0.8,
             }}
           >
-            <AccessTime />
-          </Box>
-          <Box>
-            <Typography variant="subtitle1" fontWeight={700} color="#0F172A" sx={{ lineHeight: 1.2 }}>
-              Attendance & Monthly Summary
-            </Typography>
-            <Typography variant="caption" color="#64748B">
-              Live check-in status and current month breakdown
+            <CheckCircle sx={{ fontSize: 18, color: "#15803D" }} />
+            <Typography variant="body2" fontWeight={700} color="#15803D">
+              Shift Completed for Today
             </Typography>
           </Box>
-        </Box>
+        )}
 
-        <Tooltip title="Refresh Status">
-          <IconButton size="small" onClick={fetchTodayAttendance} sx={{ border: "1px solid #E2E8F0" }}>
-            <Refresh fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        <IconButton size="small" onClick={fetchTodayAttendance} sx={{ border: "1px solid #E2E8F0" }}>
+          <Refresh fontSize="small" />
+        </IconButton>
       </Box>
-
-      <Grid container spacing={3}>
-        {/* Left Sub-Section: Today Punch Actions & Status */}
-        <Grid xs={12} md={6}>
-          <Box
-            sx={{
-              p: 2.5,
-              borderRadius: "16px",
-              bgcolor: "#F8FAFC",
-              border: "1px solid #E2E8F0",
-              height: "100%",
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="body2" fontWeight={700} color="#475569">
-                  TODAY'S SHIFT LOG
-                </Typography>
-                <Chip
-                  label={
-                    hasCheckedOut
-                      ? "Shift Completed"
-                      : hasCheckedIn
-                      ? "Currently Checked In"
-                      : "Not Checked In"
-                  }
-                  size="small"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: "0.72rem",
-                    bgcolor: hasCheckedOut
-                      ? "#E0F2FE"
-                      : hasCheckedIn
-                      ? "#DCFCE7"
-                      : "#FEF2F2",
-                    color: hasCheckedOut
-                      ? "#0369A1"
-                      : hasCheckedIn
-                      ? "#15803D"
-                      : "#DC2626",
-                    borderRadius: "6px",
-                  }}
-                />
-              </Box>
-
-              {/* Punch Stats Box */}
-              <Grid container spacing={2} textAlign="center" sx={{ mb: 2.5 }}>
-                <Grid xs={4}>
-                  <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
-                    CHECK IN
-                  </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
-                    {hasCheckedIn ? formatTime(todayRecord.check_in) : "--:--"}
-                  </Typography>
-                </Grid>
-                <Grid xs={4} sx={{ borderLeft: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>
-                  <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
-                    CHECK OUT
-                  </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
-                    {hasCheckedOut ? formatTime(todayRecord.check_out) : "--:--"}
-                  </Typography>
-                </Grid>
-                <Grid xs={4}>
-                  <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
-                    WORK HOURS
-                  </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
-                    {todayRecord?.working_hours ? `${todayRecord.working_hours} hrs` : "--"}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-
-            {/* Action Button */}
-            <Box sx={{ mt: 1 }}>
-              {!hasCheckedIn && (
-                <Button
-                  variant="contained"
-                  fullWidth
-                  disabled={actionLoading}
-                  onClick={handleCheckIn}
-                  startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <Login />}
-                  sx={{
-                    py: 1.2,
-                    borderRadius: "12px",
-                    fontWeight: 700,
-                    bgcolor: "#1976D2",
-                    color: "#FFFFFF",
-                    textTransform: "none",
-                    boxShadow: "0 4px 14px rgba(25, 118, 210, 0.35)",
-                    "&:hover": { bgcolor: "#1565C0" },
-                  }}
-                >
-                  {actionLoading ? "Processing..." : "Check In Now"}
-                </Button>
-              )}
-
-              {hasCheckedIn && !hasCheckedOut && (
-                <Button
-                  variant="contained"
-                  fullWidth
-                  disabled={actionLoading}
-                  onClick={handleCheckOut}
-                  startIcon={actionLoading ? <CircularProgress size={18} color="inherit" /> : <Logout />}
-                  sx={{
-                    py: 1.2,
-                    borderRadius: "12px",
-                    fontWeight: 700,
-                    bgcolor: "#0F172A",
-                    color: "#FFFFFF",
-                    textTransform: "none",
-                    boxShadow: "0 4px 14px rgba(15, 23, 42, 0.3)",
-                    "&:hover": { bgcolor: "#1E293B" },
-                  }}
-                >
-                  {actionLoading ? "Processing..." : "Check Out Now"}
-                </Button>
-              )}
-
-              {hasCheckedIn && hasCheckedOut && (
-                <Box
-                  sx={{
-                    py: 1.2,
-                    px: 2,
-                    borderRadius: "12px",
-                    bgcolor: "#F1F5F9",
-                    textAlign: "center",
-                    border: "1px solid #E2E8F0",
-                  }}
-                >
-                  <Typography variant="body2" fontWeight={700} color="#15803D" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.8 }}>
-                    <CheckCircle fontSize="small" /> Attendance Logged for Today
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          </Box>
-        </Grid>
-
-        {/* Right Sub-Section: Monthly Bar Chart */}
-        <Grid xs={12} md={6}>
-          <Box
-            sx={{
-              p: 2.5,
-              borderRadius: "16px",
-              bgcolor: "#FFFFFF",
-              border: "1px solid #E2E8F0",
-              height: "100%",
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-                <Typography variant="body2" fontWeight={700} color="#475569">
-                  MONTHLY ATTENDANCE SUMMARY
-                </Typography>
-                <Chip
-                  icon={<TrendingUp sx={{ fontSize: "14px !important", color: "#1976D2" }} />}
-                  label={`${presentPercent}% Attendance`}
-                  size="small"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: "0.72rem",
-                    bgcolor: "#E0F2FE",
-                    color: "#0369A1",
-                    borderRadius: "6px",
-                  }}
-                />
-              </Box>
-
-              {/* Progress Bar Categories */}
-              <Stack spacing={2} sx={{ my: 1 }}>
-                {/* Present Bar */}
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                    <Typography variant="caption" fontWeight={600} color="#0F172A">
-                      Present ({monthlyStats.present} Days)
-                    </Typography>
-                    <Typography variant="caption" fontWeight={700} color="#16A34A">
-                      {presentPercent}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={presentPercent}
-                    sx={{
-                      height: 10,
-                      borderRadius: 5,
-                      bgcolor: "#F1F5F9",
-                      "& .MuiLinearProgress-bar": { bgcolor: "#22C55E", borderRadius: 5 },
-                    }}
-                  />
-                </Box>
-
-                {/* Half Day Bar */}
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                    <Typography variant="caption" fontWeight={600} color="#0F172A">
-                      Half Day ({monthlyStats.halfDay} Days)
-                    </Typography>
-                    <Typography variant="caption" fontWeight={700} color="#D97706">
-                      {halfDayPercent}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={halfDayPercent}
-                    sx={{
-                      height: 10,
-                      borderRadius: 5,
-                      bgcolor: "#F1F5F9",
-                      "& .MuiLinearProgress-bar": { bgcolor: "#F59E0B", borderRadius: 5 },
-                    }}
-                  />
-                </Box>
-
-                {/* Absent Bar */}
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                    <Typography variant="caption" fontWeight={600} color="#0F172A">
-                      Absent / Leave ({monthlyStats.absent} Days)
-                    </Typography>
-                    <Typography variant="caption" fontWeight={700} color="#DC2626">
-                      {absentPercent}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={absentPercent}
-                    sx={{
-                      height: 10,
-                      borderRadius: 5,
-                      bgcolor: "#F1F5F9",
-                      "& .MuiLinearProgress-bar": { bgcolor: "#EF4444", borderRadius: 5 },
-                    }}
-                  />
-                </Box>
-              </Stack>
-            </Box>
-
-            <Typography variant="caption" color="#64748B" display="block" sx={{ mt: 1 }}>
-              * Calculated automatically based on approved shift entries for the current calendar month.
-            </Typography>
-          </Box>
-        </Grid>
-      </Grid>
     </Paper>
   );
 }

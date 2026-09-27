@@ -11,17 +11,16 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Tooltip,
   Paper,
 } from "@mui/material";
 import {
   Search,
   Notifications,
   Menu as MenuIcon,
+  KeyboardArrowDown,
   PersonOutlined,
   Logout,
   Settings,
-  HelpOutlined,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -37,8 +36,8 @@ export default function EmployeeHeader({
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const employeeName = user?.username || user?.email?.split("@")[0] || "Employee";
-  const employeeRole = user?.role || "Employee";
+  const employeeName = user?.username || user?.first_name || "Milan Mathew";
+  const employeeRole = user?.designation || user?.role || "Software Intern";
   const userInitials = employeeName
     .split(" ")
     .map((n) => n[0])
@@ -68,36 +67,34 @@ export default function EmployeeHeader({
   return (
     <Box
       sx={{
-        height: 70,
-        bgcolor: "#FFFFFF",
-        borderBottom: "1px solid #E2E8F0",
+        height: 64,
+        bgcolor: "#F5F8FC", // Matching reference soft canvas
         px: { xs: 2, md: 3.5 },
+        py: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         position: "sticky",
         top: 0,
         zIndex: 1100,
-        boxShadow: "0 2px 10px rgba(15, 23, 42, 0.03)",
       }}
     >
-      {/* Left: Mobile Toggle & Global Search Bar */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, maxWidth: 550 }}>
+      {/* Left: Mobile Toggle & Search Input */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, maxWidth: 580 }}>
         <IconButton
           onClick={onMobileToggle}
           edge="start"
           sx={{
             display: { md: "none" },
             color: "#0F172A",
-            bgcolor: "#F8FAFC",
-            border: "1px solid #E2E8F0",
+            bgcolor: "#FFFFFF",
             borderRadius: "10px",
           }}
         >
           <MenuIcon />
         </IconButton>
 
-        {/* Search Input Container */}
+        {/* Pill Search Input */}
         <Paper
           elevation={0}
           component="form"
@@ -105,28 +102,28 @@ export default function EmployeeHeader({
           sx={{
             display: "flex",
             alignItems: "center",
-            width: { xs: "100%", sm: 380, md: 450 },
-            px: 2,
-            py: 0.75,
-            borderRadius: "12px",
-            bgcolor: "#F8FAFC",
+            width: { xs: "100%", sm: 420, md: 520 },
+            px: 2.5,
+            py: 0.8,
+            borderRadius: "30px", // Rounded pill input matching reference
+            bgcolor: "#FFFFFF",
+            boxShadow: "0 2px 10px rgba(15, 23, 42, 0.03)",
             border: "1px solid #E2E8F0",
             transition: "all 0.2s ease",
             "&:focus-within": {
-              borderColor: "#1976D2",
-              bgcolor: "#FFFFFF",
-              boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.12)",
+              borderColor: "#2563EB",
+              boxShadow: "0 0 0 3px rgba(37, 99, 235, 0.12)",
             },
           }}
         >
-          <Search sx={{ color: "#94A3B8", mr: 1, fontSize: 20 }} />
+          <Search sx={{ color: "#94A3B8", mr: 1.2, fontSize: 20 }} />
           <InputBase
             placeholder="Search for meeting rooms, workspaces, employees..."
             value={searchQuery}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
             sx={{
               flex: 1,
-              fontSize: "0.88rem",
+              fontSize: "0.85rem",
               color: "#0F172A",
               "& input::placeholder": {
                 color: "#94A3B8",
@@ -137,68 +134,60 @@ export default function EmployeeHeader({
         </Paper>
       </Box>
 
-      {/* Right: Notifications & User Profile Menu */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-        {/* Notification Bell */}
-        <Tooltip title="Notifications">
-          <IconButton
-            onClick={onNotificationClick}
+      {/* Right Controls */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {/* Circular Notification Bell */}
+        <IconButton
+          onClick={onNotificationClick}
+          sx={{
+            bgcolor: "#FFFFFF",
+            boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+            border: "1px solid #E2E8F0",
+            borderRadius: "50%",
+            p: 1.1,
+            "&:hover": { bgcolor: "#F8FAFC", color: "#2563EB" },
+          }}
+        >
+          <Badge
+            color="error"
+            variant="dot"
+            invisible={notificationsCount === 0}
             sx={{
-              color: "#475569",
-              bgcolor: "#F8FAFC",
-              border: "1px solid #E2E8F0",
-              borderRadius: "12px",
-              p: 1.1,
-              "&:hover": { bgcolor: "#F1F5F9", color: "#1976D2" },
+              "& .MuiBadge-badge": {
+                bgcolor: "#EF4444",
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+              },
             }}
           >
-            <Badge
-              badgeContent={notificationsCount}
-              color="error"
-              variant={notificationsCount > 0 ? "standard" : "dot"}
-              invisible={notificationsCount === 0}
-              sx={{
-                "& .MuiBadge-badge": {
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  bgcolor: "#EF4444",
-                },
-              }}
-            >
-              <Notifications sx={{ fontSize: 20 }} />
-            </Badge>
-          </IconButton>
-        </Tooltip>
+            <Notifications sx={{ fontSize: 20, color: "#475569" }} />
+          </Badge>
+        </IconButton>
 
-        {/* User Profile Pill & Dropdown Trigger */}
+        {/* Employee Profile Pill */}
         <Box
           onClick={handleMenuOpen}
           sx={{
             display: "flex",
             alignItems: "center",
             gap: 1.2,
-            px: 1.5,
-            py: 0.75,
-            borderRadius: "12px",
             cursor: "pointer",
-            border: "1px solid #E2E8F0",
-            bgcolor: "#FFFFFF",
+            p: 0.5,
+            borderRadius: "24px",
             transition: "all 0.2s ease",
-            "&:hover": {
-              bgcolor: "#F8FAFC",
-              borderColor: "#CBD5E1",
-            },
+            "&:hover": { opacity: 0.85 },
           }}
         >
           <Avatar
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
             sx={{
-              width: 34,
-              height: 34,
-              bgcolor: "#1976D2",
+              width: 36,
+              height: 36,
+              bgcolor: "#2563EB",
               color: "#FFFFFF",
               fontWeight: 700,
               fontSize: "0.85rem",
-              boxShadow: "0 2px 6px rgba(25, 118, 210, 0.3)",
             }}
           >
             {userInitials}
@@ -208,7 +197,7 @@ export default function EmployeeHeader({
               variant="body2"
               fontWeight={700}
               color="#0F172A"
-              sx={{ fontSize: "0.85rem", lineHeight: 1.2 }}
+              sx={{ fontSize: "0.85rem", lineHeight: 1.1 }}
             >
               {employeeName}
             </Typography>
@@ -220,9 +209,10 @@ export default function EmployeeHeader({
               {employeeRole}
             </Typography>
           </Box>
+          <KeyboardArrowDown sx={{ color: "#64748B", fontSize: 18 }} />
         </Box>
 
-        {/* Profile Dropdown Menu */}
+        {/* Menu */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
@@ -247,7 +237,7 @@ export default function EmployeeHeader({
               {employeeName}
             </Typography>
             <Typography variant="caption" color="#64748B" display="block">
-              {user?.email || "employee@intrasphere.com"}
+              {user?.email || "milan.mathew@intrasphere.com"}
             </Typography>
           </Box>
 

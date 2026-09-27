@@ -215,13 +215,15 @@ async def get_all_rooms_filtered(
 
         created_at_str = format_iso_utc(r.get("created_at"))
 
+        room_title = r.get("room_name") or r.get("name") or "Meeting Room"
         rooms.append({
             "id": str(r["_id"]),
-            "room_name": r["room_name"],
-            "room_code": r["room_code"],
-            "floor": r["floor"],
-            "location": r["location"],
-            "capacity": r["capacity"],
+            "name": room_title,
+            "room_name": room_title,
+            "room_code": r.get("room_code", f"CR-{str(r['_id'])[-4:]}"),
+            "floor": r.get("floor", 1),
+            "location": r.get("location", "Main Office"),
+            "capacity": r.get("capacity", 8),
             "description": r.get("description", ""),
             "facilities": r.get("facilities", []),
             "status": r.get("status", "Available"),
@@ -273,13 +275,15 @@ async def get_room_details_by_id(room_id_str: str):
             "attendee_count": len(b.get("attendees", [])) + 1
         })
 
+    room_title = room.get("room_name") or room.get("name") or "Meeting Room"
     return {
         "id": str(room["_id"]),
-        "room_name": room["room_name"],
-        "room_code": room["room_code"],
-        "floor": room["floor"],
-        "location": room["location"],
-        "capacity": room["capacity"],
+        "name": room_title,
+        "room_name": room_title,
+        "room_code": room.get("room_code", f"CR-{str(room['_id'])[-4:]}"),
+        "floor": room.get("floor", 1),
+        "location": room.get("location", "Main Office"),
+        "capacity": room.get("capacity", 8),
         "description": room.get("description", ""),
         "facilities": room.get("facilities", []),
         "status": room.get("status", "Available"),
@@ -604,17 +608,21 @@ async def create_room(room_data, user_payload: dict):
     if role not in ("Admin", "Facility Manager"):
         raise HTTPException(status_code=403, detail="Only Facility Managers and Admins can create meeting rooms.")
 
+    name_str = (room_data.room_name or room_data.name or "Meeting Room").strip()
+    code_str = (room_data.room_code or f"RM-{int(datetime.utcnow().timestamp()) % 10000}").strip()
+
     # Check for duplicate room_code
-    existing = await rooms_collection.find_one({"room_code": room_data.room_code.strip()})
+    existing = await rooms_collection.find_one({"room_code": code_str})
     if existing:
-        raise HTTPException(status_code=409, detail=f"Room code '{room_data.room_code}' already exists.")
+        code_str = f"{code_str}-{int(datetime.utcnow().timestamp()) % 1000}"
 
     new_room = {
-        "room_name": room_data.room_name.strip(),
-        "room_code": room_data.room_code.strip(),
-        "floor": room_data.floor,
-        "location": room_data.location.strip(),
-        "capacity": room_data.capacity,
+        "room_name": name_str,
+        "name": name_str,
+        "room_code": code_str,
+        "floor": room_data.floor or 1,
+        "location": (room_data.location or "Main Wing").strip(),
+        "capacity": room_data.capacity or 8,
         "description": room_data.description.strip() if room_data.description else "",
         "facilities": room_data.facilities or [],
         "status": room_data.status or "Available",

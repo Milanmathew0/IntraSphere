@@ -529,8 +529,7 @@ export default function UserDashboard() {
                       alignItems="center"
                       justifyContent="space-between"
                       p={1.5}
-                      borderRadius="12px"
-                      sx={{ background: "#FFFFFF", border: "1px solid #E2E8F0" }}
+                      sx={{ borderRadius: "12px", background: "#FFFFFF", border: "1px solid #E2E8F0" }}
                     >
                       <Typography variant="body2" fontWeight={600} color="#0F172A">
                         {role}

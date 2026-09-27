@@ -36,6 +36,7 @@ import TeamPresenceWidget from "../components/dashboard/TeamPresenceWidget";
 import TeamLeaveApprovalsWidget from "../components/dashboard/TeamLeaveApprovalsWidget";
 import EmployeeDirectoryWidget from "../components/dashboard/EmployeeDirectoryWidget";
 import AddEmployeeModal from "../components/Employee/AddEmployeeModal";
+import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 import api from "../api/axios";
 
 export default function ManagerDashboard() {
@@ -118,13 +119,9 @@ export default function ManagerDashboard() {
         (e) => e.employment_status === "Active" || e.is_active !== false
       ).length;
 
-      let presentPercentage = 100;
+      let presentPercentage = 0;
       if (totalWorkforce > 0) {
-        if (todayAttCount > 0) {
-          presentPercentage = Math.round((todayAttCount / totalWorkforce) * 100);
-        } else {
-          presentPercentage = Math.round((activeEmps / totalWorkforce) * 100);
-        }
+        presentPercentage = Math.round((todayAttCount / totalWorkforce) * 100);
       }
 
       setMetrics({
@@ -360,36 +357,7 @@ export default function ManagerDashboard() {
               <Bell size={18} />
             </IconButton>
 
-            {/* Profile Chip / Avatar */}
-            <Box
-              sx={{
-                bgcolor: "#FFFFFF",
-                border: "1px solid #E4E4E7",
-                borderRadius: "50px",
-                px: 1.5,
-                py: 0.5,
-                display: "flex",
-                alignItems: "center",
-                gap: 1.25,
-              }}
-            >
-              <Avatar
-                sx={{
-                  width: 32,
-                  height: 32,
-                  bgcolor: "#09090B",
-                  color: "#FFFFFF",
-                  fontSize: "14px",
-                  fontWeight: 700
-                }}
-              >
-                {username.charAt(0).toUpperCase()}
-              </Avatar>
-              <Typography variant="body2" fontWeight={700} color="#09090B">
-                {username}
-              </Typography>
-              <ChevronDown size={14} color="#71717A" />
-            </Box>
+            <UserProfileHeader user={{ ...user, role: "Manager" }} onLogout={handleLogout} />
           </Box>
         </Box>
 

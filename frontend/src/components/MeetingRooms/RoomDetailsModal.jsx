@@ -299,8 +299,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                       <Box
                         key={idx}
                         p={1.5}
-                        borderRadius="12px"
-                        sx={{ bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", boxShadow: "0 2px 6px rgba(0,0,0,0.02)" }}
+                        sx={{ borderRadius: "12px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0", boxShadow: "0 2px 6px rgba(0,0,0,0.02)" }}
                       >
                         <Typography variant="subtitle2" fontWeight={800} color="#1E293B">
                           {slot.title}

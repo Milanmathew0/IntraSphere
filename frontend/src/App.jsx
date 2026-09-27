@@ -15,6 +15,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Employees from "./pages/Employees";
 import Leave from "./pages/Leave";
 import MeetingRooms from "./pages/MeetingRooms";
+import WorkspaceReservation from "./pages/WorkspaceReservation";
+import FacilityManagerDashboard from "./pages/FacilityManagerDashboard";
+import FacilityManagement from "./pages/FacilityManagement";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -80,12 +84,56 @@ function App() {
               }
             />
 
+            {/* Facility Manager & Facility Management Routes */}
+            <Route
+              path="/facility-manager"
+              element={
+                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                  <FacilityManagerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/facility-management"
+              element={
+                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                  <FacilityManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/facility-management/*"
+              element={
+                <ProtectedRoute allowedRoles={["Facility Manager", "Admin"]}>
+                  <FacilityManagement />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Meeting Room Booking Route */}
             <Route
               path="/meeting-rooms"
               element={
                 <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
                   <MeetingRooms />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Workspace / Desk Reservation Route */}
+            <Route
+              path="/workspaces"
+              element={
+                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <WorkspaceReservation />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/workspace-reservation"
+              element={
+                <ProtectedRoute allowedRoles={["Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <WorkspaceReservation />
                 </ProtectedRoute>
               }
             />
@@ -106,6 +154,16 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
                   <Employees />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Profile Route for all authenticated users */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

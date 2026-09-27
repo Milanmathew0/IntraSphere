@@ -7,11 +7,12 @@ from datetime import datetime
 # ==========================================
 
 class RoomCreate(BaseModel):
-    room_name: str = Field(..., example="Conference Room A")
-    room_code: str = Field(..., example="CR-A-201")
-    floor: int = Field(..., example=2)
-    location: str = Field(..., example="North Wing")
-    capacity: int = Field(..., example=10, gt=0)
+    room_name: Optional[str] = Field(None, example="Conference Room A")
+    name: Optional[str] = Field(None, example="Conference Room A")
+    room_code: Optional[str] = Field(None, example="CR-A-201")
+    floor: int = Field(1, example=2)
+    location: str = Field("Main Wing", example="North Wing")
+    capacity: int = Field(8, example=10, gt=0)
     description: Optional[str] = Field(None, example="Executive conference room with 4K display and VC.")
     facilities: List[str] = Field(default_factory=list, example=["Projector", "Video Conferencing", "Whiteboard"])
     status: Optional[str] = Field("Available", example="Available") # Available, Maintenance, Inactive
@@ -21,6 +22,7 @@ class RoomCreate(BaseModel):
 
 class RoomUpdate(BaseModel):
     room_name: Optional[str] = None
+    name: Optional[str] = None
     room_code: Optional[str] = None
     floor: Optional[int] = None
     location: Optional[str] = None

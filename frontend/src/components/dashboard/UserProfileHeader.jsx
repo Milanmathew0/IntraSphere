@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -26,6 +27,7 @@ export default function UserProfileHeader({
   user,
   onLogout,
 }) {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const email = user?.email || localStorage.getItem("email") || "michael@gmail.com";
@@ -51,6 +53,16 @@ export default function UserProfileHeader({
         bgColor: "#F4F4F5",
         borderColor: "#E4E4E7",
         gradient: "#09090B",
+        pulse: false,
+      };
+    }
+    if (role === "Facility Manager") {
+      return {
+        label: "Role: Facility Manager",
+        color: "#1976D2",
+        bgColor: "#E3F2FD",
+        borderColor: "#90CAF9",
+        gradient: "linear-gradient(135deg, #1565C0 0%, #1976D2 100%)",
         pulse: false,
       };
     }
@@ -397,6 +409,10 @@ export default function UserProfileHeader({
               fullWidth
               variant="text"
               startIcon={<User size={16} color="#64748B" />}
+              onClick={() => {
+                handleCloseMenu();
+                navigate("/profile");
+              }}
               sx={{
                 justifyContent: "flex-start",
                 borderRadius: "10px",

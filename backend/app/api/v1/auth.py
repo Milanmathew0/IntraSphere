@@ -267,7 +267,22 @@ async def resend_activation(payload: ResendActivationRequest):
 async def get_logged_in_user(
     current_user=Depends(get_current_user)
 ):
+    email = current_user.get("sub")
+    db_user = await get_user_by_email(email) if email else None
+    user_role = current_user.get("role", "User")
+    username = current_user.get("username", email.split("@")[0] if email else "")
+
+    if db_user:
+        user_role = await sync_and_get_user_role(db_user)
+        username = db_user.get("username", username)
+
     return {
         "message": "Authenticated user",
-        "user": current_user
+        "user": {
+            "sub": email,
+            "email": email,
+            "role": user_role,
+            "username": username,
+            "user_id": str(db_user["_id"]) if db_user else ""
+        }
     }

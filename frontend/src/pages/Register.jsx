@@ -14,6 +14,10 @@ import {
   Alert,
   TextField,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -62,40 +66,27 @@ export default function Register() {
       );
       return JSON.parse(jsonPayload);
     } catch (e) {
-      return {};
+      return null;
     }
   };
 
   // LIVE VALIDATORS
   const validateUsername = (val) => {
-    const trimmed = val.trim();
-    if (!trimmed) return "Full name / Username is required";
-    if (trimmed.length < 3) return "Username must be at least 3 characters long";
-    if (!/^[a-zA-Z0-9._\s-]+$/.test(trimmed)) {
-      return "Username can only contain letters, numbers, spaces, and . - _";
-    }
+    if (!val || !val.trim()) return "Full name is required";
+    if (val.trim().length < 3) return "Name must be at least 3 characters";
     return "";
   };
 
   const validateEmail = (val) => {
-    const trimmed = val.trim();
-    if (!trimmed) return "Email address is required";
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(trimmed)) {
-      return "Please enter a valid email address (e.g. name@company.com)";
-    }
+    if (!val || !val.trim()) return "Email address is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(val.trim())) return "Enter a valid email address";
     return "";
   };
 
   const validatePassword = (val) => {
     if (!val) return "Password is required";
     if (val.length < 8) return "Password must be at least 8 characters long";
-    if (!/[a-z]/.test(val) || !/[A-Z]/.test(val)) {
-      return "Password must contain both uppercase and lowercase letters";
-    }
-    if (!/[\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(val)) {
-      return "Password must include at least one number or special character";
-    }
     return "";
   };
 
@@ -105,54 +96,84 @@ export default function Register() {
     return "";
   };
 
+  const getFirstErrorMap = (rawErrors) => {
+    const fields = ["username", "email", "password", "confirmPassword"];
+    const result = { username: "", email: "", password: "", confirmPassword: "" };
+    for (const f of fields) {
+      if (rawErrors[f]) {
+        result[f] = rawErrors[f];
+        break;
+      }
+    }
+    return result;
+  };
+
   // INSTANT LIVE KEYSTROKE HANDLERS
   const handleUsernameChange = (e) => {
     const val = e.target.value;
     setUsername(val);
     setTouched((prev) => ({ ...prev, username: true }));
-    setErrors((prev) => ({ ...prev, username: validateUsername(val) }));
+    const raw = {
+      username: validateUsername(val),
+      email: validateEmail(email),
+      password: validatePassword(password),
+      confirmPassword: validateConfirmPassword(confirmPassword, password),
+    };
+    setErrors(getFirstErrorMap(raw));
   };
 
   const handleEmailChange = (e) => {
     const val = e.target.value;
     setEmail(val);
     setTouched((prev) => ({ ...prev, email: true }));
-    setErrors((prev) => ({ ...prev, email: validateEmail(val) }));
+    const raw = {
+      username: validateUsername(username),
+      email: validateEmail(val),
+      password: validatePassword(password),
+      confirmPassword: validateConfirmPassword(confirmPassword, password),
+    };
+    setErrors(getFirstErrorMap(raw));
   };
 
   const handlePasswordChange = (e) => {
     const val = e.target.value;
     setPassword(val);
     setTouched((prev) => ({ ...prev, password: true }));
-    setErrors((prev) => ({
-      ...prev,
+    const raw = {
+      username: validateUsername(username),
+      email: validateEmail(email),
       password: validatePassword(val),
-      confirmPassword: confirmPassword ? validateConfirmPassword(confirmPassword, val) : prev.confirmPassword,
-    }));
+      confirmPassword: confirmPassword ? validateConfirmPassword(confirmPassword, val) : "",
+    };
+    setErrors(getFirstErrorMap(raw));
   };
 
   const handleConfirmPasswordChange = (e) => {
     const val = e.target.value;
     setConfirmPassword(val);
     setTouched((prev) => ({ ...prev, confirmPassword: true }));
-    setErrors((prev) => ({ ...prev, confirmPassword: validateConfirmPassword(val, password) }));
+    const raw = {
+      username: validateUsername(username),
+      email: validateEmail(email),
+      password: validatePassword(password),
+      confirmPassword: validateConfirmPassword(val, password),
+    };
+    setErrors(getFirstErrorMap(raw));
   };
 
   const validateForm = () => {
-    const uErr = validateUsername(username);
-    const eErr = validateEmail(email);
-    const pErr = validatePassword(password);
-    const cErr = validateConfirmPassword(confirmPassword, password);
+    const rawErrors = {
+      username: validateUsername(username),
+      email: validateEmail(email),
+      password: validatePassword(password),
+      confirmPassword: validateConfirmPassword(confirmPassword, password),
+    };
 
-    setErrors({
-      username: uErr,
-      email: eErr,
-      password: pErr,
-      confirmPassword: cErr,
-    });
+    const hasAnyError = Object.values(rawErrors).some(Boolean);
+    setErrors(getFirstErrorMap(rawErrors));
     setTouched({ username: true, email: true, password: true, confirmPassword: true });
 
-    return !uErr && !eErr && !pErr && !cErr;
+    return !hasAnyError;
   };
 
   const handleSubmit = async (e) => {

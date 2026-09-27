@@ -149,9 +149,8 @@ export default function TeamLeaveApprovalsWidget({ showToast }) {
         {leaveRequests.length === 0 ? (
           <Box
             p={4}
-            borderRadius="12px"
             textAlign="center"
-            sx={{ bgcolor: "#F8FAFC", border: "1px dashed #CBD5E1", my: "auto" }}
+            sx={{ borderRadius: "12px", bgcolor: "#F8FAFC", border: "1px dashed #CBD5E1", my: "auto" }}
           >
             <CheckCircle2 size={36} color="#10B981" style={{ marginBottom: 8 }} />
             <Typography variant="subtitle2" fontWeight={700} color="#1E293B">

@@ -537,7 +537,7 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
                   </Typography>
 
                   {attachmentUrl ? (
-                    <Box display="flex" justifyContent="space-between" alignItems="center" bgcolor="#FFFFFF" p={1.5} borderRadius="8px" border="1px solid #E2E8F0">
+                    <Box display="flex" justifyContent="space-between" alignItems="center" p={1.5} sx={{ borderRadius: "8px", bgcolor: "#FFFFFF", border: "1px solid #E2E8F0" }}>
                       <Typography variant="caption" fontWeight={600} color="#1E293B" noWrap sx={{ maxWidth: 300 }}>
                         {attachmentName || "Attached Document"}
                       </Typography>

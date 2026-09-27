@@ -68,6 +68,7 @@ async def get_or_create_google_user(email: str, name: str = "", picture: str = "
     new_user["_id"] = user_id
     return new_user
 
+from datetime import datetime
 from bson import ObjectId
 
 async def sync_and_get_user_role(db_user: dict) -> str:
@@ -75,8 +76,8 @@ async def sync_and_get_user_role(db_user: dict) -> str:
         return "User"
 
     user_role = db_user.get("role", "User")
-    if user_role == "Admin":
-        return "Admin"
+    if user_role in ["Admin", "Facility Manager"]:
+        return user_role
 
     users_collection = db["users"]
     employees_collection = db["employees"]
@@ -125,6 +126,14 @@ async def sync_and_get_user_role(db_user: dict) -> str:
         emp_role_lower = emp_role.lower()
 
         if (
+            "facility manager" in desig_lower
+            or "facility" in desig_lower
+            or designation_name == "Facility Manager"
+            or emp_role == "Facility Manager"
+            or emp_role_lower == "facility manager"
+        ):
+            detected_role = "Facility Manager"
+        elif (
             "manager" in desig_lower
             or "manager" in emp_role_lower
             or designation_name == "Manager"
@@ -149,4 +158,66 @@ async def sync_and_get_user_role(db_user: dict) -> str:
             )
             db_user["role"] = user_role
 
-    return user_role
+    return user_role
+
+
+async def init_facility_manager():
+    """Seed or update default pre-configured Facility Manager account on startup."""
+    users_collection = db["users"]
+    employees_collection = db["employees"]
+
+    email = "hari@gmail.com"
+    old_email = "facilitymanager@intrasphere.com"
+
+    existing = await users_collection.find_one({"email": email})
+    if not existing:
+        existing = await users_collection.find_one({"email": old_email})
+
+    if not existing:
+        new_user = {
+            "username": "Hari",
+            "email": email,
+            "password": hash_password("Hari@07"),
+            "role": "Facility Manager",
+            "is_active": True,
+            "account_status": "Active"
+        }
+        res = await users_collection.insert_one(new_user)
+        user_id = res.inserted_id
+    else:
+        user_id = existing["_id"]
+        await users_collection.update_one(
+            {"_id": user_id},
+            {
+                "$set": {
+                    "email": email,
+                    "username": "Hari",
+                    "role": "Facility Manager",
+                    "password": hash_password("Hari@07"),
+                    "account_status": "Active",
+                    "is_active": True
+                }
+            }
+        )
+
+    emp_doc = {
+        "user_id": user_id,
+        "employee_id": "EMP-FM2026",
+        "first_name": "Hari",
+        "last_name": "",
+        "email": email,
+        "phone": "+1 (555) 019-9800",
+        "department": "Facility Operations",
+        "designation": "Facility Manager",
+        "role": "Facility Manager",
+        "employment_status": "Active",
+        "is_active": True,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
+    await employees_collection.update_one(
+        {"$or": [{"email": email}, {"email": old_email}]},
+        {"$set": emp_doc},
+        upsert=True
+    )
+

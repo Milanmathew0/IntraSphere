@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../api/axios";
 
 const AuthContext = createContext(null);
 
@@ -19,6 +20,42 @@ export const AuthProvider = ({ children }) => {
         }
       : null;
   });
+
+  useEffect(() => {
+    const syncAuthUser = async () => {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) return;
+
+      try {
+        const response = await api.get("/api/v1/auth/me");
+        if (response.data && response.data.user) {
+          const u = response.data.user;
+          const freshRole = u.role || "User";
+          const freshEmail = u.email || u.sub || "";
+          const freshUsername = u.username || freshEmail.split("@")[0];
+
+          localStorage.setItem("role", freshRole);
+          if (freshEmail) localStorage.setItem("email", freshEmail);
+          if (freshUsername) localStorage.setItem("username", freshUsername);
+
+          setRole(freshRole);
+          setUser((prev) => ({
+            ...prev,
+            email: freshEmail || prev?.email,
+            username: freshUsername || prev?.username,
+            role: freshRole,
+            id: u.user_id || prev?.id,
+          }));
+        }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          logout();
+        }
+      }
+    };
+
+    syncAuthUser();
+  }, [token]);
 
   const login = (data) => {
     const authToken = data.access_token;

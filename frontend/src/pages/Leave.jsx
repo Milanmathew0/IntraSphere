@@ -659,18 +659,6 @@ export default function Leave() {
                         </Typography>
                       </Typography>
 
-                      <Stack direction="row" spacing={2} mt={1.5} pt={1.5} sx={{ borderTop: "1px solid #F4F4F5" }}>
-                        <Box>
-                          <Typography variant="caption" color="#71717A">
-                            Used: <strong>{b.used}d</strong>
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="caption" color="#71717A">
-                            Pending: <strong>{b.pending}d</strong>
-                          </Typography>
-                        </Box>
-                      </Stack>
                     </Paper>
                   </Grid>
                 ))}

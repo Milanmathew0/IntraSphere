@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import {
   Sparkles,
@@ -32,7 +32,7 @@ import {
   LogOut,
   ChevronRight,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -47,6 +47,7 @@ import EmergencyMeetingRooms from "../components/dashboard/EmergencyMeetingRooms
 import WorkspaceReservationCard from "../components/dashboard/WorkspaceReservationCard";
 import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
 import EmployeeProfileSection from "../components/dashboard/EmployeeProfileSection";
+import UserProfileHeader from "../components/dashboard/UserProfileHeader";
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -58,6 +59,21 @@ export default function EmployeeDashboard() {
   const [activeModal, setActiveModal] = useState(null); // 'meeting_room' | 'workspace' | 'leave' | null
   const [searchQuery, setSearchQuery] = useState("");
   const [todayScheduleItems, setTodayScheduleItems] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get("/api/v1/notifications/my");
+        setNotifications(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error("Notifications fetch error:", err);
+      }
+    };
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchTodaySchedule = async () => {
@@ -74,8 +90,14 @@ export default function EmployeeDashboard() {
           .map((b) => {
             const startDt = new Date(b.start_time);
             const endDt = new Date(b.end_time);
-            const startFormatted = startDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-            const endFormatted = endDt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            const startFormatted = startDt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            const endFormatted = endDt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
             return {
               type: "meeting",
               title: b.title || b.room_name || "Meeting",
@@ -129,38 +151,38 @@ export default function EmployeeDashboard() {
       label: "My Dashboard & Overview",
       subtitle: "Personal attendance, schedule overview, and quick operations.",
       icon: LayoutDashboard,
-      path: "/dashboard"
+      path: "/dashboard",
     },
     {
       id: 1,
       label: "Daily Attendance Log",
-      subtitle: "Track check-in status and inspect your monthly attendance history.",
+      subtitle:
+        "Track check-in status and inspect your monthly attendance history.",
       icon: Clock,
-      path: "/dashboard"
+      path: "/dashboard",
     },
     {
       id: 2,
       label: "My Leave Applications",
       subtitle: "Submit new leave requests and track your approval status.",
       icon: Calendar,
-      path: "/leave"
+      path: "/leave",
     },
     {
       id: 3,
       label: "Workspaces & Rooms",
       subtitle: "Reserve quiet call pods, focus desks, and war room spaces.",
       icon: Building,
-      path: "/meeting-rooms"
+      path: "/meeting-rooms",
     },
     {
       id: 4,
       label: "My Profile Settings",
       subtitle: "View personal credentials and account details.",
       icon: Settings,
-      path: "/dashboard"
-    }
+      path: "/dashboard",
+    },
   ];
-
 
   const currentDateFormatted = new Date().toLocaleDateString("en-US", {
     weekday: "short",
@@ -171,7 +193,14 @@ export default function EmployeeDashboard() {
   const currentTabInfo = navTabs.find((t) => t.id === activeTab) || navTabs[0];
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA", display: "flex", fontFamily: "'Inter', sans-serif" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#FAFAFA",
+        display: "flex",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
       {/* 1. LEFT PERMANENT SIDEBAR (Jet Obsidian Black `#09090B`) */}
       <Box
         sx={{
@@ -183,11 +212,13 @@ export default function EmployeeDashboard() {
           p: 2.5,
           boxShadow: "4px 0 25px rgba(0,0,0,0.12)",
           zIndex: 10,
-          flexShrink: 0
+          flexShrink: 0,
         }}
       >
         {/* Brand Header Badge */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4, px: 1 }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4, px: 1 }}
+        >
           <Box
             sx={{
               bgcolor: "#FFFFFF",
@@ -198,18 +229,33 @@ export default function EmployeeDashboard() {
               display: "flex",
               alignItems: "center",
               gap: 1,
-              boxShadow: "0 4px 14px rgba(255, 255, 255, 0.2)"
+              boxShadow: "0 4px 14px rgba(255, 255, 255, 0.2)",
             }}
           >
             <Sparkles size={18} color="#09090B" />
-            <Typography variant="subtitle1" fontWeight={900} letterSpacing={-0.3} color="#09090B" sx={{ display: { xs: "none", md: "block" } }}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={900}
+              letterSpacing={-0.3}
+              color="#09090B"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
               IntraSphere
             </Typography>
           </Box>
         </Box>
 
         {/* Sidebar Navigation Menu */}
-        <Typography variant="caption" sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "#71717A",
+            fontWeight: 700,
+            px: 1.5,
+            mb: 1,
+            display: { xs: "none", md: "block" },
+          }}
+        >
           EMPLOYEE PORTAL
         </Typography>
 
@@ -221,7 +267,12 @@ export default function EmployeeDashboard() {
               <Box
                 key={item.id}
                 onClick={() => {
-                  if (item.id === 3 || item.path === "/meeting-rooms" || item.label.includes("Rooms") || item.label.includes("Workspace")) {
+                  if (
+                    item.id === 3 ||
+                    item.path === "/meeting-rooms" ||
+                    item.label.includes("Rooms") ||
+                    item.label.includes("Workspace")
+                  ) {
                     navigate("/meeting-rooms");
                   } else if (item.id === 2 || item.path === "/leave") {
                     navigate("/leave");
@@ -244,24 +295,42 @@ export default function EmployeeDashboard() {
                   transition: "all 0.2s ease",
                   "&:hover": {
                     bgcolor: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.1)",
-                    color: "#FFFFFF"
-                  }
+                    color: "#FFFFFF",
+                  },
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                   <IconComponent size={18} />
-                  <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
+                  <Typography
+                    variant="body2"
+                    fontWeight="inherit"
+                    sx={{ display: { xs: "none", md: "block" } }}
+                  >
                     {item.label}
                   </Typography>
                 </Box>
-                {isActive && <ChevronRight size={16} sx={{ display: { xs: "none", md: "block" } }} />}
+                {isActive && (
+                  <ChevronRight
+                    size={16}
+                    sx={{ display: { xs: "none", md: "block" } }}
+                  />
+                )}
               </Box>
             );
           })}
         </Stack>
 
         {/* Quick Operations Section */}
-        <Typography variant="caption" sx={{ color: "#71717A", fontWeight: 700, px: 1.5, mb: 1, display: { xs: "none", md: "block" } }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "#71717A",
+            fontWeight: 700,
+            px: 1.5,
+            mb: 1,
+            display: { xs: "none", md: "block" },
+          }}
+        >
           QUICK REQUESTS
         </Typography>
 
@@ -281,11 +350,15 @@ export default function EmployeeDashboard() {
               fontSize: "14px",
               bgcolor: "#27272A",
               border: "1px solid #3F3F46",
-              "&:hover": { bgcolor: "#3F3F46" }
+              "&:hover": { bgcolor: "#3F3F46" },
             }}
           >
             <Building size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
+            <Typography
+              variant="body2"
+              fontWeight="inherit"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
               Meeting Rooms
             </Typography>
           </Box>
@@ -305,18 +378,28 @@ export default function EmployeeDashboard() {
               fontSize: "14px",
               bgcolor: "#27272A",
               border: "1px solid #3F3F46",
-              "&:hover": { bgcolor: "#3F3F46" }
+              "&:hover": { bgcolor: "#3F3F46" },
             }}
           >
             <Plus size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
+            <Typography
+              variant="body2"
+              fontWeight="inherit"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
               Apply for Leave
             </Typography>
           </Box>
         </Stack>
 
         {/* Logout at Bottom */}
-        <Box sx={{ mt: "auto", pt: 2, borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+        <Box
+          sx={{
+            mt: "auto",
+            pt: 2,
+            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
           <Box
             onClick={handleLogout}
             sx={{
@@ -330,11 +413,15 @@ export default function EmployeeDashboard() {
               color: "#EF4444",
               fontWeight: 600,
               fontSize: "14px",
-              "&:hover": { bgcolor: "rgba(239, 68, 68, 0.12)" }
+              "&:hover": { bgcolor: "rgba(239, 68, 68, 0.12)" },
             }}
           >
             <LogOut size={18} />
-            <Typography variant="body2" fontWeight="inherit" sx={{ display: { xs: "none", md: "block" } }}>
+            <Typography
+              variant="body2"
+              fontWeight="inherit"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
               Logout
             </Typography>
           </Box>
@@ -342,11 +429,33 @@ export default function EmployeeDashboard() {
       </Box>
 
       {/* 2. MAIN WORKSPACE CANVAS AREA */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", p: { xs: 2, md: 4 }, overflowX: "hidden" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          p: { xs: 2, md: 4 },
+          overflowX: "hidden",
+        }}
+      >
         {/* Top Header Row */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
           <Box>
-            <Typography variant="h5" fontWeight={800} color="#09090B" letterSpacing={-0.5}>
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              color="#09090B"
+              letterSpacing={-0.5}
+            >
               {currentTabInfo.label}
             </Typography>
             <Typography variant="body2" color="#71717A" mt={0.25}>
@@ -361,7 +470,7 @@ export default function EmployeeDashboard() {
                 bgcolor: "#FFFFFF",
                 border: "1px solid #E4E4E7",
                 boxShadow: "0 2px 6px rgba(0, 0, 0, 0.04)",
-                "&:hover": { bgcolor: "#F4F4F5" }
+                "&:hover": { bgcolor: "#F4F4F5" },
               }}
             >
               <Search size={18} color="#09090B" />
@@ -372,47 +481,28 @@ export default function EmployeeDashboard() {
                 bgcolor: "#FFFFFF",
                 border: "1px solid #E4E4E7",
                 boxShadow: "0 2px 6px rgba(0, 0, 0, 0.04)",
-                "&:hover": { bgcolor: "#F4F4F5" }
+                "&:hover": { bgcolor: "#F4F4F5" },
               }}
             >
               <Bell size={18} color="#09090B" />
             </IconButton>
 
-            {/* Profile Chip / Avatar */}
-            <Box
-              sx={{
-                bgcolor: "#FFFFFF",
-                border: "1px solid #E4E4E7",
-                borderRadius: "50px",
-                px: 1.5,
-                py: 0.5,
-                display: "flex",
-                alignItems: "center",
-                gap: 1.25,
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.04)"
-              }}
-            >
-              <Avatar
-                sx={{
-                  width: 32,
-                  height: 32,
-                  bgcolor: "#09090B",
-                  fontSize: "14px",
-                  fontWeight: 700
-                }}
-              >
-                {username.charAt(0).toUpperCase()}
-              </Avatar>
-              <Typography variant="body2" fontWeight={700} color="#09090B">
-                {username}
-              </Typography>
-              <ChevronDown size={14} color="#09090B" />
-            </Box>
+            <UserProfileHeader
+              user={{ ...user, role: "Employee" }}
+              onLogout={handleLogout}
+            />
           </Box>
         </Box>
 
         {/* Hero Quick Stat Metrics Row */}
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 2.5, mb: 3 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+            gap: 2.5,
+            mb: 3,
+          }}
+        >
           <Paper
             elevation={0}
             sx={{
@@ -423,14 +513,19 @@ export default function EmployeeDashboard() {
               border: "1px solid #E4E4E7",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             <Box>
               <Typography variant="caption" color="#71717A" fontWeight={600}>
                 Daily Attendance
               </Typography>
-              <Typography variant="h4" fontWeight={800} color="#09090B" mt={0.5}>
+              <Typography
+                variant="h4"
+                fontWeight={800}
+                color="#09090B"
+                mt={0.5}
+              >
                 PUNCHED IN
               </Typography>
             </Box>
@@ -443,7 +538,7 @@ export default function EmployeeDashboard() {
                 color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
             >
               <Clock size={22} />
@@ -460,14 +555,19 @@ export default function EmployeeDashboard() {
               border: "1px solid #E4E4E7",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             <Box>
               <Typography variant="caption" color="#71717A" fontWeight={600}>
                 Upcoming Bookings
               </Typography>
-              <Typography variant="h4" fontWeight={800} color="#09090B" mt={0.5}>
+              <Typography
+                variant="h4"
+                fontWeight={800}
+                color="#09090B"
+                mt={0.5}
+              >
                 {todayScheduleItems.length} Active
               </Typography>
             </Box>
@@ -480,7 +580,7 @@ export default function EmployeeDashboard() {
                 color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
             >
               <Building size={22} />
@@ -497,14 +597,19 @@ export default function EmployeeDashboard() {
               border: "1px solid #E4E4E7",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             <Box>
               <Typography variant="caption" color="#71717A" fontWeight={600}>
                 Today's Date
               </Typography>
-              <Typography variant="h5" fontWeight={800} color="#09090B" mt={0.5}>
+              <Typography
+                variant="h5"
+                fontWeight={800}
+                color="#09090B"
+                mt={0.5}
+              >
                 {currentDateFormatted}
               </Typography>
             </Box>
@@ -517,7 +622,7 @@ export default function EmployeeDashboard() {
                 color: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
             >
               <Calendar size={22} />
@@ -535,7 +640,12 @@ export default function EmployeeDashboard() {
                 <Box
                   key={tab.id}
                   onClick={() => {
-                    if (tab.id === 3 || tab.path === "/meeting-rooms" || tab.label.includes("Rooms") || tab.label.includes("Workspace")) {
+                    if (
+                      tab.id === 3 ||
+                      tab.path === "/meeting-rooms" ||
+                      tab.label.includes("Rooms") ||
+                      tab.label.includes("Workspace")
+                    ) {
                       navigate("/meeting-rooms");
                     } else if (tab.id === 2 || tab.path === "/leave") {
                       navigate("/leave");
@@ -553,9 +663,13 @@ export default function EmployeeDashboard() {
                     fontSize: "14px",
                     cursor: "pointer",
                     transition: "all 0.15s ease",
-                    boxShadow: isActive ? "0 -2px 10px rgba(0, 0, 0, 0.03)" : "none",
-                    border: isActive ? "1px solid #E4E4E7" : "1px solid transparent",
-                    borderBottom: "none"
+                    boxShadow: isActive
+                      ? "0 -2px 10px rgba(0, 0, 0, 0.03)"
+                      : "none",
+                    border: isActive
+                      ? "1px solid #E4E4E7"
+                      : "1px solid transparent",
+                    borderBottom: "none",
                   }}
                 >
                   {tab.label}
@@ -575,7 +689,7 @@ export default function EmployeeDashboard() {
               boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)",
               flexGrow: 1,
               display: "flex",
-              flexDirection: "column"
+              flexDirection: "column",
             }}
           >
             {/* TAB CONTENTS */}
@@ -584,7 +698,13 @@ export default function EmployeeDashboard() {
             {activeTab === 0 && (
               <Stack spacing={3.5} sx={{ width: "100%" }}>
                 {/* Attendance & Schedule Grid */}
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "7fr 5fr" }, gap: 3 }}>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", lg: "7fr 5fr" },
+                    gap: 3,
+                  }}
+                >
                   <TodayAttendanceCard
                     user={user}
                     onAttendanceChange={handleAttendanceChange}
@@ -595,7 +715,12 @@ export default function EmployeeDashboard() {
 
                 {/* Quick Actions Grid */}
                 <Box>
-                  <Typography variant="h6" fontWeight={700} color="#09090B" mb={1.5}>
+                  <Typography
+                    variant="h6"
+                    fontWeight={700}
+                    color="#09090B"
+                    mb={1.5}
+                  >
                     Quick Employee Operations
                   </Typography>
                   <QuickActionsGrid onActionClick={handleQuickAction} />
@@ -603,12 +728,15 @@ export default function EmployeeDashboard() {
 
                 {/* Attendance History Table */}
                 <Box sx={{ width: "100%" }}>
-                  <AttendanceHistoryTable user={user} refreshTrigger={historyRefreshTrigger} />
+                  <AttendanceHistoryTable
+                    user={user}
+                    refreshTrigger={historyRefreshTrigger}
+                  />
                 </Box>
 
                 {/* Notifications & Activity (Placed down below) */}
                 <Box sx={{ width: "100%" }}>
-                  <NotificationsCard />
+                  <NotificationsCard notifications={notifications} />
                 </Box>
               </Stack>
             )}
@@ -621,7 +749,10 @@ export default function EmployeeDashboard() {
                   onAttendanceChange={handleAttendanceChange}
                   showToast={showToast}
                 />
-                <AttendanceHistoryTable user={user} refreshTrigger={historyRefreshTrigger} />
+                <AttendanceHistoryTable
+                  user={user}
+                  refreshTrigger={historyRefreshTrigger}
+                />
               </Stack>
             )}
 
@@ -674,7 +805,13 @@ export default function EmployeeDashboard() {
           <Button
             onClick={() => setActiveModal(null)}
             variant="outlined"
-            sx={{ borderRadius: "8px", textTransform: "none", fontWeight: 600, borderColor: "#09090B", color: "#09090B" }}
+            sx={{
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: 600,
+              borderColor: "#09090B",
+              color: "#09090B",
+            }}
           >
             Close Window
           </Button>
@@ -700,4 +837,3 @@ export default function EmployeeDashboard() {
     </Box>
   );
 }
-

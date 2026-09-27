@@ -27,7 +27,7 @@ export default function NotificationsCard({ notifications = [] }) {
       description: "Emergency War Room Alpha reserved for today at 02:00 PM.",
       time: "10 mins ago",
       type: "success",
-      read: false,
+      is_read: false,
     },
     {
       id: "2",
@@ -35,7 +35,7 @@ export default function NotificationsCard({ notifications = [] }) {
       description: "Company-wide Q3 strategy sync scheduled for Friday 10:00 AM.",
       time: "2 hours ago",
       type: "info",
-      read: false,
+      is_read: false,
     },
     {
       id: "3",
@@ -43,18 +43,30 @@ export default function NotificationsCard({ notifications = [] }) {
       description: "Your Silent Call Pod #A4 reservation starts in 30 minutes.",
       time: "4 hours ago",
       type: "warning",
-      read: true,
+      is_read: true,
     },
   ];
 
   const list = notifications.length > 0 ? notifications : defaultNotifications;
 
-  const getNotificationIcon = () => {
-    return <Info size={16} color="#09090B" />;
+  const getNotificationIcon = (item) => {
+    const title = item.title || "";
+    if (title.includes("Cancelled")) {
+      return <AlertTriangle size={16} color="#DC2626" />;
+    } else if (title.includes("Confirmed")) {
+      return <CheckCircle2 size={16} color="#10B981" />;
+    }
+    return <Info size={16} color="#2563EB" />;
   };
 
-  const getNotificationBg = () => {
-    return "#F4F4F5";
+  const getNotificationBg = (item) => {
+    const title = item.title || "";
+    if (title.includes("Cancelled")) {
+      return "#FEF2F2";
+    } else if (title.includes("Confirmed")) {
+      return "#ECFDF5";
+    }
+    return "#EFF6FF";
   };
 
   return (
@@ -97,7 +109,7 @@ export default function NotificationsCard({ notifications = [] }) {
           </Stack>
 
           <Chip
-            label={`${list.filter((n) => !n.read).length} New`}
+            label={`${list.filter((n) => !n.is_read && !n.read).length} New`}
             size="small"
             sx={{
               bgcolor: "#09090B",
@@ -110,75 +122,83 @@ export default function NotificationsCard({ notifications = [] }) {
         </Stack>
 
         <Stack spacing={2} flexGrow={1}>
-          {list.map((item) => (
-            <Paper
-              key={item.id}
-              elevation={0}
-              sx={{
-                p: 2,
-                borderRadius: "12px",
-                border: "1px solid #E4E4E7",
-                bgcolor: !item.read ? "#FAFAFA" : "#FFFFFF",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-                },
-              }}
-            >
-              <Stack direction="row" spacing={1.5} alignItems="flex-start">
-                <Box
-                  sx={{
-                    p: 1,
-                    borderRadius: "10px",
-                    bgcolor: getNotificationBg(),
-                    border: "1px solid #E4E4E7",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mt: 0.2,
-                  }}
-                >
-                  {getNotificationIcon()}
-                </Box>
+          {list.map((item) => {
+            const isUnread = !item.is_read && !item.read;
+            const textDesc = item.message || item.description || "";
+            const dateStr = item.created_at
+              ? new Date(item.created_at).toLocaleString([], { dateStyle: "short", timeStyle: "short" })
+              : item.time || "";
 
-                <Box flexGrow={1}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="subtitle2" fontWeight={700} color="#09090B">
-                      {item.title}
-                    </Typography>
-                    {!item.read && (
-                      <Chip
-                        label="Unread"
-                        size="small"
-                        sx={{
-                          height: 18,
-                          fontSize: "0.62rem",
-                          fontWeight: 700,
-                          bgcolor: "#F4F4F5",
-                          color: "#09090B",
-                          border: "1px solid #E4E4E7"
-                        }}
-                      />
-                    )}
-                  </Stack>
-                  <Typography variant="body2" color="#71717A" mt={0.3} lineHeight={1.4}>
-                    {item.description}
-                  </Typography>
-
-                  <Typography
-                    variant="caption"
-                    color="#71717A"
-                    display="flex"
-                    alignItems="center"
-                    gap={0.5}
-                    mt={1}
+            return (
+              <Paper
+                key={item._id || item.id}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: "12px",
+                  border: "1px solid #E4E4E7",
+                  bgcolor: isUnread ? "#FEF2F2" : "#FFFFFF",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+                  },
+                }}
+              >
+                <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                  <Box
+                    sx={{
+                      p: 1,
+                      borderRadius: "10px",
+                      bgcolor: getNotificationBg(item),
+                      border: "1px solid #E4E4E7",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mt: 0.2,
+                    }}
                   >
-                    <Clock size={12} /> {item.time}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          ))}
+                    {getNotificationIcon(item)}
+                  </Box>
+
+                  <Box flexGrow={1}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Typography variant="subtitle2" fontWeight={700} color="#09090B">
+                        {item.title}
+                      </Typography>
+                      {isUnread && (
+                        <Chip
+                          label="Unread"
+                          size="small"
+                          sx={{
+                            height: 18,
+                            fontSize: "0.62rem",
+                            fontWeight: 700,
+                            bgcolor: "#FEE2E2",
+                            color: "#991B1B",
+                            border: "1px solid #FCA5A5",
+                          }}
+                        />
+                      )}
+                    </Stack>
+                    <Typography variant="body2" color="#71717A" mt={0.3} lineHeight={1.4}>
+                      {textDesc}
+                    </Typography>
+
+                    <Typography
+                      variant="caption"
+                      color="#71717A"
+                      display="flex"
+                      alignItems="center"
+                      gap={0.5}
+                      mt={1}
+                    >
+                      <Clock size={12} /> {dateStr}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            );
+          })}
         </Stack>
       </CardContent>
     </Card>

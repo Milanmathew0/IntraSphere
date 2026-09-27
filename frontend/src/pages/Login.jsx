@@ -22,6 +22,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import api from "../api/axios";
@@ -38,6 +40,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [focusedField, setFocusedField] = useState(null);
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -46,6 +49,19 @@ export default function Login() {
     message: "",
     severity: "info",
   });
+
+  // LIVE FIELD VALIDATION RULES & STATUS
+  const emailRules = {
+    notEmpty: email.trim().length > 0,
+    validFormat: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim()),
+  };
+  const isEmailValid = emailRules.notEmpty && emailRules.validFormat;
+
+  const passwordRules = {
+    notEmpty: password.length > 0,
+    minLength: password.length >= 6,
+  };
+  const isPasswordValid = passwordRules.notEmpty && passwordRules.minLength;
 
   const parseJwt = (token) => {
     try {
@@ -85,27 +101,36 @@ export default function Login() {
     const val = e.target.value;
     setEmail(val);
     setTouched((prev) => ({ ...prev, email: true }));
-    setErrors((prev) => ({ ...prev, email: validateEmail(val) }));
+    const emailErr = validateEmail(val);
+    setErrors((prev) => ({ ...prev, email: emailErr }));
   };
 
   const handlePasswordChange = (e) => {
     const val = e.target.value;
     setPassword(val);
     setTouched((prev) => ({ ...prev, password: true }));
-    setErrors((prev) => ({ ...prev, password: validatePassword(val) }));
+    const passErr = validatePassword(val);
+    setErrors((prev) => ({ ...prev, password: passErr }));
   };
 
   const validateForm = () => {
     const emailErr = validateEmail(email);
     const passwordErr = validatePassword(password);
 
-    setErrors({
-      email: emailErr,
-      password: passwordErr,
-    });
-    setTouched({ email: true, password: true });
+    if (emailErr) {
+      setErrors({ email: emailErr, password: passwordErr });
+      setTouched({ email: true, password: true });
+      return false;
+    }
 
-    return !emailErr && !passwordErr;
+    if (passwordErr) {
+      setErrors({ email: "", password: passwordErr });
+      setTouched({ email: true, password: true });
+      return false;
+    }
+
+    setErrors({ email: "", password: "" });
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -137,7 +162,13 @@ export default function Login() {
         severity: "success",
       });
 
-      setTimeout(() => navigate("/dashboard"), 600);
+      if (assignedRole === "Facility Manager") {
+        setTimeout(() => navigate("/facility-manager"), 600);
+      } else if (assignedRole === "Admin") {
+        setTimeout(() => navigate("/admin-dashboard"), 600);
+      } else {
+        setTimeout(() => navigate("/dashboard"), 600);
+      }
     } catch (err) {
       const serverDetail = err.response?.data?.detail;
       let errorMsg = "Unable to login. Please check your email and password.";
@@ -159,8 +190,9 @@ export default function Login() {
       if (err.response?.status === 401) {
         setErrors({
           email: "Invalid email or password",
-          password: "Check password and try again",
+          password: "",
         });
+        setTouched({ email: true, password: false });
       }
     } finally {
       setLoading(false);
@@ -197,7 +229,13 @@ export default function Login() {
         severity: "success",
       });
 
-      setTimeout(() => navigate("/dashboard"), 600);
+      if (assignedRole === "Facility Manager") {
+        setTimeout(() => navigate("/facility-manager"), 600);
+      } else if (assignedRole === "Admin") {
+        setTimeout(() => navigate("/admin-dashboard"), 600);
+      } else {
+        setTimeout(() => navigate("/dashboard"), 600);
+      }
     } catch (err) {
       console.error("Google authentication error:", err);
       setSnackbar({
@@ -267,6 +305,8 @@ export default function Login() {
               margin="normal"
               value={email}
               onChange={handleEmailChange}
+              onFocus={() => setFocusedField("email")}
+              onBlur={() => setFocusedField(null)}
               error={!!(touched.email && errors.email)}
               helperText={touched.email && errors.email ? errors.email : ""}
               placeholder="name@company.com"
@@ -274,7 +314,25 @@ export default function Login() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailOutlinedIcon color={touched.email && errors.email ? "error" : "action"} fontSize="small" />
+                      <EmailOutlinedIcon
+                        color={
+                          touched.email && errors.email
+                            ? "error"
+                            : focusedField === "email"
+                            ? "primary"
+                            : "action"
+                        }
+                        fontSize="small"
+                      />
+                    </InputAdornment>
+                  ),
+                  endAdornment: email.length > 0 && (
+                    <InputAdornment position="end">
+                      {isEmailValid ? (
+                        <CheckCircleIcon color="success" fontSize="small" />
+                      ) : touched.email || errors.email ? (
+                        <ErrorIcon color="error" fontSize="small" />
+                      ) : null}
                     </InputAdornment>
                   ),
                 },
@@ -288,6 +346,8 @@ export default function Login() {
               margin="normal"
               value={password}
               onChange={handlePasswordChange}
+              onFocus={() => setFocusedField("password")}
+              onBlur={() => setFocusedField(null)}
               error={!!(touched.password && errors.password)}
               helperText={touched.password && errors.password ? errors.password : ""}
               placeholder="Enter your password"
@@ -295,11 +355,27 @@ export default function Login() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockOutlinedIcon color={touched.password && errors.password ? "error" : "action"} fontSize="small" />
+                      <LockOutlinedIcon
+                        color={
+                          touched.password && errors.password
+                            ? "error"
+                            : focusedField === "password"
+                            ? "primary"
+                            : "action"
+                        }
+                        fontSize="small"
+                      />
                     </InputAdornment>
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
+                      {password.length > 0 && (
+                        isPasswordValid ? (
+                          <CheckCircleIcon color="success" fontSize="small" sx={{ mr: 0.5 }} />
+                        ) : touched.password || errors.password ? (
+                          <ErrorIcon color="error" fontSize="small" sx={{ mr: 0.5 }} />
+                        ) : null
+                      )}
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}

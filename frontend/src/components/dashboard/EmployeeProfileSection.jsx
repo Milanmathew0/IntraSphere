@@ -1,248 +1,1091 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
-  Button,
   Stack,
   Avatar,
-  Grid,
-  TextField,
-  Divider,
-  Chip,
-  Paper,
+  Snackbar,
   Alert,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import EditIcon from "@mui/icons-material/Edit";
-import LockResetIcon from "@mui/icons-material/LockReset";
-import BadgeIcon from "@mui/icons-material/Badge";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import BusinessIcon from "@mui/icons-material/Business";
-import SaveIcon from "@mui/icons-material/Save";
+import {
+  User,
+  Lock,
+  LogOut,
+  Pencil,
+  Calendar,
+  ChevronDown,
+  CheckCircle2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axios";
 
 export function EmployeeProfileSection() {
-  const email = localStorage.getItem("email") || "employee@intrasphere.com";
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const fileInputRef = useRef(null);
 
-  const [fullName, setFullName] = useState("Milan Mathew");
-  const [phone, setPhone] = useState("+1 (555) 019-2834");
-  const [department, setDepartment] = useState("Software Engineering");
-  const [designation, setDesignation] = useState("Senior Full-Stack Developer");
-  
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  // Dynamic logged in user info fallback
+  const authEmail = user?.email || localStorage.getItem("email") || "rolandDonald@mail.com";
+  const authUsername = user?.username || localStorage.getItem("username") || "Tom Shibu";
+  const authRole = user?.role || localStorage.getItem("role") || "Cashier";
+  const authEmpCode = user?.employee_code || localStorage.getItem("employee_code") || user?.id || "6a6f4585c0b0fe8983e77c8";
 
-  const [successMessage, setSuccessMessage] = useState("");
+  const nameParts = authUsername.trim().split(" ");
+  const defaultFirstName = nameParts[0] || "Roland";
+  const defaultLastName = nameParts.slice(1).join(" ") || "Donald";
 
-  const handleProfileSave = () => {
-    setSuccessMessage("Profile details updated successfully!");
-    setTimeout(() => setSuccessMessage(""), 4000);
+  // Active sub-tab state ('personal' | 'security')
+  const [activeSubTab, setActiveSubTab] = useState("personal");
+
+  // Profile Information state
+  const [profileData, setProfileData] = useState(() => {
+    const saved = localStorage.getItem("user_profile_details");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // fallback
+      }
+    }
+    return {
+      gender: "male",
+      firstName: defaultFirstName,
+      lastName: defaultLastName,
+      email: authEmail,
+      address: "3605 Parker Rd.",
+      phone: "(405) 555-0128",
+      dob: "1 Feb, 1995",
+      location: "Atlanta, USA",
+      postalCode: "30301",
+      designation: authRole === "User" ? "Cashier" : authRole,
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+      emailVerified: true,
+    };
+  });
+
+  const [formData, setFormData] = useState({ ...profileData });
+
+  // Security Form State
+  const [securityData, setSecurityData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    enable2FA: true,
+  });
+
+  // Notification Toast State
+  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+
+  const showToast = (message, severity = "success") => {
+    setToast({ open: true, message, severity });
   };
 
-  const handlePasswordUpdate = () => {
-    setSuccessMessage("Password updated successfully!");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setTimeout(() => setSuccessMessage(""), 4000);
+  // Sync profile data from backend API if available
+  useEffect(() => {
+    const fetchBackendProfile = async () => {
+      if (!authEmail) return;
+      try {
+        const response = await api.get("/api/v1/employees");
+        const employees = response.data?.employees || [];
+        const matched = employees.find(
+          (emp) => emp.email?.toLowerCase() === authEmail.toLowerCase()
+        );
+
+        if (matched) {
+          const fetched = {
+            gender: matched.gender?.toLowerCase() || "male",
+            firstName: matched.first_name || defaultFirstName,
+            lastName: matched.last_name || defaultLastName,
+            email: matched.email || authEmail,
+            address: matched.address || "3605 Parker Rd.",
+            phone: matched.phone || "(405) 555-0128",
+            dob: matched.dob || "1 Feb, 1995",
+            location: matched.location || "Atlanta, USA",
+            postalCode: matched.postal_code || "30301",
+            designation: matched.designation_id || (authRole === "User" ? "Cashier" : authRole),
+            avatarUrl: matched.profile_image || profileData.avatarUrl,
+            emailVerified: true,
+          };
+          setProfileData(fetched);
+          setFormData(fetched);
+          localStorage.setItem("user_profile_details", JSON.stringify(fetched));
+        }
+      } catch (err) {
+        console.log("Using cached profile data:", err);
+      }
+    };
+
+    fetchBackendProfile();
+  }, [authEmail]);
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newAvatar = reader.result;
+        setFormData((prev) => ({ ...prev, avatarUrl: newAvatar }));
+        setProfileData((prev) => ({ ...prev, avatarUrl: newAvatar }));
+        showToast("Profile picture updated!");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveChanges = () => {
+    setProfileData({ ...formData });
+    localStorage.setItem("user_profile_details", JSON.stringify(formData));
+
+    const newFullName = `${formData.firstName} ${formData.lastName}`.trim();
+    if (newFullName) {
+      localStorage.setItem("username", newFullName);
+    }
+    if (formData.email) {
+      localStorage.setItem("email", formData.email);
+    }
+
+    showToast("Profile changes saved successfully!");
+  };
+
+  const handleDiscardChanges = () => {
+    setFormData({ ...profileData });
+    showToast("Changes discarded.", "info");
+  };
+
+  const handleSaveSecurity = () => {
+    if (!securityData.currentPassword) {
+      showToast("Please enter your current password.", "error");
+      return;
+    }
+    if (securityData.newPassword.length < 6) {
+      showToast("New password must be at least 6 characters.", "error");
+      return;
+    }
+    if (securityData.newPassword !== securityData.confirmPassword) {
+      showToast("New password and confirm password do not match.", "error");
+      return;
+    }
+    showToast("Password updated successfully!");
+    setSecurityData((prev) => ({
+      ...prev,
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    }));
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
-    <Card
-      elevation={0}
-      sx={{
-        border: "1px solid #E2E8F0",
-        borderRadius: 4,
-        background: "#FFFFFF",
-      }}
-    >
-      <CardContent sx={{ p: 3 }}>
-        {/* Header section */}
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={3} alignItems="center" mb={4}>
-          <Box position="relative">
+    <Box sx={{ width: "100%", py: 1 }}>
+      {/* Hidden File Input for Avatar Upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        style={{ display: "none" }}
+      />
+
+      {/* Main Flex Row Container for Side-by-Side Options & Content */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: "flex-start",
+          gap: { xs: 3, md: 3.5 },
+          width: "100%",
+        }}
+      >
+        {/* Left Sub-Panel: Profile Summary & Navigation Options */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "310px", lg: "330px" },
+            flexShrink: 0,
+            bgcolor: "#FFFFFF",
+            borderRadius: "24px",
+            p: { xs: 3, md: 3.5 },
+            border: "1px solid #F1F5F9",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            minHeight: { md: 520 },
+          }}
+        >
+          {/* Profile Avatar with Edit Badge */}
+          <Box sx={{ position: "relative", mb: 2 }}>
             <Avatar
+              src={formData.avatarUrl}
               sx={{
-                width: 90,
-                height: 90,
-                bgcolor: "#1976D2",
-                fontSize: "2.2rem",
-                fontWeight: 700,
-                boxShadow: "0 8px 24px rgba(25, 118, 210, 0.25)",
+                width: 110,
+                height: 110,
+                boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                border: "4px solid #FFFFFF",
               }}
             >
-              {fullName.charAt(0)}
+              {formData.firstName.charAt(0)}
             </Avatar>
-            <Button
-              size="small"
-              variant="contained"
-              color="primary"
+
+            {/* Edit Pencil Icon Badge */}
+            <Box
+              onClick={handleAvatarClick}
               sx={{
                 position: "absolute",
-                bottom: -6,
-                right: -6,
-                minWidth: 32,
+                bottom: 4,
+                right: 4,
                 width: 32,
                 height: 32,
                 borderRadius: "50%",
-                p: 0,
+                bgcolor: "#ED6C02",
+                color: "#FFFFFF",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 4px 10px rgba(237, 108, 2, 0.4)",
+                transition: "all 0.2s ease",
+                border: "2.5px solid #FFFFFF",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                  bgcolor: "#D95B16",
+                },
               }}
             >
-              <EditIcon fontSize="small" />
-            </Button>
+              <Pencil size={15} color="#FFFFFF" />
+            </Box>
           </Box>
 
-          <Box textAlign={{ xs: "center", sm: "left" }}>
-            <Stack direction="row" spacing={1} alignItems="center" justifyContent={{ xs: "center", sm: "flex-start" }} mb={0.5}>
-              <Typography variant="h5" fontWeight="bold" color="#0F172A">
-                {fullName}
+          {/* Name & Title / Code */}
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            color="#0F172A"
+            sx={{ fontSize: "1.15rem", mb: 0.3 }}
+          >
+            {`${formData.firstName} ${formData.lastName}`}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="#64748B"
+            fontWeight={500}
+            sx={{ fontSize: "0.85rem", mb: 3.5, wordBreak: "break-all" }}
+          >
+            {formData.designation || authEmpCode}
+          </Typography>
+
+          {/* Navigation Sub-Tabs */}
+          <Stack spacing={1.5} width="100%">
+            {/* Personal Information Tab */}
+            <Box
+              onClick={() => setActiveSubTab("personal")}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                px: 2.5,
+                py: 1.4,
+                borderRadius: "30px",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                bgcolor: activeSubTab === "personal" ? "#FFF0E6" : "transparent",
+                color: activeSubTab === "personal" ? "#ED6C02" : "#475569",
+                border: activeSubTab === "personal" ? "1px solid #FFD8C2" : "1px solid transparent",
+                "&:hover": {
+                  bgcolor: activeSubTab === "personal" ? "#FFF0E6" : "#F8FAFC",
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  bgcolor: activeSubTab === "personal" ? "#ED6C02" : "transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <User size={16} color={activeSubTab === "personal" ? "#FFFFFF" : "#64748B"} />
+              </Box>
+              <Typography fontWeight={600} sx={{ fontSize: "0.92rem" }}>
+                Personal Information
               </Typography>
-              <Chip label="Active" color="success" size="small" sx={{ fontWeight: 600 }} />
+            </Box>
+
+
+
+            {/* Log Out Button */}
+            <Box
+              onClick={handleLogout}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                px: 2.5,
+                py: 1.4,
+                borderRadius: "30px",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+                color: "#64748B",
+                "&:hover": {
+                  bgcolor: "#FEF2F2",
+                  color: "#EF4444",
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <LogOut size={16} />
+              </Box>
+              <Typography fontWeight={600} sx={{ fontSize: "0.92rem" }}>
+                Log Out
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
+
+        {/* Right Main Panel: Personal Information / Security Content RIGHT NEXT TO Options */}
+        <Box
+          sx={{
+            flex: 1,
+            width: "100%",
+            minWidth: 0,
+            bgcolor: "#FFFFFF",
+            borderRadius: "24px",
+            p: { xs: 3, md: 4 },
+            border: "1px solid #F1F5F9",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
+            minHeight: { md: 520 },
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          {activeSubTab === "personal" ? (
+            /* PERSONAL INFORMATION FORM */
+            <Stack spacing={3}>
+              <Box>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  color="#0F172A"
+                  sx={{ fontSize: "1.35rem", mb: 2 }}
+                >
+                  Personal Information
+                </Typography>
+
+                {/* Gender Option Selector */}
+                <Stack direction="row" spacing={3} alignItems="center" mb={2}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleChange("gender", "male")}
+                  >
+                    <Typography fontWeight={500} color="#334155" sx={{ fontSize: "0.92rem" }}>
+                      Male
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        border: "2px solid #ED6C02",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {formData.gender === "male" && (
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            bgcolor: "#ED6C02",
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleChange("gender", "female")}
+                  >
+                    <Typography fontWeight={500} color="#334155" sx={{ fontSize: "0.92rem" }}>
+                      Female
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        border: formData.gender === "female" ? "2px solid #ED6C02" : "2px solid #CBD5E1",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {formData.gender === "female" && (
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            bgcolor: "#ED6C02",
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </Stack>
+                </Stack>
+              </Box>
+
+              {/* Form Fields Grid */}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2.5,
+                  width: "100%",
+                }}
+              >
+                {/* First Name */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    First Name
+                  </Typography>
+                  <Box
+                    component="input"
+                    value={formData.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
+
+                {/* Last Name */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Last Name
+                  </Typography>
+                  <Box
+                    component="input"
+                    value={formData.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
+
+                {/* Email (Full width spanning both columns) */}
+                <Box sx={{ gridColumn: { sm: "1 / -1" } }}>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Email
+                  </Typography>
+                  <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Box
+                      component="input"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      sx={{
+                        width: "100%",
+                        py: 1.3,
+                        pl: 2,
+                        pr: 12,
+                        borderRadius: "14px",
+                        bgcolor: "#F4F5F7",
+                        border: "1px solid transparent",
+                        outline: "none",
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                        color: "#0F172A",
+                        fontFamily: "inherit",
+                        transition: "all 0.2s ease",
+                        "&:focus": {
+                          bgcolor: "#FFFFFF",
+                          borderColor: "#ED6C02",
+                          boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                        },
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        right: 12,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        color: "#10B981",
+                        fontWeight: 600,
+                        fontSize: "0.82rem",
+                      }}
+                    >
+                      <CheckCircle2 size={16} color="#10B981" />
+                      <Typography variant="caption" fontWeight={600} color="#10B981">
+                        Verified
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Address (Full width spanning both columns) */}
+                <Box sx={{ gridColumn: { sm: "1 / -1" } }}>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Address
+                  </Typography>
+                  <Box
+                    component="input"
+                    value={formData.address}
+                    onChange={(e) => handleChange("address", e.target.value)}
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
+
+                {/* Phone Number */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Phone Number
+                  </Typography>
+                  <Box
+                    component="input"
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
+
+                {/* Date of Birth */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Date of Birth
+                  </Typography>
+                  <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Box
+                      component="input"
+                      value={formData.dob}
+                      onChange={(e) => handleChange("dob", e.target.value)}
+                      sx={{
+                        width: "100%",
+                        py: 1.3,
+                        pl: 2,
+                        pr: 5,
+                        borderRadius: "14px",
+                        bgcolor: "#F4F5F7",
+                        border: "1px solid transparent",
+                        outline: "none",
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                        color: "#0F172A",
+                        fontFamily: "inherit",
+                        transition: "all 0.2s ease",
+                        "&:focus": {
+                          bgcolor: "#FFFFFF",
+                          borderColor: "#ED6C02",
+                          boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                        },
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        right: 14,
+                        color: "#64748B",
+                        display: "flex",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      <Calendar size={18} />
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Location */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Location
+                  </Typography>
+                  <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <Box
+                      component="input"
+                      value={formData.location}
+                      onChange={(e) => handleChange("location", e.target.value)}
+                      sx={{
+                        width: "100%",
+                        py: 1.3,
+                        pl: 2,
+                        pr: 5,
+                        borderRadius: "14px",
+                        bgcolor: "#F4F5F7",
+                        border: "1px solid transparent",
+                        outline: "none",
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                        color: "#0F172A",
+                        fontFamily: "inherit",
+                        transition: "all 0.2s ease",
+                        "&:focus": {
+                          bgcolor: "#FFFFFF",
+                          borderColor: "#ED6C02",
+                          boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                        },
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        right: 14,
+                        color: "#64748B",
+                        display: "flex",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      <ChevronDown size={18} />
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Postal Code */}
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Postal Code
+                  </Typography>
+                  <Box
+                    component="input"
+                    value={formData.postalCode}
+                    onChange={(e) => handleChange("postalCode", e.target.value)}
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Bottom Action Buttons */}
+              <Stack direction="row" spacing={2} justifyContent="flex-end" pt={2} mt={3}>
+                <Box
+                  component="button"
+                  onClick={handleDiscardChanges}
+                  sx={{
+                    py: 1.3,
+                    px: 4,
+                    borderRadius: "30px",
+                    border: "2px solid #ED6C02",
+                    bgcolor: "transparent",
+                    color: "#ED6C02",
+                    fontWeight: 700,
+                    fontSize: "0.92rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      bgcolor: "#FFF0E6",
+                    },
+                  }}
+                >
+                  Discard Changes
+                </Box>
+
+                <Box
+                  component="button"
+                  onClick={handleSaveChanges}
+                  sx={{
+                    py: 1.3,
+                    px: 5,
+                    borderRadius: "30px",
+                    border: "none",
+                    bgcolor: "#ED6C02",
+                    color: "#FFFFFF",
+                    fontWeight: 700,
+                    fontSize: "0.92rem",
+                    cursor: "pointer",
+                    boxShadow: "0 6px 18px rgba(237, 108, 2, 0.35)",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      bgcolor: "#D95B16",
+                      boxShadow: "0 8px 24px rgba(237, 108, 2, 0.45)",
+                    },
+                  }}
+                >
+                  Save Changes
+                </Box>
+              </Stack>
             </Stack>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              {designation} • {department}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Employee ID: EMP-2026-0489
-            </Typography>
-          </Box>
-        </Stack>
+          ) : (
+            /* SECURITY FORM */
+            <Stack spacing={3}>
+              <Box>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  color="#0F172A"
+                  sx={{ fontSize: "1.35rem", mb: 0.5 }}
+                >
+                  Login & Password
+                </Typography>
+                <Typography variant="body2" color="#64748B">
+                  Manage your account authentication credentials and security settings.
+                </Typography>
+              </Box>
 
-        {successMessage && (
-          <Alert severity="success" sx={{ mb: 3, borderRadius: 2 }}>
-            {successMessage}
-          </Alert>
-        )}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                  gap: 2.5,
+                  width: "100%",
+                }}
+              >
+                <Box sx={{ gridColumn: { sm: "1 / -1" } }}>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Current Password
+                  </Typography>
+                  <Box
+                    component="input"
+                    type="password"
+                    placeholder="••••••••"
+                    value={securityData.currentPassword}
+                    onChange={(e) =>
+                      setSecurityData((prev) => ({
+                        ...prev,
+                        currentPassword: e.target.value,
+                      }))
+                    }
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
 
-        {/* Profile Information Form */}
-        <Paper elevation={0} sx={{ p: 3, border: "1px solid #E2E8F0", borderRadius: 3, mb: 4, bgcolor: "#F8FAFC" }}>
-          <Stack direction="row" spacing={1.5} alignItems="center" mb={2.5}>
-            <BadgeIcon color="primary" />
-            <Typography variant="h6" fontWeight="bold" color="#1E293B">
-              Personal Information
-            </Typography>
-          </Stack>
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    New Password
+                  </Typography>
+                  <Box
+                    component="input"
+                    type="password"
+                    placeholder="Minimum 6 characters"
+                    value={securityData.newPassword}
+                    onChange={(e) =>
+                      setSecurityData((prev) => ({
+                        ...prev,
+                        newPassword: e.target.value,
+                      }))
+                    }
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Email Address"
-                value={email}
-                disabled
-                helperText="Email address is managed by domain admin"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Phone Number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Department"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                size="small"
-                label="Job Designation"
-                value={designation}
-                onChange={(e) => setDesignation(e.target.value)}
-              />
-            </Grid>
-          </Grid>
+                <Box>
+                  <Typography variant="caption" color="#64748B" fontWeight={500} display="block" mb={0.6}>
+                    Confirm Password
+                  </Typography>
+                  <Box
+                    component="input"
+                    type="password"
+                    placeholder="Re-enter new password"
+                    value={securityData.confirmPassword}
+                    onChange={(e) =>
+                      setSecurityData((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
+                    sx={{
+                      width: "100%",
+                      py: 1.3,
+                      px: 2,
+                      borderRadius: "14px",
+                      bgcolor: "#F4F5F7",
+                      border: "1px solid transparent",
+                      outline: "none",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#0F172A",
+                      fontFamily: "inherit",
+                      transition: "all 0.2s ease",
+                      "&:focus": {
+                        bgcolor: "#FFFFFF",
+                        borderColor: "#ED6C02",
+                        boxShadow: "0 0 0 3px rgba(237, 108, 2, 0.15)",
+                      },
+                    }}
+                  />
+                </Box>
 
-          <Box mt={3} textAlign="right">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<SaveIcon />}
-              onClick={handleProfileSave}
-              sx={{ fontWeight: 600 }}
-            >
-              Save Profile Changes
-            </Button>
-          </Box>
-        </Paper>
+                <Box sx={{ gridColumn: { sm: "1 / -1" } }}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "16px",
+                      bgcolor: "#F8FAFC",
+                      border: "1px solid #E2E8F0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Box>
+                      <Typography fontWeight={600} color="#0F172A" sx={{ fontSize: "0.92rem" }}>
+                        Two-Factor Authentication (2FA)
+                      </Typography>
+                      <Typography variant="caption" color="#64748B">
+                        Add an extra layer of security to your account upon login.
+                      </Typography>
+                    </Box>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={securityData.enable2FA}
+                          onChange={(e) =>
+                            setSecurityData((prev) => ({
+                              ...prev,
+                              enable2FA: e.target.checked,
+                            }))
+                          }
+                          sx={{
+                            "& .MuiSwitch-switchBase.Mui-checked": { color: "#ED6C02" },
+                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                              backgroundColor: "#ED6C02",
+                            },
+                          }}
+                        />
+                      }
+                      label=""
+                    />
+                  </Box>
+                </Box>
+              </Box>
 
-        {/* Security & Password Update Section */}
-        <Paper elevation={0} sx={{ p: 3, border: "1px solid #E2E8F0", borderRadius: 3, bgcolor: "#F8FAFC" }}>
-          <Stack direction="row" spacing={1.5} alignItems="center" mb={2.5}>
-            <LockResetIcon color="error" />
-            <Typography variant="h6" fontWeight="bold" color="#1E293B">
-              Security & Password
-            </Typography>
-          </Stack>
+              <Stack direction="row" spacing={2} justifyContent="flex-end" pt={2} mt={3}>
+                <Box
+                  component="button"
+                  onClick={() =>
+                    setSecurityData({
+                      currentPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
+                      enable2FA: true,
+                    })
+                  }
+                  sx={{
+                    py: 1.3,
+                    px: 4,
+                    borderRadius: "30px",
+                    border: "2px solid #ED6C02",
+                    bgcolor: "transparent",
+                    color: "#ED6C02",
+                    fontWeight: 700,
+                    fontSize: "0.92rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    "&:hover": { bgcolor: "#FFF0E6" },
+                  }}
+                >
+                  Discard Changes
+                </Box>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                type="password"
-                size="small"
-                label="Current Password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                type="password"
-                size="small"
-                label="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                type="password"
-                size="small"
-                label="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </Grid>
-          </Grid>
+                <Box
+                  component="button"
+                  onClick={handleSaveSecurity}
+                  sx={{
+                    py: 1.3,
+                    px: 5,
+                    borderRadius: "30px",
+                    border: "none",
+                    bgcolor: "#ED6C02",
+                    color: "#FFFFFF",
+                    fontWeight: 700,
+                    fontSize: "0.92rem",
+                    cursor: "pointer",
+                    boxShadow: "0 6px 18px rgba(237, 108, 2, 0.35)",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      bgcolor: "#D95B16",
+                      boxShadow: "0 8px 24px rgba(237, 108, 2, 0.45)",
+                    },
+                  }}
+                >
+                  Save Password
+                </Box>
+              </Stack>
+            </Stack>
+          )}
+        </Box>
+      </Box>
 
-          <Box mt={3} textAlign="right">
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<LockResetIcon />}
-              onClick={handlePasswordUpdate}
-              sx={{ fontWeight: 600 }}
-            >
-              Update Password
-            </Button>
-          </Box>
-        </Paper>
-      </CardContent>
-    </Card>
+      {/* Toast Notification Bar */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+          severity={toast.severity}
+          sx={{
+            borderRadius: "16px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+            fontWeight: 600,
+          }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
 

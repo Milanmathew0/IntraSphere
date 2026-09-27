@@ -36,23 +36,69 @@ export default function TeamPresenceWidget() {
 
   const fetchTeamData = async () => {
     try {
-      const res = await api.get("/api/v1/employees");
-      if (res.data && res.data.employees) {
-        const emps = res.data.employees.map((e) => ({
-          name: e.name || `${e.first_name || ""} ${e.last_name || ""}`.trim() || e.email,
-          role: e.designation || e.department || "Employee",
-          status: e.employment_status === "Active" ? "In Office" : "Offline",
-          zone: e.department || "Floor 2 Alpha",
-        }));
-        if (emps.length > 0) setTeamMembers(emps);
+      const [empRes, attRes] = await Promise.allSettled([
+        api.get("/api/v1/employees"),
+        api.get("/api/v1/attendance/today"),
+      ]);
+
+      let empList = [];
+      if (empRes.status === "fulfilled" && empRes.value.data) {
+        empList = empRes.value.data.employees || empRes.value.data || [];
+      }
+
+      let todayAttendance = [];
+      if (attRes.status === "fulfilled" && attRes.value.data) {
+        todayAttendance = attRes.value.data.attendance || attRes.value.data || [];
+      }
+
+      if (empList.length > 0) {
+        const emps = empList.map((e) => {
+          const empId = (e._id || e.id || "").toString();
+          const empCode = (e.employee_id || e.employee_code || "").toString().toLowerCase();
+          const empEmail = (e.email || "").toString().toLowerCase();
+
+          // Match today's attendance record
+          const attRecord = todayAttendance.find((att) => {
+            const attEmpId = (att.employee_id || "").toString();
+            const attCode = (att.employee_code || "").toString().toLowerCase();
+            const attEmail = (att.email || "").toString().toLowerCase();
+
+            return (
+              (attEmpId && empId && attEmpId === empId) ||
+              (attCode && empCode && attCode === empCode) ||
+              (attEmail && empEmail && attEmail === empEmail)
+            );
+          });
+
+          let status = "Offline";
+          if (attRecord) {
+            if (attRecord.check_in && !attRecord.check_out) {
+              status = "In Office";
+            } else if (attRecord.check_out) {
+              status = "Checked Out";
+            } else if (attRecord.status === "Present" || attRecord.status === "Half-Day") {
+              status = "In Office";
+            }
+          }
+
+          return {
+            id: empId,
+            name: e.name || `${e.first_name || ""} ${e.last_name || ""}`.trim() || e.email,
+            role: e.designation || e.department || "Employee",
+            status: status,
+            zone: e.department || "Floor 2 Alpha",
+          };
+        });
+
+        setTeamMembers(emps);
       }
     } catch (err) {
-      console.log("Using default team presence list", err);
+      console.log("Error fetching team presence data", err);
     }
   };
 
   const presentCount = teamMembers.filter((m) => m.status === "In Office").length;
-  const presencePercentage = teamMembers.length > 0 ? Math.round((presentCount / teamMembers.length) * 100) : 100;
+  const presencePercentage = teamMembers.length > 0 ? Math.round((presentCount / teamMembers.length) * 100) : 0;
 
   return (
     <Card
@@ -118,7 +164,7 @@ export default function TeamPresenceWidget() {
               Checked-in Headcount:
             </Typography>
             <Typography variant="caption" color="#09090B" fontWeight={800}>
-              {teamMembers.length} Active Staff
+              {presentCount} / {teamMembers.length} Active Staff
             </Typography>
           </Box>
           <LinearProgress

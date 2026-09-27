@@ -14,12 +14,17 @@ from app.api.v1.employment_request import router as employment_request_router
 from app.api.v1.onboarding import router as onboarding_router
 from app.api.v1.leave import router as leave_router
 from app.api.v1.meeting_rooms import router as meeting_rooms_router
+from app.api.v1.workspaces import router as workspaces_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.facility import router as facility_router
+from app.api.v1.notifications import router as notifications_router
 from app.api.v1.health import router as health_router
 from app.services.leave_service import init_leave_system
 from app.services.department_service import init_departments
 from app.services.designation_service import init_designations
 from app.services.meeting_service import init_meeting_rooms
+from app.services.workspace_service import init_workspace_desks
+from app.services.user_service import init_facility_manager
 
 app = FastAPI(
     title="IntraSphere API",
@@ -33,12 +38,20 @@ async def startup_event():
     await init_departments()
     await init_designations()
     await init_meeting_rooms()
+    await init_workspace_desks()
+    await init_facility_manager()
 
     # Create collection indexes
     try:
         await db["users"].create_index("email", unique=True)
         await db["users"].create_index("activation_token_hash")
         await db["employees"].create_index("employee_id", unique=True)
+        await db["facility_maintenance"].create_index("resource_type")
+        await db["facility_maintenance"].create_index("resource_id")
+        await db["facility_maintenance"].create_index("status")
+        await db["facility_maintenance"].create_index("priority")
+        await db["facility_maintenance"].create_index("created_at")
+        await db["facility_maintenance"].create_index("scheduled_date")
     except Exception as e:
         pass
 
@@ -76,7 +89,10 @@ app.include_router(employment_request_router, prefix="/api/v1")
 app.include_router(onboarding_router, prefix="/api/v1")
 app.include_router(leave_router, prefix="/api/v1")
 app.include_router(meeting_rooms_router, prefix="/api/v1")
+app.include_router(workspaces_router, prefix="/api/v1")
+app.include_router(facility_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
+app.include_router(notifications_router, prefix="/api/v1")
 app.include_router(health_router, prefix="/api/v1")
 
 @app.get("/")

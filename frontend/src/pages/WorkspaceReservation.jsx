@@ -106,11 +106,11 @@ export default function WorkspaceReservation() {
       if (floorFilter !== "All") params.floor = Number(floorFilter);
       if (zoneFilter !== "All") params.zone = zoneFilter;
       if (workspaceTypeFilter !== "All") params.workspace_type = workspaceTypeFilter;
-      if (facilityFilter !== "All") params.facilities = facilityFilter;
+      if (facilityFilter !== "All") params.facility = facilityFilter;
       if (statusFilter !== "All") params.status = statusFilter;
       if (searchTerm.trim()) params.search = searchTerm.trim();
 
-      const res = await api.get("/api/v1/workspaces/desks", { params });
+      const res = await api.get("/api/v1/workspaces", { params });
       setDesks(res.data || []);
     } catch (err) {
       console.error("Error fetching desks:", err);

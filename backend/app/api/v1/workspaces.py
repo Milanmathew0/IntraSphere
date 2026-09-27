@@ -42,23 +42,27 @@ async def fetch_analytics(current_user: dict = Depends(get_current_user)):
 
 @router.get("/workspaces")
 @router.get("/workspaces/")
+@router.get("/workspaces/desks")
+@router.get("/workspaces/desks/")
 async def list_desks(
     search: Optional[str] = Query(None),
     floor: Optional[int] = Query(None),
     zone: Optional[str] = Query(None),
     workspace_type: Optional[str] = Query(None),
     facility: Optional[str] = Query(None),
+    facilities: Optional[str] = Query(None),
     is_accessible: Optional[bool] = Query(None),
     status: Optional[str] = Query(None),
     date: Optional[str] = Query(None),
     current_user: dict = Depends(get_current_user)
 ):
+    target_facility = facility or facilities
     return await get_all_desks_filtered(
         search=search,
         floor=floor,
         zone=zone,
         workspace_type=workspace_type,
-        facility=facility,
+        facility=target_facility,
         is_accessible=is_accessible,
         status_filter=status,
         target_date=date

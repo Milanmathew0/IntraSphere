@@ -168,8 +168,8 @@ export default function EmployeeDashboard() {
 
               {/* 3. Multi-Column Grid */}
               <Grid container spacing={3.5}>
-                {/* Left/Main Column (7/12 width on desktop) */}
-                <Grid item xs={12} lg={7.5}>
+                {/* Left/Main Column (7.5/12 width on desktop) */}
+                <Grid xs={12} lg={7.5}>
                   <Stack spacing={3.5}>
                     {/* Attendance Overview Card with Monthly Bar Chart & Live Punch */}
                     <AttendanceOverview
@@ -190,7 +190,7 @@ export default function EmployeeDashboard() {
                 </Grid>
 
                 {/* Right Column (4.5/12 width on desktop) */}
-                <Grid item xs={12} lg={4.5}>
+                <Grid xs={12} lg={4.5}>
                   <Stack spacing={3.5}>
                     {/* Monthly Calendar Widget */}
                     <EmployeeCalendar bookings={userBookings} />

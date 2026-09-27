@@ -135,8 +135,7 @@ export default function EmployeeSidebar({
                 variant="subtitle1"
                 fontWeight={800}
                 color="#FFFFFF"
-                letterSpacing={-0.3}
-                lineHeight={1.2}
+                sx={{ letterSpacing: -0.3, lineHeight: 1.2 }}
               >
                 IntraSphere
               </Typography>
@@ -209,12 +208,18 @@ export default function EmployeeSidebar({
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: "0.86rem",
-                      fontWeight: active ? 700 : 500,
-                      lineHeight: 1.2,
-                    }}
+                    primary={
+                      <Typography
+                        sx={{
+                          fontSize: "0.86rem",
+                          fontWeight: active ? 700 : 500,
+                          lineHeight: 1.2,
+                          color: active ? "#FFFFFF" : "inherit",
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+                    }
                   />
                   {active && (
                     <ChevronRight

@@ -82,7 +82,7 @@ export default function EmployeeHeader({
       }}
     >
       {/* Left: Mobile Toggle & Global Search Bar */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, maxW: 550 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, maxWidth: 550 }}>
         <IconButton
           onClick={onMobileToggle}
           edge="start"
@@ -208,8 +208,7 @@ export default function EmployeeHeader({
               variant="body2"
               fontWeight={700}
               color="#0F172A"
-              lineHeight={1.2}
-              sx={{ fontSize: "0.85rem" }}
+              sx={{ fontSize: "0.85rem", lineHeight: 1.2 }}
             >
               {employeeName}
             </Typography>
@@ -259,8 +258,7 @@ export default function EmployeeHeader({
               <PersonOutlined fontSize="small" sx={{ color: "#475569" }} />
             </ListItemIcon>
             <ListItemText
-              primary="My Profile"
-              primaryTypographyProps={{ fontSize: "0.85rem", fontWeight: 600, color: "#0F172A" }}
+              primary={<Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#0F172A" }}>My Profile</Typography>}
             />
           </MenuItem>
 
@@ -269,8 +267,7 @@ export default function EmployeeHeader({
               <Settings fontSize="small" sx={{ color: "#475569" }} />
             </ListItemIcon>
             <ListItemText
-              primary="Account Settings"
-              primaryTypographyProps={{ fontSize: "0.85rem", fontWeight: 600, color: "#0F172A" }}
+              primary={<Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#0F172A" }}>Account Settings</Typography>}
             />
           </MenuItem>
 
@@ -281,8 +278,7 @@ export default function EmployeeHeader({
               <Logout fontSize="small" sx={{ color: "#EF4444" }} />
             </ListItemIcon>
             <ListItemText
-              primary="Log Out"
-              primaryTypographyProps={{ fontSize: "0.85rem", fontWeight: 700 }}
+              primary={<Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "#EF4444" }}>Log Out</Typography>}
             />
           </MenuItem>
         </Menu>

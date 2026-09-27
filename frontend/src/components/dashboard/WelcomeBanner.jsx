@@ -72,14 +72,17 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
 
       <Stack
         direction={{ xs: "column", md: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", md: "center" }}
         spacing={2}
-        sx={{ position: "relative", zIndex: 1 }}
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
+        }}
       >
-        <Box sx={{ maxW: 650 }}>
+        <Box sx={{ maxWidth: 650 }}>
           {/* Top Pill with Date */}
-          <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
             <Chip
               icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#60A5FA" }} />}
               label={todayFormatted}
@@ -113,9 +116,11 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
             variant="h4"
             fontWeight={800}
             color="#FFFFFF"
-            letterSpacing="-0.5px"
-            lineHeight={1.2}
-            sx={{ fontSize: { xs: "1.5rem", sm: "1.85rem", md: "2.1rem" } }}
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "1.85rem", md: "2.1rem" },
+              letterSpacing: "-0.5px",
+              lineHeight: 1.2,
+            }}
           >
             {greeting}, {employeeName}! 👋
           </Typography>

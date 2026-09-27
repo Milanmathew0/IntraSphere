@@ -12,6 +12,7 @@ import {
   LinearProgress,
   Tooltip,
   Divider,
+  IconButton,
 } from "@mui/material";
 import {
   AccessTime,
@@ -168,7 +169,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
       }}
     >
       {/* Header Row */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2.5 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <Box
             sx={{
@@ -185,7 +186,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             <AccessTime />
           </Box>
           <Box>
-            <Typography variant="subtitle1" fontWeight={700} color="#0F172A" lineHeight={1.2}>
+            <Typography variant="subtitle1" fontWeight={700} color="#0F172A" sx={{ lineHeight: 1.2 }}>
               Attendance & Monthly Summary
             </Typography>
             <Typography variant="caption" color="#64748B">
@@ -199,11 +200,11 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             <Refresh fontSize="small" />
           </IconButton>
         </Tooltip>
-      </Stack>
+      </Box>
 
       <Grid container spacing={3}>
         {/* Left Sub-Section: Today Punch Actions & Status */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Box
             sx={{
               p: 2.5,
@@ -218,7 +219,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             }}
           >
             <Box>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                 <Typography variant="body2" fontWeight={700} color="#475569">
                   TODAY'S SHIFT LOG
                 </Typography>
@@ -247,31 +248,31 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
                     borderRadius: "6px",
                   }}
                 />
-              </Stack>
+              </Box>
 
               {/* Punch Stats Box */}
               <Grid container spacing={2} textAlign="center" sx={{ mb: 2.5 }}>
-                <Grid item xs={4}>
+                <Grid xs={4}>
                   <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
                     CHECK IN
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" mt={0.3}>
+                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
                     {hasCheckedIn ? formatTime(todayRecord.check_in) : "--:--"}
                   </Typography>
                 </Grid>
-                <Grid item xs={4} sx={{ borderLeft: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>
+                <Grid xs={4} sx={{ borderLeft: "1px solid #E2E8F0", borderRight: "1px solid #E2E8F0" }}>
                   <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
                     CHECK OUT
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" mt={0.3}>
+                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
                     {hasCheckedOut ? formatTime(todayRecord.check_out) : "--:--"}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid xs={4}>
                   <Typography variant="caption" color="#64748B" fontWeight={600} display="block">
                     WORK HOURS
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" mt={0.3}>
+                  <Typography variant="subtitle1" fontWeight={800} color="#0F172A" sx={{ mt: 0.3 }}>
                     {todayRecord?.working_hours ? `${todayRecord.working_hours} hrs` : "--"}
                   </Typography>
                 </Grid>
@@ -279,7 +280,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             </Box>
 
             {/* Action Button */}
-            <Box mt={1}>
+            <Box sx={{ mt: 1 }}>
               {!hasCheckedIn && (
                 <Button
                   variant="contained"
@@ -335,7 +336,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
                     border: "1px solid #E2E8F0",
                   }}
                 >
-                  <Typography variant="body2" fontWeight={700} color="#15803D" display="flex" alignItems="center" justifyContent="center" gap={0.8}>
+                  <Typography variant="body2" fontWeight={700} color="#15803D" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.8 }}>
                     <CheckCircle fontSize="small" /> Attendance Logged for Today
                   </Typography>
                 </Box>
@@ -345,7 +346,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
         </Grid>
 
         {/* Right Sub-Section: Monthly Bar Chart */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Box
             sx={{
               p: 2.5,
@@ -360,7 +361,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
             }}
           >
             <Box>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
                 <Typography variant="body2" fontWeight={700} color="#475569">
                   MONTHLY ATTENDANCE SUMMARY
                 </Typography>
@@ -376,20 +377,20 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
                     borderRadius: "6px",
                   }}
                 />
-              </Stack>
+              </Box>
 
               {/* Progress Bar Categories */}
-              <Stack spacing={2} my={1}>
+              <Stack spacing={2} sx={{ my: 1 }}>
                 {/* Present Bar */}
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                     <Typography variant="caption" fontWeight={600} color="#0F172A">
                       Present ({monthlyStats.present} Days)
                     </Typography>
                     <Typography variant="caption" fontWeight={700} color="#16A34A">
                       {presentPercent}%
                     </Typography>
-                  </Stack>
+                  </Box>
                   <LinearProgress
                     variant="determinate"
                     value={presentPercent}
@@ -404,14 +405,14 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
 
                 {/* Half Day Bar */}
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                     <Typography variant="caption" fontWeight={600} color="#0F172A">
                       Half Day ({monthlyStats.halfDay} Days)
                     </Typography>
                     <Typography variant="caption" fontWeight={700} color="#D97706">
                       {halfDayPercent}%
                     </Typography>
-                  </Stack>
+                  </Box>
                   <LinearProgress
                     variant="determinate"
                     value={halfDayPercent}
@@ -426,14 +427,14 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
 
                 {/* Absent Bar */}
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                     <Typography variant="caption" fontWeight={600} color="#0F172A">
                       Absent / Leave ({monthlyStats.absent} Days)
                     </Typography>
                     <Typography variant="caption" fontWeight={700} color="#DC2626">
                       {absentPercent}%
                     </Typography>
-                  </Stack>
+                  </Box>
                   <LinearProgress
                     variant="determinate"
                     value={absentPercent}
@@ -448,7 +449,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
               </Stack>
             </Box>
 
-            <Typography variant="caption" color="#64748B" display="block" mt={1}>
+            <Typography variant="caption" color="#64748B" display="block" sx={{ mt: 1 }}>
               * Calculated automatically based on approved shift entries for the current calendar month.
             </Typography>
           </Box>

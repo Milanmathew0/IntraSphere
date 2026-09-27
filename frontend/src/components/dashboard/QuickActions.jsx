@@ -74,13 +74,13 @@ export default function QuickActions({ onActionClick }) {
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={800} color="#0F172A" mb={2} letterSpacing="-0.3px">
+      <Typography variant="h6" fontWeight={800} color="#0F172A" sx={{ mb: 2, letterSpacing: "-0.3px" }}>
         Quick Actions
       </Typography>
 
       <Grid container spacing={2}>
         {actions.map((act) => (
-          <Grid item xs={12} sm={6} md={4} key={act.id}>
+          <Grid xs={12} sm={6} md={4} key={act.id}>
             <Paper
               elevation={0}
               onClick={() => handleClick(act)}
@@ -122,7 +122,7 @@ export default function QuickActions({ onActionClick }) {
                   {act.icon}
                 </Box>
                 <Box sx={{ overflow: "hidden" }}>
-                  <Typography variant="subtitle2" fontWeight={700} color="#0F172A" lineHeight={1.2}>
+                  <Typography variant="subtitle2" fontWeight={700} color="#0F172A" sx={{ lineHeight: 1.2 }}>
                     {act.label}
                   </Typography>
                   <Typography variant="caption" color="#64748B" display="block" mt={0.3} noWrap>

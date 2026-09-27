@@ -182,7 +182,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
   return (
     <Grid container spacing={2.5}>
       {cardsData.map((card, idx) => (
-        <Grid item xs={12} sm={6} md={3} key={idx}>
+        <Grid xs={12} sm={6} md={3} key={idx}>
           <Paper
             elevation={0}
             sx={{
@@ -236,8 +236,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
                   variant="h5"
                   fontWeight={800}
                   color="#0F172A"
-                  lineHeight={1.2}
-                  sx={{ fontSize: { xs: "1.3rem", lg: "1.45rem" } }}
+                  sx={{ fontSize: { xs: "1.3rem", lg: "1.45rem" }, lineHeight: 1.2 }}
                 >
                   {card.data}
                 </Typography>

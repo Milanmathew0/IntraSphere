@@ -12,7 +12,7 @@ export default function AppLayout({ children, activeTabOverride }) {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#F5F8FC", // Standard Light Blue/Gray Canvas
+        bgcolor: "#FFFBF7", // Soft Warm Cream Light Canvas matching Orange Theme
         display: "flex",
         fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
       }}

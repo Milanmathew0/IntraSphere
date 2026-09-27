@@ -117,7 +117,7 @@ export default function ActivateAccount() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#F4F6F0",
+        bgcolor: "#FFFBF7",
         p: 2
       }}
     >

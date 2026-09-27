@@ -37,9 +37,9 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       background: {
-        default: isDark ? "#0F172A" : "#FAF8F5",
+        default: isDark ? "#0F172A" : "#FFFBF7",
         paper: isDark ? "#1E293B" : "#FFFFFF",
-        subtle: isDark ? "#182234" : "#F8FAFC",
+        subtle: isDark ? "#182234" : "#FAF6F0",
       },
       text: {
         primary: isDark ? "#F8FAFC" : "#0F172A",
@@ -83,7 +83,7 @@ export const getAppTheme = (mode = "light") => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: isDark ? "#0F172A" : "#FAF8F5",
+            backgroundColor: isDark ? "#0F172A" : "#FFFBF7",
             fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
           },
         },

@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
+  Container,
   Grid,
   Snackbar,
   Alert,
+  Paper,
+  Typography,
   Stack,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 
-// Import Enterprise Reference Components
+// Import Custom Enterprise Components
 import EmployeeSidebar from "../components/dashboard/EmployeeSidebar";
 import EmployeeHeader from "../components/dashboard/EmployeeHeader";
 import WelcomeBanner from "../components/dashboard/WelcomeBanner";
@@ -20,8 +26,9 @@ import QuickActions from "../components/dashboard/QuickActions";
 import UpcomingMeetings from "../components/dashboard/UpcomingMeetings";
 import RecentAnnouncements from "../components/dashboard/RecentAnnouncements";
 import EmployeeNotifications from "../components/dashboard/EmployeeNotifications";
+import SmartOfficeSideCard from "../components/dashboard/SmartOfficeSideCard";
 
-// Modular views for sub-tab navigation
+// Modular tab panels for embedded full views
 import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
 import WorkspaceReservationCard from "../components/dashboard/WorkspaceReservationCard";
 import EmergencyMeetingRooms from "../components/dashboard/EmergencyMeetingRooms";
@@ -33,6 +40,9 @@ export default function EmployeeDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
+  const [notificationsCount, setNotificationsCount] = useState(0);
+  const [todayScheduleItems, setTodayScheduleItems] = useState([]);
+  const [userBookings, setUserBookings] = useState([]);
   const [attendanceRefreshKey, setAttendanceRefreshKey] = useState(0);
 
   const [toast, setToast] = useState({
@@ -45,6 +55,65 @@ export default function EmployeeDashboard() {
     setToast({ open: true, message, severity });
   };
 
+  // Fetch today's schedule (meetings + desk bookings)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchTodayScheduleData = async () => {
+      try {
+        const [meetingRes, deskRes] = await Promise.allSettled([
+          api.get("/api/v1/meeting-bookings/my"),
+          api.get("/api/v1/workspace-reservations/my"),
+        ]);
+
+        const nowStr = new Date().toDateString();
+        let items = [];
+        let allBookingsList = [];
+
+        if (meetingRes.status === "fulfilled" && Array.isArray(meetingRes.value.data)) {
+          allBookingsList = [...allBookingsList, ...meetingRes.value.data];
+          const todayMeetings = meetingRes.value.data
+            .filter((b) => b.status !== "Cancelled" && new Date(b.start_time).toDateString() === nowStr)
+            .map((b) => ({
+              type: "meeting",
+              title: b.title || b.room_name || "Meeting Room Booking",
+              time: `${new Date(b.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${new Date(b.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+              location: `${b.room_name || "Conference Room"}${b.location ? " • " + b.location : ""}`,
+              start_time: b.start_time,
+            }));
+          items = [...items, ...todayMeetings];
+        }
+
+        if (deskRes.status === "fulfilled" && Array.isArray(deskRes.value.data)) {
+          allBookingsList = [...allBookingsList, ...deskRes.value.data];
+          const todayDesks = deskRes.value.data
+            .filter((b) => b.status !== "Cancelled" && new Date(b.start_time || b.reservation_date).toDateString() === nowStr)
+            .map((b) => ({
+              type: "workspace",
+              title: b.desk_name || b.zone_name || "Workspace Desk Reservation",
+              time: b.start_time
+                ? `${new Date(b.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${new Date(b.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                : "Full Day Access",
+              location: `Desk ${b.desk_number || "A-101"}${b.floor ? " • Floor " + b.floor : ""}`,
+              start_time: b.start_time || b.reservation_date,
+            }));
+          items = [...items, ...todayDesks];
+        }
+
+        if (isMounted) {
+          setTodayScheduleItems(items);
+          setUserBookings(allBookingsList);
+        }
+      } catch (err) {
+        console.error("Error fetching schedule data:", err);
+      }
+    };
+
+    fetchTodayScheduleData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleAttendanceChange = () => {
     setAttendanceRefreshKey((prev) => prev + 1);
   };
@@ -53,7 +122,7 @@ export default function EmployeeDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#F4F7FC", // Match exact canvas background color
+        bgcolor: "#F8FAFC", // Clean Slate 50 SaaS background
         display: "flex",
         fontFamily: "'Inter', sans-serif",
       }}
@@ -64,10 +133,9 @@ export default function EmployeeDashboard() {
         onMobileClose={() => setMobileOpen(false)}
         activeTab={activeTab}
         onTabChange={(tabId) => setActiveTab(tabId)}
-        notificationsCount={3}
       />
 
-      {/* 2. Main Area */}
+      {/* 2. Main Work Area Container */}
       <Box
         sx={{
           flexGrow: 1,
@@ -76,76 +144,85 @@ export default function EmployeeDashboard() {
           minWidth: 0,
         }}
       >
-        {/* Top Header Bar */}
+        {/* Top Header */}
         <EmployeeHeader
           onMobileToggle={() => setMobileOpen(!mobileOpen)}
-          notificationsCount={3}
+          notificationsCount={notificationsCount}
           searchQuery={searchQuery}
           onSearchChange={(q) => setSearchQuery(q)}
           onNotificationClick={() => setActiveTab("notifications")}
         />
 
-        {/* Dashboard Canvas Area */}
-        <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 }, flexGrow: 1 }}>
+        {/* Dashboard Main Content Canvas */}
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, flexGrow: 1 }}>
+          {/* Main Dashboard Overview View */}
           {activeTab === "dashboard" && (
-            <Grid container spacing={2.5}>
-              {/* Left & Center Main Section (Width ~74% / 8.8 grid cols on desktop) */}
-              <Grid xs={12} lg={8.8}>
-                <Stack spacing={2.5}>
-                  {/* Row 1: Welcome Banner */}
-                  <WelcomeBanner user={user} />
+            <Stack spacing={3.5}>
+              {/* 1. Welcome Banner */}
+              <WelcomeBanner user={user} />
 
-                  {/* Row 2: 4 Summary Cards */}
-                  <EmployeeSummaryCards
-                    user={user}
-                    onNavigateTab={(tab) => setActiveTab(tab)}
-                  />
+              {/* 2. 4 Metric Summary Cards */}
+              <EmployeeSummaryCards
+                user={user}
+                onNavigateTab={(tab) => setActiveTab(tab)}
+              />
 
-                  {/* Row 3: Today's Schedule & Quick Actions */}
-                  <Grid container spacing={2.5}>
-                    <Grid xs={12} md={6}>
-                      <TodaySchedule />
-                    </Grid>
-                    <Grid xs={12} md={6}>
-                      <QuickActions onActionClick={(id) => setActiveTab(id)} />
-                    </Grid>
-                  </Grid>
+              {/* 3. Multi-Column Grid */}
+              <Grid container spacing={3.5}>
+                {/* Left/Main Column (7.5/12 width on desktop) */}
+                <Grid xs={12} lg={7.5}>
+                  <Stack spacing={3.5}>
+                    {/* Attendance Overview Card with Monthly Bar Chart & Live Punch */}
+                    <AttendanceOverview
+                      user={user}
+                      onAttendanceChange={handleAttendanceChange}
+                      showToast={showToast}
+                    />
 
-                  {/* Row 4: Attendance Overview (Bar Chart) & Recent Announcements */}
-                  <Grid container spacing={2.5}>
-                    <Grid xs={12} md={6}>
-                      <AttendanceOverview
-                        user={user}
-                        onAttendanceChange={handleAttendanceChange}
-                        showToast={showToast}
-                      />
+                    {/* Today's Schedule & Quick Actions Grid (Split 2 Columns) */}
+                    <Grid container spacing={3}>
+                      <Grid xs={12} md={6}>
+                        <TodaySchedule scheduleItems={todayScheduleItems} />
+                      </Grid>
+                      <Grid xs={12} md={6}>
+                        <QuickActions onActionClick={(id) => setActiveTab(id)} />
+                      </Grid>
                     </Grid>
-                    <Grid xs={12} md={6}>
-                      <RecentAnnouncements />
+
+                    {/* Upcoming Meetings & Recent Announcements (Side-by-Side Split) */}
+                    <Grid container spacing={3}>
+                      <Grid xs={12} md={6}>
+                        <UpcomingMeetings />
+                      </Grid>
+                      <Grid xs={12} md={6}>
+                        <RecentAnnouncements />
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </Stack>
+                  </Stack>
+                </Grid>
+
+                {/* Right Column / Side Panel (4.5/12 width on desktop) */}
+                <Grid xs={12} lg={4.5}>
+                  <Stack spacing={3.5}>
+                    {/* 1. Smart Office Side Panel Vector Banner Image Card */}
+                    <SmartOfficeSideCard />
+
+                    {/* 2. Monthly Calendar Widget */}
+                    <EmployeeCalendar bookings={userBookings} />
+
+                    {/* 3. Notifications Card */}
+                    <EmployeeNotifications
+                      onUnreadCountChange={(cnt) => setNotificationsCount(cnt)}
+                    />
+                  </Stack>
+                </Grid>
               </Grid>
-
-              {/* Right Column Section (Width ~26% / 3.2 grid cols on desktop) */}
-              <Grid xs={12} lg={3.2}>
-                <Stack spacing={2.5}>
-                  {/* Calendar Widget */}
-                  <EmployeeCalendar />
-
-                  {/* Upcoming Meetings */}
-                  <UpcomingMeetings />
-
-                  {/* My Notifications */}
-                  <EmployeeNotifications />
-                </Stack>
-              </Grid>
-            </Grid>
+            </Stack>
           )}
 
-          {/* Sub-Tab Embedded Views */}
+          {/* Sub-Tab Views for Dedicated Modules */}
           {activeTab === "attendance" && (
-            <Stack spacing={3}>
+            <Stack spacing={3.5}>
               <AttendanceOverview
                 user={user}
                 onAttendanceChange={handleAttendanceChange}
@@ -158,32 +235,54 @@ export default function EmployeeDashboard() {
             </Stack>
           )}
 
-          {activeTab === "leave" && <LeaveApplicationCard />}
-
-          {activeTab === "meeting-rooms" && <EmergencyMeetingRooms />}
-
-          {activeTab === "workspaces" && <WorkspaceReservationCard />}
-
-          {activeTab === "my-bookings" && (
-            <Stack spacing={3}>
-              <UpcomingMeetings />
-              <TodaySchedule />
-            </Stack>
-          )}
-
-          {activeTab === "announcements" && <RecentAnnouncements />}
-
-          {activeTab === "notifications" && (
-            <Box sx={{ maxWidth: 800, mx: "auto" }}>
-              <EmployeeNotifications />
+          {activeTab === "leave" && (
+            <Box>
+              <LeaveApplicationCard />
             </Box>
           )}
 
-          {activeTab === "profile" && <EmployeeProfileSection />}
+          {activeTab === "meeting-rooms" && (
+            <Stack spacing={3.5}>
+              <EmergencyMeetingRooms />
+            </Stack>
+          )}
+
+          {activeTab === "workspaces" && (
+            <Stack spacing={3.5}>
+              <WorkspaceReservationCard />
+            </Stack>
+          )}
+
+          {activeTab === "my-bookings" && (
+            <Stack spacing={3.5}>
+              <UpcomingMeetings />
+              <TodaySchedule scheduleItems={todayScheduleItems} />
+            </Stack>
+          )}
+
+          {activeTab === "announcements" && (
+            <Box>
+              <RecentAnnouncements />
+            </Box>
+          )}
+
+          {activeTab === "notifications" && (
+            <Box sx={{ maxW: 800, mx: "auto" }}>
+              <EmployeeNotifications
+                onUnreadCountChange={(cnt) => setNotificationsCount(cnt)}
+              />
+            </Box>
+          )}
+
+          {activeTab === "profile" && (
+            <Box>
+              <EmployeeProfileSection />
+            </Box>
+          )}
         </Box>
       </Box>
 
-      {/* Global Toast Alert */}
+      {/* Global Toast Notification */}
       <Snackbar
         open={toast.open}
         autoHideDuration={4000}

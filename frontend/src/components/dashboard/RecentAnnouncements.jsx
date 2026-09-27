@@ -1,142 +1,203 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
   Typography,
   Stack,
+  Chip,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import {
-  NotificationsActive,
-  Settings,
-  Groups,
-  Description,
-} from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Campaign, CalendarToday, ArrowForward } from "@mui/icons-material";
+import api from "../../api/axios";
 
 export default function RecentAnnouncements() {
-  const navigate = useNavigate();
+  const [announcements, setAnnouncements] = useState([]);
+  const [selectedNotice, setSelectedNotice] = useState(null);
 
-  const announcements = [
-    {
-      id: 1,
-      title: "Office Holiday Notice",
-      date: "22 Sep 2026",
-      description: "The office will remain closed on 2nd October 20...",
-      icon: <NotificationsActive fontSize="small" />,
-      color: { bg: "#F3E8FF", text: "#7E22CE" },
-    },
-    {
-      id: 2,
-      title: "IT Maintenance",
-      date: "20 Sep 2026",
-      description: "Scheduled system maintenance on 23rd Septe...",
-      icon: <Settings fontSize="small" />,
-      color: { bg: "#FFEDD5", text: "#EA580C" },
-    },
-    {
-      id: 3,
-      title: "Team Building Event",
-      date: "18 Sep 2026",
-      description: "Join us for the annual team building event on 28...",
-      icon: <Groups fontSize="small" />,
-      color: { bg: "#F3E8FF", text: "#7E22CE" },
-    },
-    {
-      id: 4,
-      title: "New Workspace Guidelines",
-      date: "15 Sep 2026",
-      description: "Updated workspace usage guidelines are now a...",
-      icon: <Description fontSize="small" />,
-      color: { bg: "#FFEDD5", text: "#EA580C" },
-    },
-  ];
+  useEffect(() => {
+    // Default fallback announcements as per spec
+    const sampleAnnouncements = [
+      {
+        id: 1,
+        title: "Office Holiday Notice - Gandhi Jayanti",
+        description: "The office will remain closed on October 2nd. Mandatory facilities maintenance will be performed.",
+        date: "Sep 28, 2026",
+        category: "Notice",
+        color: { bg: "#FEF3C7", text: "#B45309" },
+      },
+      {
+        id: 2,
+        title: "IT Maintenance & Server Upgrade",
+        description: "Network maintenance scheduled for Saturday 10:00 PM - 02:00 AM. Intermittent API latency may occur.",
+        date: "Sep 26, 2026",
+        category: "IT Alert",
+        color: { bg: "#E0F2FE", text: "#0369A1" },
+      },
+      {
+        id: 3,
+        title: "Team Building Event & Hackathon",
+        description: "Join us for IntraSphere Q4 Innovation Hackathon on Friday at the main auditorium.",
+        date: "Sep 24, 2026",
+        category: "Event",
+        color: { bg: "#DCFCE7", text: "#15803D" },
+      },
+      {
+        id: 4,
+        title: "New Workspace Desk Booking Guidelines",
+        description: "Check out the updated hot-desking policy regarding maximum consecutive desk reservation hours.",
+        date: "Sep 20, 2026",
+        category: "Policy",
+        color: { bg: "#F3E8FF", text: "#7E22CE" },
+      },
+    ];
+
+    setAnnouncements(sampleAnnouncements);
+  }, []);
 
   return (
     <Paper
       elevation={0}
       sx={{
-        p: 2.5,
+        p: 3,
         borderRadius: "20px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxSizing: "border-box",
+        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.04)",
       }}
     >
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ fontSize: "1.05rem" }}>
-          Recent Announcements
-        </Typography>
-        <Button
-          size="small"
-          onClick={() => navigate("/announcements")}
-          sx={{
-            fontWeight: 700,
-            color: "#2563EB",
-            textTransform: "none",
-            fontSize: "0.78rem",
-            p: 0,
-            "&:hover": { bgcolor: "transparent" },
-          }}
-        >
-          View All
-        </Button>
-      </Box>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: "10px",
+              bgcolor: "#FEF3C7",
+              color: "#D97706",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Campaign sx={{ fontSize: 20 }} />
+          </Box>
+          <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+            Recent Announcements
+          </Typography>
+        </Box>
+      </Stack>
 
-      {/* List matching reference */}
-      <Stack spacing={1.5}>
+      {/* List */}
+      <Stack spacing={1.8}>
         {announcements.map((item) => (
-          <Box key={item.id} sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-            <Box
+          <Paper
+            key={item.id}
+            elevation={0}
+            onClick={() => setSelectedNotice(item)}
+            sx={{
+              p: 2,
+              borderRadius: "14px",
+              bgcolor: "#F8FAFC",
+              border: "1px solid #E2E8F0",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                bgcolor: "#FFFFFF",
+                borderColor: "#1976D2",
+                boxShadow: "0 4px 14px rgba(25, 118, 210, 0.1)",
+              },
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={0.8}>
+              <Typography variant="body2" fontWeight={700} color="#0F172A" sx={{ fontSize: "0.88rem" }}>
+                {item.title}
+              </Typography>
+              <Chip
+                label={item.category}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: "0.68rem",
+                  fontWeight: 700,
+                  bgcolor: item.color.bg,
+                  color: item.color.text,
+                  borderRadius: "5px",
+                  "& .MuiChip-label": { px: 0.8 },
+                }}
+              />
+            </Stack>
+
+            <Typography
+              variant="caption"
+              color="#64748B"
+              display="-webkit-box"
               sx={{
-                width: 34,
-                height: 34,
-                borderRadius: "10px",
-                bgcolor: item.color.bg,
-                color: item.color.text,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                mt: 0.2,
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                lineHeight: 1.4,
               }}
             >
-              {item.icon}
-            </Box>
+              {item.description}
+            </Typography>
 
-            <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <Typography variant="body2" fontWeight={800} color="#0A1628" sx={{ fontSize: "0.84rem", lineHeight: 1.2 }}>
-                  {item.title}
-                </Typography>
-                <Typography variant="caption" color="#94A3B8" sx={{ fontSize: "0.7rem", fontWeight: 500, flexShrink: 0 }}>
-                  {item.date}
-                </Typography>
-              </Box>
-              <Typography
-                variant="caption"
-                color="#64748B"
-                sx={{
-                  fontSize: "0.74rem",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  mt: 0.2,
-                }}
-              >
-                {item.description}
-              </Typography>
-            </Box>
-          </Box>
+            <Typography
+              variant="caption"
+              color="#94A3B8"
+              display="flex"
+              alignItems="center"
+              gap={0.5}
+              mt={1}
+              fontWeight={500}
+            >
+              <CalendarToday sx={{ fontSize: 12 }} /> {item.date}
+            </Typography>
+          </Paper>
         ))}
       </Stack>
+
+      {/* Notice Detail Dialog */}
+      <Dialog
+        open={Boolean(selectedNotice)}
+        onClose={() => setSelectedNotice(null)}
+        PaperProps={{ sx: { borderRadius: "16px", p: 1, minWidth: 340 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, pb: 1, color: "#0F172A" }}>
+          {selectedNotice?.title}
+        </DialogTitle>
+        <DialogContent dividers>
+          {selectedNotice && (
+            <Stack spacing={1.5}>
+              <Chip
+                label={selectedNotice.category}
+                size="small"
+                sx={{
+                  width: "fit-content",
+                  fontWeight: 700,
+                  bgcolor: selectedNotice.color.bg,
+                  color: selectedNotice.color.text,
+                }}
+              />
+              <Typography variant="body2" color="#475569" lineHeight={1.6}>
+                {selectedNotice.description}
+              </Typography>
+              <Typography variant="caption" color="#94A3B8">
+                Posted on {selectedNotice.date}
+              </Typography>
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSelectedNotice(null)} sx={{ fontWeight: 700, color: "#475569" }}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

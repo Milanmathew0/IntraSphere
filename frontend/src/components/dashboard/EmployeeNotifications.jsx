@@ -1,150 +1,230 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
   Typography,
   Stack,
+  Chip,
   Button,
   IconButton,
+  Tooltip,
+  Skeleton,
 } from "@mui/material";
 import {
-  CheckCircle,
-  FlightTakeoff,
-  Campaign,
-  Desk,
-  MoreVert,
+  Notifications,
+  DoneAll,
+  CheckCircleOutlined,
+  AccessTime,
+  MarkEmailRead,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
-export default function EmployeeNotifications() {
-  const navigate = useNavigate();
+export default function EmployeeNotifications({ onUnreadCountChange }) {
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
 
-  const notifications = [
-    {
-      id: 1,
-      text: "Your meeting room booking is confirmed.",
-      time: "2 hours ago",
-      icon: <CheckCircle fontSize="small" />,
-      color: { bg: "#DCFCE7", text: "#16A34A" },
-      unread: true,
-    },
-    {
-      id: 2,
-      text: "Leave request approved.",
-      time: "5 hours ago",
-      icon: <FlightTakeoff fontSize="small" />,
-      color: { bg: "#E0F2FE", text: "#0284C7" },
-      unread: true,
-    },
-    {
-      id: 3,
-      text: "New announcement posted.",
-      time: "1 day ago",
-      icon: <Campaign fontSize="small" />,
-      color: { bg: "#FFEDD5", text: "#EA580C" },
-      unread: false,
-    },
-    {
-      id: 4,
-      text: "Workspace booking reminder.",
-      time: "1 day ago",
-      icon: <Desk fontSize="small" />,
-      color: { bg: "#E0F2FE", text: "#0284C7" },
-      unread: false,
-    },
-  ];
+  const fetchNotifications = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get("/api/v1/notifications/my");
+      const list = Array.isArray(response.data) ? response.data : [];
+      setNotifications(list);
+
+      const unreadCount = list.filter((n) => !n.is_read).length;
+      if (onUnreadCountChange) onUnreadCountChange(unreadCount);
+    } catch (err) {
+      console.error("Notifications fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await api.patch(`/api/v1/notifications/${id}/read`);
+      await fetchNotifications();
+    } catch (err) {
+      console.error("Mark read error:", err);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await api.patch("/api/v1/notifications/read-all");
+      await fetchNotifications();
+    } catch (err) {
+      console.error("Mark all read error:", err);
+    }
+  };
+
+  const formatNotificationTime = (timeStr) => {
+    if (!timeStr) return "Just now";
+    try {
+      const d = new Date(timeStr);
+      if (isNaN(d.getTime())) return timeStr;
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return timeStr;
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
     <Paper
       elevation={0}
       sx={{
-        p: 2.5,
+        p: 3,
         borderRadius: "20px",
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
+        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.04)",
       }}
     >
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ fontSize: "1.05rem" }}>
-          My Notifications
-        </Typography>
-        <Button
-          size="small"
-          onClick={() => navigate("/notifications")}
-          sx={{
-            fontWeight: 700,
-            color: "#2563EB",
-            textTransform: "none",
-            fontSize: "0.78rem",
-            p: 0,
-            "&:hover": { bgcolor: "transparent" },
-          }}
-        >
-          View All
-        </Button>
-      </Box>
-
-      {/* List matching reference image */}
-      <Stack spacing={1.5}>
-        {notifications.map((item) => (
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
           <Box
-            key={item.id}
             sx={{
+              width: 36,
+              height: 36,
+              borderRadius: "10px",
+              bgcolor: "#F3E8FF",
+              color: "#7E22CE",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              p: 1.2,
-              borderRadius: "12px",
-              bgcolor: "#F8FAFC",
-              border: "1px solid #F1F5F9",
+              justifyContent: "center",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
-              <Box
+            <Notifications sx={{ fontSize: 20 }} />
+          </Box>
+          <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+            My Notifications
+          </Typography>
+        </Box>
+
+        {unreadCount > 0 && (
+          <Tooltip title="Mark all notifications as read">
+            <Button
+              size="small"
+              onClick={handleMarkAllAsRead}
+              startIcon={<DoneAll sx={{ fontSize: "14px !important" }} />}
+              sx={{
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                color: "#1976D2",
+                textTransform: "none",
+              }}
+            >
+              Mark All Read
+            </Button>
+          </Tooltip>
+        )}
+      </Stack>
+
+      {/* List */}
+      {loading ? (
+        <Stack spacing={1.5}>
+          <Skeleton variant="rectangular" height={50} sx={{ borderRadius: "12px" }} />
+          <Skeleton variant="rectangular" height={50} sx={{ borderRadius: "12px" }} />
+        </Stack>
+      ) : notifications.length === 0 ? (
+        <Box
+          sx={{
+            py: 3,
+            px: 2,
+            textAlign: "center",
+            borderRadius: "14px",
+            bgcolor: "#F8FAFC",
+            border: "1px dashed #CBD5E1",
+          }}
+        >
+          <Typography variant="body2" color="#64748B" fontWeight={500}>
+            You have no notifications.
+          </Typography>
+        </Box>
+      ) : (
+        <Stack spacing={1.5}>
+          {notifications.slice(0, 5).map((item) => {
+            const isRead = Boolean(item.is_read);
+            return (
+              <Paper
+                key={item._id || item.id}
+                elevation={0}
                 sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  bgcolor: item.color.bg,
-                  color: item.color.text,
+                  p: 1.8,
+                  borderRadius: "14px",
+                  bgcolor: isRead ? "#FFFFFF" : "#F0F7FF",
+                  border: isRead ? "1px solid #E2E8F0" : "1px solid #BFDBFE",
+                  transition: "all 0.2s ease",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
                 }}
               >
-                {item.icon}
-              </Box>
-              <Box>
-                <Typography variant="body2" fontWeight={700} color="#0A1628" sx={{ fontSize: "0.8rem", lineHeight: 1.2 }}>
-                  {item.text}
-                </Typography>
-                <Typography variant="caption" color="#94A3B8" sx={{ fontSize: "0.7rem", mt: 0.2, display: "block" }}>
-                  {item.time}
-                </Typography>
-              </Box>
-            </Box>
+                <Box sx={{ overflow: "hidden", pr: 1 }}>
+                  <Stack direction="row" spacing={1} alignItems="center" mb={0.3}>
+                    <Typography
+                      variant="body2"
+                      fontWeight={isRead ? 600 : 800}
+                      color="#0F172A"
+                      sx={{ fontSize: "0.85rem" }}
+                    >
+                      {item.title || item.message || "Notification"}
+                    </Typography>
+                    {!isRead && (
+                      <Chip
+                        label="New"
+                        size="small"
+                        sx={{
+                          height: 18,
+                          fontSize: "0.62rem",
+                          fontWeight: 800,
+                          bgcolor: "#1976D2",
+                          color: "#FFFFFF",
+                          borderRadius: "4px",
+                          "& .MuiChip-label": { px: 0.6 },
+                        }}
+                      />
+                    )}
+                  </Stack>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {item.unread && (
-                <Box
-                  sx={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    bgcolor: "#2563EB",
-                  }}
-                />
-              )}
-              <IconButton size="small" sx={{ color: "#94A3B8" }}>
-                <MoreVert fontSize="small" />
-              </IconButton>
-            </Box>
-          </Box>
-        ))}
-      </Stack>
+                  <Typography variant="caption" color="#475569" display="block" lineHeight={1.4}>
+                    {item.message || item.description}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    color="#94A3B8"
+                    display="flex"
+                    alignItems="center"
+                    gap={0.4}
+                    mt={0.8}
+                  >
+                    <AccessTime sx={{ fontSize: 12 }} /> {formatNotificationTime(item.created_at || item.time)}
+                  </Typography>
+                </Box>
+
+                {!isRead && (
+                  <Tooltip title="Mark as read">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleMarkAsRead(item._id || item.id)}
+                      sx={{ color: "#1976D2", p: 0.5 }}
+                    >
+                      <MarkEmailRead fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Paper>
+            );
+          })}
+        </Stack>
+      )}
     </Paper>
   );
 }

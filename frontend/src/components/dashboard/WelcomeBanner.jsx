@@ -1,142 +1,180 @@
 import React from "react";
-import { Box, Typography, Stack, Paper } from "@mui/material";
-import { CalendarMonth } from "@mui/icons-material";
+import { Box, Typography, Stack, Button, Chip } from "@mui/material";
+import { AutoAwesome as SparklesIcon, CalendarMonth, AccessTime } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-export default function WelcomeBanner({ user }) {
+export default function WelcomeBanner({ user, onQuickCheckIn }) {
+  const navigate = useNavigate();
+
+  // Dynamic greeting based on current local hour
   const currentHour = new Date().getHours();
-  let greeting = "Good Evening";
+  let greeting = "Good Day";
   if (currentHour < 12) {
     greeting = "Good Morning";
   } else if (currentHour < 17) {
     greeting = "Good Afternoon";
+  } else {
+    greeting = "Good Evening";
   }
 
-  const employeeName = user?.username || user?.first_name || "Milan Mathew";
+  const employeeName = user?.username || user?.email?.split("@")[0] || "Employee";
 
   const todayFormatted = new Date().toLocaleDateString("en-US", {
     weekday: "long",
-    day: "numeric",
     month: "long",
+    day: "numeric",
     year: "numeric",
   });
-  const dayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
-  const dateStr = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
         width: "100%",
-        minHeight: 165,
+        minHeight: 170,
         borderRadius: "20px",
-        background: `linear-gradient(90deg, rgba(235, 243, 255, 0.95) 0%, rgba(244, 247, 252, 0.8) 50%, rgba(255, 255, 255, 0.4) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center right",
-        p: { xs: 2.5, md: 3.2 },
+        background: "linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #1976D2 100%)",
+        color: "#FFFFFF",
+        p: { xs: 3, md: 4 },
         boxSizing: "border-box",
         position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.12)",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
+        justifyContent: "center",
       }}
     >
-      <Box sx={{ maxWidth: 520 }}>
-        <Typography
-          variant="h5"
-          fontWeight={800}
-          color="#0A1628"
-          sx={{ fontSize: { xs: "1.4rem", md: "1.75rem" }, lineHeight: 1.2 }}
-        >
-          {greeting},
-        </Typography>
-        <Typography
-          variant="h4"
-          fontWeight={800}
-          color="#0A1628"
-          sx={{ fontSize: { xs: "1.6rem", md: "2rem" }, lineHeight: 1.15 }}
-        >
-          {employeeName} 👋
-        </Typography>
-
-        <Typography
-          variant="body2"
-          sx={{
-            color: "#64748B",
-            mt: 0.6,
-            fontWeight: 500,
-            fontSize: "0.9rem",
-          }}
-        >
-          Let's make today productive!
-        </Typography>
-
-        {/* Quote Container matching reference */}
-        <Box
-          sx={{
-            mt: 1.8,
-            px: 1.5,
-            py: 0.8,
-            borderRadius: "8px",
-            bgcolor: "rgba(37, 99, 235, 0.06)",
-            borderLeft: "3px solid #2563EB",
-            display: "inline-block",
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#1E3A8A",
-              fontStyle: "italic",
-              fontWeight: 600,
-              fontSize: "0.78rem",
-            }}
-          >
-            “A well-organized workplace leads to a focused mind.”
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Floating Date Card matching bottom-right of reference */}
-      <Paper
-        elevation={0}
+      {/* Decorative Background Lighting Overlay */}
+      <Box
         sx={{
           position: "absolute",
-          bottom: 16,
-          right: 20,
-          px: 1.8,
-          py: 1,
-          borderRadius: "14px",
-          bgcolor: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(6px)",
-          border: "1px solid #E2E8F0",
-          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.05)",
-          display: { xs: "none", sm: "flex" },
-          alignItems: "center",
-          gap: 1.2,
+          top: -40,
+          right: -40,
+          width: 220,
+          height: 220,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(25, 118, 210, 0.4) 0%, rgba(25, 118, 210, 0) 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: -60,
+          left: "30%",
+          width: 280,
+          height: 280,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, rgba(255, 255, 255, 0) 70%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={2}
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
         }}
       >
-        <Box
-          sx={{
-            p: 0.8,
-            borderRadius: "8px",
-            bgcolor: "#F1F5F9",
-            color: "#0A1628",
-            display: "flex",
-          }}
-        >
-          <CalendarMonth sx={{ fontSize: 20 }} />
-        </Box>
-        <Box>
-          <Typography variant="caption" color="#64748B" display="block" fontWeight={600} sx={{ lineHeight: 1 }}>
-            {dayName}
+        <Box sx={{ maxWidth: 650 }}>
+          {/* Top Pill with Date */}
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
+            <Chip
+              icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#60A5FA" }} />}
+              label={todayFormatted}
+              size="small"
+              sx={{
+                bgcolor: "rgba(255, 255, 255, 0.12)",
+                color: "#E2E8F0",
+                fontWeight: 600,
+                fontSize: "0.75rem",
+                borderRadius: "8px",
+                backdropFilter: "blur(4px)",
+              }}
+            />
+            <Chip
+              icon={<SparklesIcon sx={{ fontSize: "14px !important", color: "#FBBF24" }} />}
+              label="IntraSphere SaaS Portal"
+              size="small"
+              sx={{
+                bgcolor: "rgba(251, 191, 36, 0.15)",
+                color: "#FCD34D",
+                fontWeight: 700,
+                fontSize: "0.72rem",
+                borderRadius: "8px",
+                display: { xs: "none", sm: "inline-flex" },
+              }}
+            />
+          </Stack>
+
+          {/* Dynamic Greeting & Name */}
+          <Typography
+            variant="h4"
+            fontWeight={800}
+            color="#FFFFFF"
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "1.85rem", md: "2.1rem" },
+              letterSpacing: "-0.5px",
+              lineHeight: 1.2,
+            }}
+          >
+            {greeting}, {employeeName}! 👋
           </Typography>
-          <Typography variant="subtitle2" fontWeight={800} color="#0A1628" sx={{ fontSize: "0.82rem" }}>
-            {dateStr}
+
+          {/* Subtitle & Quote */}
+          <Typography
+            variant="body1"
+            sx={{
+              color: "#94A3B8",
+              mt: 0.75,
+              fontWeight: 500,
+              fontSize: { xs: "0.88rem", sm: "0.95rem" },
+            }}
+          >
+            Let's make today productive!{" "}
+            <Typography
+              component="span"
+              sx={{
+                color: "#CBD5E1",
+                fontStyle: "italic",
+                display: { xs: "none", sm: "inline" },
+              }}
+            >
+              — "A well-organized workplace leads to a focused mind."
+            </Typography>
           </Typography>
         </Box>
-      </Paper>
-    </Paper>
+
+        {/* Action Buttons */}
+        <Stack direction="row" spacing={1.5}>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/workspaces")}
+            startIcon={<SparklesIcon sx={{ fontSize: 18 }} />}
+            sx={{
+              bgcolor: "#1976D2",
+              color: "#FFFFFF",
+              fontWeight: 700,
+              px: 2.5,
+              py: 1.1,
+              borderRadius: "12px",
+              textTransform: "none",
+              fontSize: "0.88rem",
+              boxShadow: "0 4px 14px rgba(25, 118, 210, 0.4)",
+              "&:hover": {
+                bgcolor: "#1565C0",
+                boxShadow: "0 6px 20px rgba(25, 118, 210, 0.6)",
+              },
+            }}
+          >
+            Reserve Workspace
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 }

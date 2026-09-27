@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography, Stack } from "@mui/material";
 import {
   Groups,
   Desk,
@@ -7,6 +7,7 @@ import {
   CalendarMonth,
   Bookmark,
   Person,
+  ArrowForward,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
@@ -17,43 +18,49 @@ export default function QuickActions({ onActionClick }) {
     {
       id: "meeting-rooms",
       label: "Book Meeting Room",
-      icon: <Groups sx={{ fontSize: 26, color: "#7E22CE" }} />,
-      bg: "#F3E8FF",
+      subtitle: "Reserve war room or call pod",
+      icon: <Groups sx={{ fontSize: 24, color: "#1976D2" }} />,
+      iconBg: "#E0F2FE",
       route: "/meeting-rooms",
     },
     {
       id: "workspaces",
       label: "Reserve Workspace",
-      icon: <Desk sx={{ fontSize: 26, color: "#0284C7" }} />,
-      bg: "#E0F2FE",
+      subtitle: "Book hot desk or quiet station",
+      icon: <Desk sx={{ fontSize: 24, color: "#7E22CE" }} />,
+      iconBg: "#F3E8FF",
       route: "/workspaces",
     },
     {
       id: "leave",
       label: "Apply Leave",
-      icon: <FlightTakeoff sx={{ fontSize: 26, color: "#EA580C" }} />,
-      bg: "#FFEDD5",
+      subtitle: "Submit time off or vacation",
+      icon: <FlightTakeoff sx={{ fontSize: 24, color: "#15803D" }} />,
+      iconBg: "#DCFCE7",
       route: "/leave",
     },
     {
       id: "attendance",
       label: "View Attendance",
-      icon: <CalendarMonth sx={{ fontSize: 26, color: "#16A34A" }} />,
-      bg: "#DCFCE7",
+      subtitle: "Inspect monthly punch log",
+      icon: <CalendarMonth sx={{ fontSize: 24, color: "#B45309" }} />,
+      iconBg: "#FEF3C7",
       route: "/attendance",
     },
     {
       id: "my-bookings",
       label: "My Bookings",
-      icon: <Bookmark sx={{ fontSize: 26, color: "#DC2626" }} />,
-      bg: "#FEE2E2",
+      subtitle: "Manage active room & desk passes",
+      icon: <Bookmark sx={{ fontSize: 24, color: "#C2410C" }} />,
+      iconBg: "#FFEDD5",
       route: "/my-bookings",
     },
     {
       id: "profile",
       label: "Update Profile",
-      icon: <Person sx={{ fontSize: 26, color: "#2563EB" }} />,
-      bg: "#EFF6FF",
+      subtitle: "Edit user info & preferences",
+      icon: <Person sx={{ fontSize: 24, color: "#0F172A" }} />,
+      iconBg: "#F1F5F9",
       route: "/profile",
     },
   ];
@@ -66,62 +73,77 @@ export default function QuickActions({ onActionClick }) {
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 2.5,
-        borderRadius: "20px",
-        bgcolor: "#FFFFFF",
-        border: "1px solid #E2E8F0",
-        boxShadow: "0 2px 10px rgba(10, 22, 40, 0.03)",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxSizing: "border-box",
-      }}
-    >
-      <Typography variant="subtitle1" fontWeight={800} color="#0A1628" sx={{ mb: 2, fontSize: "1.05rem" }}>
+    <Box>
+      <Typography variant="h6" fontWeight={800} color="#0F172A" sx={{ mb: 2, letterSpacing: "-0.3px" }}>
         Quick Actions
       </Typography>
 
-      <Grid container spacing={1.8}>
+      <Grid container spacing={2}>
         {actions.map((act) => (
-          <Grid xs={4} key={act.id}>
+          <Grid xs={12} sm={6} md={4} key={act.id}>
             <Paper
               elevation={0}
               onClick={() => handleClick(act)}
               sx={{
-                p: 2,
-                height: 95,
+                p: 2.2,
                 borderRadius: "16px",
-                bgcolor: act.bg,
+                bgcolor: "#FFFFFF",
+                border: "1px solid #E2E8F0",
+                boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
+                justifyContent: "space-between",
                 "&:hover": {
+                  borderColor: "#1976D2",
+                  boxShadow: "0 8px 24px rgba(25, 118, 210, 0.12)",
                   transform: "translateY(-2px)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+                  "& .action-arrow": {
+                    transform: "translateX(4px)",
+                    color: "#1976D2",
+                  },
                 },
               }}
             >
-              <Box sx={{ mb: 0.8 }}>{act.icon}</Box>
-              <Typography
-                variant="caption"
-                fontWeight={700}
-                color="#0A1628"
-                sx={{ fontSize: "0.74rem", lineHeight: 1.15 }}
-              >
-                {act.label}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.8 }}>
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "12px",
+                    bgcolor: act.iconBg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {act.icon}
+                </Box>
+                <Box sx={{ overflow: "hidden" }}>
+                  <Typography variant="subtitle2" fontWeight={700} color="#0F172A" sx={{ lineHeight: 1.2 }}>
+                    {act.label}
+                  </Typography>
+                  <Typography variant="caption" color="#64748B" display="block" mt={0.3} noWrap>
+                    {act.subtitle}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <ArrowForward
+                className="action-arrow"
+                sx={{
+                  fontSize: 18,
+                  color: "#94A3B8",
+                  transition: "all 0.2s ease",
+                  flexShrink: 0,
+                }}
+              />
             </Paper>
           </Grid>
         ))}
       </Grid>
-    </Paper>
+    </Box>
   );
 }

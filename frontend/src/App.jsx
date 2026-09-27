@@ -168,6 +168,40 @@ function App() {
               }
             />
 
+            {/* Additional Employee Portal Direct Routes */}
+            <Route
+              path="/attendance"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-bookings"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/announcements"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Admin"]}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Fallback Catch-all Route */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

@@ -236,7 +236,7 @@ export default function UserDashboard() {
           }}
         >
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={7}>
+            <Grid xs={12} md={7}>
               <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                 <Chip
                   icon={<Sparkles size={14} color="#15803D" />}
@@ -478,7 +478,7 @@ export default function UserDashboard() {
           </Box>
 
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={7}>
+            <Grid xs={12} md={7}>
               <Typography variant="h5" fontWeight={700} color="#15803D" mb={1}>
                 {selectedDept.title}
               </Typography>
@@ -509,7 +509,7 @@ export default function UserDashboard() {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={5}>
+            <Grid xs={12} md={5}>
               <Box
                 sx={{
                   p: 3,

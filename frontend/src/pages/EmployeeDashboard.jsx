@@ -26,7 +26,6 @@ import QuickActions from "../components/dashboard/QuickActions";
 import UpcomingMeetings from "../components/dashboard/UpcomingMeetings";
 import RecentAnnouncements from "../components/dashboard/RecentAnnouncements";
 import EmployeeNotifications from "../components/dashboard/EmployeeNotifications";
-import SmartOfficeSideCard from "../components/dashboard/SmartOfficeSideCard";
 
 // Modular tab panels for embedded full views
 import LeaveApplicationCard from "../components/dashboard/LeaveApplicationCard";
@@ -122,7 +121,7 @@ export default function EmployeeDashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#F8FAFC", // Clean Slate 50 SaaS background
+        bgcolor: "#F5F8FC", // Light blue/gray SaaS background
         display: "flex",
         fontFamily: "'Inter', sans-serif",
       }}
@@ -179,41 +178,27 @@ export default function EmployeeDashboard() {
                       showToast={showToast}
                     />
 
-                    {/* Today's Schedule & Quick Actions Grid (Split 2 Columns) */}
-                    <Grid container spacing={3}>
-                      <Grid xs={12} md={6}>
-                        <TodaySchedule scheduleItems={todayScheduleItems} />
-                      </Grid>
-                      <Grid xs={12} md={6}>
-                        <QuickActions onActionClick={(id) => setActiveTab(id)} />
-                      </Grid>
-                    </Grid>
+                    {/* Quick Actions (2x3 Grid) */}
+                    <QuickActions onActionClick={(id) => setActiveTab(id)} />
 
-                    {/* Upcoming Meetings & Recent Announcements (Side-by-Side Split) */}
-                    <Grid container spacing={3}>
-                      <Grid xs={12} md={6}>
-                        <UpcomingMeetings />
-                      </Grid>
-                      <Grid xs={12} md={6}>
-                        <RecentAnnouncements />
-                      </Grid>
-                    </Grid>
+                    {/* Upcoming Meetings List */}
+                    <UpcomingMeetings />
+
+                    {/* Recent Announcements */}
+                    <RecentAnnouncements />
                   </Stack>
                 </Grid>
 
-                {/* Right Column / Side Panel (4.5/12 width on desktop) */}
+                {/* Right Column (4.5/12 width on desktop) */}
                 <Grid xs={12} lg={4.5}>
                   <Stack spacing={3.5}>
-                    {/* 1. Smart Office Side Panel Vector Banner Image Card */}
-                    <SmartOfficeSideCard />
-
-                    {/* 2. Monthly Calendar Widget */}
+                    {/* Monthly Calendar Widget */}
                     <EmployeeCalendar bookings={userBookings} />
 
-                    {/* 3. Notifications Card */}
-                    <EmployeeNotifications
-                      onUnreadCountChange={(cnt) => setNotificationsCount(cnt)}
-                    />
+                    {/* Today's Schedule Timeline */}
+                    <TodaySchedule scheduleItems={todayScheduleItems} />
+
+
                   </Stack>
                 </Grid>
               </Grid>

@@ -13,50 +13,54 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       secondary: {
-        main: "#00ACC1",
-        light: "#26C6DA",
-        dark: "#00838F",
+        main: "#0F172A",
+        light: "#1E293B",
+        dark: "#020617",
         contrastText: "#FFFFFF",
       },
       success: {
-        main: "#2E7D32",
-        light: "#4CAF50",
-        dark: "#1B5E20",
+        main: "#16A34A",
+        light: "#4ADE80",
+        dark: "#15803D",
+        contrastText: "#FFFFFF",
+      },
+      warning: {
+        main: "#D97706",
+        light: "#FBBF24",
+        dark: "#B45309",
+        contrastText: "#FFFFFF",
+      },
+      error: {
+        main: "#EF4444",
+        light: "#F87171",
+        dark: "#DC2626",
         contrastText: "#FFFFFF",
       },
       background: {
-        default: isDark ? "#0F172A" : "#F5F7FA",
+        default: isDark ? "#0F172A" : "#F5F8FC",
         paper: isDark ? "#1E293B" : "#FFFFFF",
-        subtle: isDark ? "#182234" : "#EEF2F6",
+        subtle: isDark ? "#182234" : "#F8FAFC",
       },
       text: {
-        primary: isDark ? "#F8FAFC" : "#1E293B",
+        primary: isDark ? "#F8FAFC" : "#0F172A",
         secondary: isDark ? "#94A3B8" : "#64748B",
       },
-      divider: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)",
+      divider: isDark ? "rgba(255, 255, 255, 0.08)" : "#E2E8F0",
     },
     typography: {
-      fontFamily: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      h3: {
-        fontWeight: 700,
-        letterSpacing: "-0.5px",
-      },
-      h4: {
-        fontWeight: 700,
-        letterSpacing: "-0.5px",
-      },
-      h5: {
-        fontWeight: 600,
-        letterSpacing: "-0.3px",
-      },
-      h6: {
-        fontWeight: 600,
-      },
-      subtitle1: {
-        fontWeight: 500,
-      },
+      fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      h1: { fontWeight: 800, letterSpacing: "-1px" },
+      h2: { fontWeight: 800, letterSpacing: "-0.8px" },
+      h3: { fontWeight: 800, letterSpacing: "-0.6px" },
+      h4: { fontWeight: 800, letterSpacing: "-0.5px" },
+      h5: { fontWeight: 700, letterSpacing: "-0.3px" },
+      h6: { fontWeight: 700, letterSpacing: "-0.2px" },
+      subtitle1: { fontWeight: 600 },
+      subtitle2: { fontWeight: 600 },
+      body1: { fontWeight: 400, lineHeight: 1.6 },
+      body2: { fontWeight: 400, lineHeight: 1.5 },
       button: {
-        fontWeight: 600,
+        fontWeight: 700,
         textTransform: "none",
       },
     },
@@ -65,62 +69,66 @@ export const getAppTheme = (mode = "light") => {
     },
     shadows: [
       "none",
-      "0px 2px 4px rgba(15, 23, 42, 0.03)",
-      "0px 4px 8px rgba(15, 23, 42, 0.04)",
-      "0px 6px 12px rgba(15, 23, 42, 0.05)",
-      "0px 8px 16px rgba(15, 23, 42, 0.06)",
-      "0px 10px 20px rgba(15, 23, 42, 0.07)",
-      "0px 12px 24px rgba(15, 23, 42, 0.08)",
+      "0px 2px 8px rgba(15, 23, 42, 0.03)",
+      "0px 4px 12px rgba(15, 23, 42, 0.04)",
+      "0px 6px 16px rgba(15, 23, 42, 0.05)",
+      "0px 8px 20px rgba(15, 23, 42, 0.06)",
+      "0px 10px 24px rgba(15, 23, 42, 0.07)",
+      "0px 12px 28px rgba(15, 23, 42, 0.08)",
       "0px 16px 32px rgba(15, 23, 42, 0.09)",
       "0px 20px 40px rgba(15, 23, 42, 0.10)",
       ...Array(16).fill("0px 24px 48px rgba(15, 23, 42, 0.12)"),
     ],
     components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: isDark ? "#0F172A" : "#F5F8FC",
+            fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+          },
+        },
+      },
       MuiPaper: {
         styleOverrides: {
           root: {
             backgroundImage: "none",
             borderRadius: 16,
-            transition: "box-shadow 0.3s ease, transform 0.3s ease",
+            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16,
+            borderRadius: 18,
             boxShadow: isDark
               ? "0px 10px 30px rgba(0, 0, 0, 0.4)"
-              : "0px 10px 30px rgba(25, 118, 210, 0.08)",
+              : "0px 4px 20px rgba(15, 23, 42, 0.04)",
+            border: isDark ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #E2E8F0",
           },
         },
       },
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
-            padding: "10px 22px",
-            fontSize: "0.95rem",
+            borderRadius: 12,
+            padding: "10px 20px",
+            fontSize: "0.88rem",
+            fontWeight: 700,
             boxShadow: "none",
-            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               transform: "translateY(-1px)",
-              boxShadow: "0px 6px 16px rgba(25, 118, 210, 0.25)",
+              boxShadow: "0px 6px 16px rgba(25, 118, 210, 0.2)",
             },
             "&:active": {
               transform: "translateY(0)",
             },
           },
           containedPrimary: {
-            background: "linear-gradient(135deg, #1976D2 0%, #1565C0 100%)",
+            backgroundColor: "#1976D2",
             "&:hover": {
-              background: "linear-gradient(135deg, #1E88E5 0%, #1976D2 100%)",
-            },
-          },
-          containedSuccess: {
-            background: "linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)",
-            "&:hover": {
-              background: "linear-gradient(135deg, #388E3C 0%, #2E7D32 100%)",
+              backgroundColor: "#1565C0",
             },
           },
         },
@@ -129,7 +137,7 @@ export const getAppTheme = (mode = "light") => {
         styleOverrides: {
           root: {
             "& .MuiOutlinedInput-root": {
-              borderRadius: 10,
+              borderRadius: 12,
               transition: "all 0.2s ease",
               "& fieldset": {
                 borderColor: isDark ? "rgba(255, 255, 255, 0.15)" : "#E2E8F0",
@@ -146,10 +154,11 @@ export const getAppTheme = (mode = "light") => {
           },
         },
       },
-      MuiCheckbox: {
+      MuiChip: {
         styleOverrides: {
           root: {
-            borderRadius: 6,
+            borderRadius: 8,
+            fontWeight: 700,
           },
         },
       },

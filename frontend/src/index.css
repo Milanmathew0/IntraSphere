@@ -1,5 +1,5 @@
 :root {
-  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
@@ -20,7 +20,10 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #F5F8FC;
+  color: #0F172A;
   overflow-x: hidden;
+  font-family: var(--font-sans);
 }
 
 #root {
@@ -30,10 +33,16 @@ html, body {
   flex-direction: column;
 }
 
+/* Custom Text Selection Highlight */
+::selection {
+  background-color: rgba(25, 118, 210, 0.25);
+  color: #0F172A;
+}
+
 /* Custom smooth scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -41,10 +50,27 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 140, 140, 0.3);
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 140, 140, 0.5);
+  background: #94A3B8;
+}
+
+/* Glassmorphism utility helpers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Spin animation utility for refresh icons */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spinSlow 1s linear infinite;
 }

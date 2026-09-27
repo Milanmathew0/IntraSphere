@@ -231,40 +231,6 @@ export default function EmployeeSidebar({
             );
           })}
         </List>
-
-        {/* Sidebar Mini Promo Card */}
-        <Box
-          sx={{
-            mt: 3,
-            p: 1.8,
-            borderRadius: "14px",
-            background: "linear-gradient(135deg, rgba(25, 118, 210, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%)",
-            border: "1px solid rgba(25, 118, 210, 0.3)",
-            display: { xs: "none", md: "block" },
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.8 }}>
-            <Typography variant="caption" fontWeight={800} color="#60A5FA" sx={{ fontSize: "0.72rem" }}>
-              INTRASPHERE PRO
-            </Typography>
-            <Chip
-              label="v2.4"
-              size="small"
-              sx={{
-                height: 16,
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                bgcolor: "rgba(34, 197, 94, 0.2)",
-                color: "#4ADE80",
-                borderRadius: "4px",
-                "& .MuiChip-label": { px: 0.6 },
-              }}
-            />
-          </Box>
-          <Typography variant="caption" color="#94A3B8" display="block" sx={{ fontSize: "0.72rem", lineHeight: 1.3 }}>
-            Smart office desk & meeting room automation enabled.
-          </Typography>
-        </Box>
       </Box>
 
       {/* Footer Profile & Logout Card */}

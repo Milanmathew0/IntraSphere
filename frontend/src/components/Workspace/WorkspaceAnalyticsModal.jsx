@@ -44,7 +44,7 @@ export default function WorkspaceAnalyticsModal({ open, onClose }) {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth paperProps={{ sx: { borderRadius: "20px" } }}>
       <DialogTitle sx={{ m: 0, p: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <BarChart3 size={22} color="#1976D2" />
+          <BarChart3 size={22} color="#10B981" />
           <Typography variant="h6" fontWeight={800} color="#09090B">
             Workspace Utilization Analytics
           </Typography>
@@ -59,7 +59,7 @@ export default function WorkspaceAnalyticsModal({ open, onClose }) {
       <DialogContent sx={{ p: 3 }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-            <CircularProgress size={36} sx={{ color: "#1976D2" }} />
+            <CircularProgress size={36} sx={{ color: "#10B981" }} />
           </Box>
         ) : !analytics ? (
           <Typography color="#71717A" textAlign="center" py={4}>
@@ -70,14 +70,14 @@ export default function WorkspaceAnalyticsModal({ open, onClose }) {
             {/* Top Metric Cards */}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
-                <Paper elevation={0} sx={{ p: 2.5, borderRadius: "14px", bgcolor: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-                  <Typography variant="caption" fontWeight={700} color="#1D4ED8">
+                <Paper elevation={0} sx={{ p: 2.5, borderRadius: "14px", bgcolor: "#ECFDF5", border: "1px solid #A7F3D0" }}>
+                  <Typography variant="caption" fontWeight={700} color="#047857">
                     AVERAGE UTILIZATION (30 DAYS)
                   </Typography>
-                  <Typography variant="h4" fontWeight={900} color="#1E40AF" sx={{ my: 0.5 }}>
+                  <Typography variant="h4" fontWeight={900} color="#065F46" sx={{ my: 0.5 }}>
                     {analytics.average_utilization_pct}%
                   </Typography>
-                  <Typography variant="caption" color="#3B82F6">
+                  <Typography variant="caption" color="#059669">
                     Based on office working hours (09:00–18:00)
                   </Typography>
                 </Paper>
@@ -138,7 +138,7 @@ export default function WorkspaceAnalyticsModal({ open, onClose }) {
                             (Floor {item.floor} • {item.zone})
                           </Typography>
                         </Box>
-                        <Typography variant="subtitle2" fontWeight={800} color="#1976D2">
+                        <Typography variant="subtitle2" fontWeight={800} color="#10B981">
                           {item.utilization_pct}% ({item.booked_hours_30d} hrs)
                         </Typography>
                       </Box>
@@ -151,7 +151,7 @@ export default function WorkspaceAnalyticsModal({ open, onClose }) {
                           borderRadius: 4,
                           bgcolor: "#F4F4F5",
                           "& .MuiLinearProgress-bar": {
-                            bgcolor: item.utilization_pct > 75 ? "#16A34A" : item.utilization_pct > 40 ? "#1976D2" : "#EAB308",
+                            bgcolor: item.utilization_pct > 75 ? "#16A34A" : item.utilization_pct > 40 ? "#10B981" : "#EAB308",
                             borderRadius: 4,
                           },
                         }}

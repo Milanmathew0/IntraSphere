@@ -176,7 +176,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
               width: 40,
               height: 40,
               borderRadius: "12px",
-              bgcolor: "#1976D2",
+              bgcolor: "#10B981",
               color: "#FFFFFF",
               display: "flex",
               alignItems: "center",
@@ -292,11 +292,11 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
                     py: 1.2,
                     borderRadius: "12px",
                     fontWeight: 700,
-                    bgcolor: "#1976D2",
+                    bgcolor: "#10B981",
                     color: "#FFFFFF",
                     textTransform: "none",
-                    boxShadow: "0 4px 14px rgba(25, 118, 210, 0.35)",
-                    "&:hover": { bgcolor: "#1565C0" },
+                    boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
+                    "&:hover": { bgcolor: "#059669" },
                   }}
                 >
                   {actionLoading ? "Processing..." : "Check In Now"}
@@ -366,7 +366,7 @@ export default function AttendanceOverview({ user, onAttendanceChange, showToast
                   MONTHLY ATTENDANCE SUMMARY
                 </Typography>
                 <Chip
-                  icon={<TrendingUp sx={{ fontSize: "14px !important", color: "#1976D2" }} />}
+                  icon={<TrendingUp sx={{ fontSize: "14px !important", color: "#10B981" }} />}
                   label={`${presentPercent}% Attendance`}
                   size="small"
                   sx={{

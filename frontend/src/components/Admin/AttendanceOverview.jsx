@@ -31,7 +31,7 @@ export default function AttendanceOverview({ data, loading, onNavigateToAttendan
               height: 36,
               borderRadius: 2,
               bgcolor: "#E0F7FA",
-              color: "#0288D1",
+              color: "#047857",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -70,11 +70,11 @@ export default function AttendanceOverview({ data, loading, onNavigateToAttendan
                 </Paper>
               </Grid>
               <Grid item xs={6} sm={3}>
-                <Paper elevation={0} sx={{ p: 1.5, textAlign: "center", bgcolor: "#E3F2FD", borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 1.5, textAlign: "center", bgcolor: "#ECFDF5", borderRadius: 2 }}>
                   <Typography variant="caption" color="text.secondary" fontWeight={600}>
                     Checked In
                   </Typography>
-                  <Typography variant="h5" fontWeight={800} color="#1976D2">
+                  <Typography variant="h5" fontWeight={800} color="#10B981">
                     {att.checked_in ?? 0}
                   </Typography>
                 </Paper>
@@ -111,14 +111,14 @@ export default function AttendanceOverview({ data, loading, onNavigateToAttendan
                       justifyContent: "flex-end",
                     }}
                   >
-                    <Typography variant="caption" fontWeight={700} color="#1976D2" sx={{ fontSize: "0.7rem", mb: 0.5 }}>
+                    <Typography variant="caption" fontWeight={700} color="#10B981" sx={{ fontSize: "0.7rem", mb: 0.5 }}>
                       {dayItem.present}
                     </Typography>
                     <Box
                       sx={{
                         width: "80%",
                         height: `${Math.max(heightPct, 6)}%`,
-                        bgcolor: "#1976D2",
+                        bgcolor: "#10B981",
                         borderRadius: "4px 4px 0 0",
                         transition: "height 0.3s ease",
                       }}
@@ -141,9 +141,9 @@ export default function AttendanceOverview({ data, loading, onNavigateToAttendan
           endIcon={<ArrowForwardIcon />}
           onClick={onNavigateToAttendance}
           sx={{
-            borderColor: "#1976D2",
-            color: "#1976D2",
-            "&:hover": { bgcolor: "#E3F2FD" },
+            borderColor: "#10B981",
+            color: "#10B981",
+            "&:hover": { bgcolor: "#ECFDF5" },
             borderRadius: 2,
             textTransform: "none",
             fontWeight: 700,

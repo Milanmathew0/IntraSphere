@@ -269,7 +269,7 @@ export default function Login() {
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
             <Avatar
               sx={{
-                bgcolor: "#1976D2",
+                bgcolor: "#10B981",
                 width: 52,
                 height: 52,
                 mb: 1.5,
@@ -447,8 +447,8 @@ export default function Login() {
                 py: 1.3,
                 fontSize: "1rem",
                 fontWeight: 600,
-                backgroundColor: "#1976D2",
-                "&:hover": { backgroundColor: "#1565C0" },
+                backgroundColor: "#10B981",
+                "&:hover": { backgroundColor: "#059669" },
               }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}

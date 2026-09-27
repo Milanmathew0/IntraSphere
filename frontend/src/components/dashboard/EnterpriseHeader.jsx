@@ -312,7 +312,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
                     ) : item.title?.includes("Confirmed") ? (
                       <CheckCircle2 size={18} color="#10B981" />
                     ) : (
-                      <Info size={18} color="#3B82F6" />
+                      <Info size={18} color="#059669" />
                     )}
                   </ListItemIcon>
                   <ListItemText
@@ -403,7 +403,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
                       {item.title?.includes("Cancelled") ? (
                         <AlertTriangle size={20} color="#DC2626" />
                       ) : (
-                        <Info size={20} color="#2563EB" />
+                        <Info size={20} color="#10B981" />
                       )}
                     </Box>
                     <Box flexGrow={1}>

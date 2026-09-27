@@ -10,7 +10,7 @@ export default function UserManagementSection({ data, loading, onOpenManageUsers
 
   const roleList = [
     { name: "Admin", count: roles.Admin ?? 0, color: "#7B1FA2", bg: "#F3E5F5" },
-    { name: "Manager", count: roles.Manager ?? 0, color: "#1976D2", bg: "#E3F2FD" },
+    { name: "Manager", count: roles.Manager ?? 0, color: "#10B981", bg: "#ECFDF5" },
     { name: "HR", count: roles.HR ?? 0, color: "#C2185B", bg: "#FCE4EC" },
     { name: "Employee", count: roles.Employee ?? 0, color: "#2E7D32", bg: "#E8F5E9" },
     { name: "Facility Manager", count: roles["Facility Manager"] ?? 0, color: "#00796B", bg: "#E0F2F1" },
@@ -56,7 +56,7 @@ export default function UserManagementSection({ data, loading, onOpenManageUsers
           <Chip
             label={`${users.total || 0} Total System Users`}
             size="small"
-            sx={{ bgcolor: "#E3F2FD", color: "#1976D2", fontWeight: 700 }}
+            sx={{ bgcolor: "#ECFDF5", color: "#10B981", fontWeight: 700 }}
           />
         </Box>
 
@@ -96,8 +96,8 @@ export default function UserManagementSection({ data, loading, onOpenManageUsers
             startIcon={<ManageAccountsIcon />}
             onClick={onOpenManageUsers}
             sx={{
-              bgcolor: "#1976D2",
-              "&:hover": { bgcolor: "#1565C0" },
+              bgcolor: "#10B981",
+              "&:hover": { bgcolor: "#059669" },
               borderRadius: 2,
               textTransform: "none",
               fontWeight: 700,
@@ -112,9 +112,9 @@ export default function UserManagementSection({ data, loading, onOpenManageUsers
             startIcon={<AdminPanelSettingsIcon />}
             onClick={onOpenManageUsers}
             sx={{
-              borderColor: "#1976D2",
-              color: "#1976D2",
-              "&:hover": { bgcolor: "#E3F2FD" },
+              borderColor: "#10B981",
+              color: "#10B981",
+              "&:hover": { bgcolor: "#ECFDF5" },
               borderRadius: 2,
               textTransform: "none",
               fontWeight: 700,

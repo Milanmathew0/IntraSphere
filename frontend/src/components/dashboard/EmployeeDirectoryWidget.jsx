@@ -136,7 +136,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                 borderRadius: "12px",
                 textTransform: "none",
                 fontWeight: 700,
-                color: "#3B82F6",
+                color: "#059669",
                 borderColor: "rgba(59, 130, 246, 0.4)",
                 "&:hover": { bgcolor: "rgba(59, 130, 246, 0.08)" },
               }}
@@ -152,8 +152,8 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                 borderRadius: "12px",
                 textTransform: "none",
                 fontWeight: 700,
-                background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
-                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+                background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
                 color: "#FFFFFF",
               }}
             >
@@ -183,8 +183,8 @@ export default function EmployeeDirectoryWidget({ showToast }) {
             "& .MuiOutlinedInput-root": {
               borderRadius: "14px",
               bgcolor: "#FFFFFF",
-              "&:hover fieldset": { borderColor: "#3B82F6" },
-              "&.Mui-focused fieldset": { borderColor: "#1D4ED8" },
+              "&:hover fieldset": { borderColor: "#059669" },
+              "&.Mui-focused fieldset": { borderColor: "#047857" },
             },
           }}
         />
@@ -192,7 +192,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
         {/* Body Content */}
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 6 }}>
-            <CircularProgress size={32} sx={{ color: "#3B82F6" }} />
+            <CircularProgress size={32} sx={{ color: "#059669" }} />
           </Box>
         ) : error ? (
           <Alert severity="error" sx={{ borderRadius: "14px" }}>
@@ -235,7 +235,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                       transition: "all 0.25s ease",
                       "&:hover": {
                         transform: "translateY(-3px)",
-                        boxShadow: "0 8px 22px rgba(37, 99, 235, 0.12)",
+                        boxShadow: "0 8px 22px rgba(16, 185, 129, 0.12)",
                         borderColor: "#93C5FD",
                       },
                     }}
@@ -246,11 +246,11 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                           sx={{
                             width: 42,
                             height: 42,
-                            background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+                            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                             color: "#FFFFFF",
                             fontWeight: 800,
                             fontSize: "1rem",
-                            boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
+                            boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)",
                           }}
                         >
                           {initial}
@@ -282,7 +282,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
 
                     <Stack spacing={1}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Briefcase size={14} color="#3B82F6" />
+                        <Briefcase size={14} color="#059669" />
                         <Typography variant="caption" color="#334155" fontWeight={600}>
                           {emp.designation || emp.role || "Staff Member"}
                         </Typography>

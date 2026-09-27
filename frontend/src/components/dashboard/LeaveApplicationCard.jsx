@@ -108,7 +108,7 @@ export function LeaveApplicationCard() {
         return "#F59E0B"; // Amber
       case "Declined":
       case "Rejected":
-        return "#3B82F6"; // Blue/Red
+        return "#059669"; // Blue/Red
       case "Cancelled":
         return "#71717A"; // Gray
       default:

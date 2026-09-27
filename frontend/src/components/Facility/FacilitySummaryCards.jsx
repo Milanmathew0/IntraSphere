@@ -18,8 +18,8 @@ export default function FacilitySummaryCards({ stats, loading }) {
       value: summary.total_meeting_rooms ?? "—",
       subText: `${summary.available_meeting_rooms ?? 0} Available`,
       icon: MeetingRoomIcon,
-      color: "#1976D2",
-      bgColor: "#E3F2FD",
+      color: "#10B981",
+      bgColor: "#ECFDF5",
     },
     {
       title: "Available Rooms",
@@ -42,8 +42,8 @@ export default function FacilitySummaryCards({ stats, loading }) {
       value: summary.total_workspaces ?? "—",
       subText: `${summary.available_workspaces ?? 0} Available`,
       icon: DesktopWindowsIcon,
-      color: "#0288D1",
-      bgColor: "#E1F5FE",
+      color: "#047857",
+      bgColor: "#ECFDF5",
     },
     {
       title: "Available Desks",

@@ -218,7 +218,7 @@ export default function FacilityReservations({ onRefreshStats }) {
                       </Typography>
                     </TableCell>
 
-                    <TableCell sx={{ fontWeight: 700, color: "#1976D2" }}>
+                    <TableCell sx={{ fontWeight: 700, color: "#10B981" }}>
                       {r.resource_name}
                     </TableCell>
 
@@ -227,7 +227,7 @@ export default function FacilityReservations({ onRefreshStats }) {
                         icon={r.resource_type === "meeting_room" ? <MeetingRoomIcon sx={{ fontSize: "14px !important" }} /> : <DesktopWindowsIcon sx={{ fontSize: "14px !important" }} />}
                         label={r.resource_type === "meeting_room" ? "Room" : "Desk"}
                         size="small"
-                        sx={{ height: 22, fontSize: "0.7rem", fontWeight: 700, bgcolor: r.resource_type === "meeting_room" ? "#E3F2FD" : "#E1F5FE", color: r.resource_type === "meeting_room" ? "#1565C0" : "#0288D1" }}
+                        sx={{ height: 22, fontSize: "0.7rem", fontWeight: 700, bgcolor: r.resource_type === "meeting_room" ? "#ECFDF5" : "#ECFDF5", color: r.resource_type === "meeting_room" ? "#059669" : "#047857" }}
                       />
                     </TableCell>
 

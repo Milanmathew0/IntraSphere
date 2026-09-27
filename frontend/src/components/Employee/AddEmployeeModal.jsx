@@ -414,7 +414,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       width: 22,
                       height: 22,
                       borderRadius: "50%",
-                      bgcolor: "#2563EB",
+                      bgcolor: "#10B981",
                       color: "#FFFFFF",
                       display: "flex",
                       alignItems: "center",
@@ -454,7 +454,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       left: 0,
                       right: 0,
                       height: "3px",
-                      bgcolor: "#2563EB",
+                      bgcolor: "#10B981",
                       borderRadius: "3px 3px 0 0"
                     }}
                   />
@@ -479,7 +479,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
               {activationData.first_name} {activationData.last_name}
             </Typography>
 
-            <Typography variant="body1" color="#2563EB" fontWeight={600} mb={2}>
+            <Typography variant="body1" color="#10B981" fontWeight={600} mb={2}>
               {activationData.email}
             </Typography>
 

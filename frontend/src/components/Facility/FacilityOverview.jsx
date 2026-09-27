@@ -27,14 +27,14 @@ export default function FacilityOverview({ stats, onNavigateTab, onOpenAddRoom, 
   const recentMaint = stats?.recent_maintenance || [];
 
   const quickActions = [
-    { label: "Add Meeting Room", icon: AddCircleOutlinedIcon, color: "#1976D2", onClick: onOpenAddRoom },
-    { label: "Add Workspace Desk", icon: AddCircleOutlinedIcon, color: "#0288D1", onClick: onOpenAddDesk },
+    { label: "Add Meeting Room", icon: AddCircleOutlinedIcon, color: "#10B981", onClick: onOpenAddRoom },
+    { label: "Add Workspace Desk", icon: AddCircleOutlinedIcon, color: "#047857", onClick: onOpenAddDesk },
     { label: "Report Maintenance Issue", icon: BuildIcon, color: "#ED6C02", onClick: onOpenMaintenance },
     { label: "View All Reservations", icon: EventNoteIcon, color: "#7B1FA2", onClick: () => onNavigateTab(3) },
     { label: "Manage Meeting Rooms", icon: MeetingRoomIcon, color: "#2E7D32", onClick: () => onNavigateTab(1) },
     { label: "Manage Workspace Desks", icon: DesktopWindowsIcon, color: "#00796B", onClick: () => onNavigateTab(2) },
     { label: "View Maintenance Queue", icon: BuildIcon, color: "#D32F2F", onClick: () => onNavigateTab(4) },
-    { label: "View Facility Analytics", icon: InsightsIcon, color: "#1565C0", onClick: () => onNavigateTab(5) },
+    { label: "View Facility Analytics", icon: InsightsIcon, color: "#059669", onClick: () => onNavigateTab(5) },
   ];
 
   return (
@@ -122,7 +122,7 @@ export default function FacilityOverview({ stats, onNavigateTab, onOpenAddRoom, 
               size="small"
               endIcon={<ArrowForwardIcon />}
               onClick={() => onNavigateTab(4)}
-              sx={{ textTransform: "none", fontWeight: 700, color: "#1976D2" }}
+              sx={{ textTransform: "none", fontWeight: 700, color: "#10B981" }}
             >
               View Queue
             </Button>
@@ -179,13 +179,13 @@ export default function FacilityOverview({ stats, onNavigateTab, onOpenAddRoom, 
                                 ? "#FFEBEE"
                                 : m.priority === "High"
                                 ? "#FFF3E0"
-                                : "#E3F2FD",
+                                : "#ECFDF5",
                             color:
                               m.priority === "Critical"
                                 ? "#C62828"
                                 : m.priority === "High"
                                 ? "#EF6C00"
-                                : "#1565C0",
+                                : "#059669",
                           }}
                         />
                       </TableCell>
@@ -200,13 +200,13 @@ export default function FacilityOverview({ stats, onNavigateTab, onOpenAddRoom, 
                             fontSize: "0.7rem",
                             borderColor:
                               m.status === "In Progress"
-                                ? "#0288D1"
+                                ? "#047857"
                                 : m.status === "Completed"
                                 ? "#2E7D32"
                                 : "#ED6C02",
                             color:
                               m.status === "In Progress"
-                                ? "#0288D1"
+                                ? "#047857"
                                 : m.status === "Completed"
                                 ? "#2E7D32"
                                 : "#ED6C02",

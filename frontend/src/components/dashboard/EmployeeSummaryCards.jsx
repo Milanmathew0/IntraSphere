@@ -145,7 +145,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
     },
     {
       title: "Check-Out",
-      icon: <AccessTime sx={{ fontSize: 24, color: "#1976D2" }} />,
+      icon: <AccessTime sx={{ fontSize: 24, color: "#10B981" }} />,
       iconBg: "#E0F2FE",
       data: checkOutTimeDisplay,
       status: hasCheckedOut ? "Checked Out" : hasCheckedIn ? "In Shift" : "Not Started",
@@ -159,7 +159,7 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
     },
     {
       title: "Leave Balance",
-      icon: <CalendarMonth sx={{ fontSize: 24, color: "#9333EA" }} />,
+      icon: <CalendarMonth sx={{ fontSize: 24, color: "#059669" }} />,
       iconBg: "#F3E8FF",
       data: `${leaveBalance} Days`,
       status: "Available",
@@ -265,11 +265,11 @@ export default function EmployeeSummaryCards({ user, onNavigateTab }) {
               sx={{
                 p: 0,
                 justifyContent: "flex-start",
-                color: "#1976D2",
+                color: "#10B981",
                 fontWeight: 700,
                 fontSize: "0.78rem",
                 textTransform: "none",
-                "&:hover": { bgcolor: "transparent", color: "#1565C0" },
+                "&:hover": { bgcolor: "transparent", color: "#059669" },
               }}
             >
               {card.actionLabel}

@@ -113,9 +113,9 @@ export default function EmployeeHeader({
             border: "1px solid #E2E8F0",
             transition: "all 0.2s ease",
             "&:focus-within": {
-              borderColor: "#1976D2",
+              borderColor: "#10B981",
               bgcolor: "#FFFFFF",
-              boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.12)",
+              boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.12)",
             },
           }}
         >
@@ -149,7 +149,7 @@ export default function EmployeeHeader({
               border: "1px solid #E2E8F0",
               borderRadius: "12px",
               p: 1.1,
-              "&:hover": { bgcolor: "#F1F5F9", color: "#1976D2" },
+              "&:hover": { bgcolor: "#F1F5F9", color: "#10B981" },
             }}
           >
             <Badge
@@ -194,11 +194,11 @@ export default function EmployeeHeader({
             sx={{
               width: 34,
               height: 34,
-              bgcolor: "#1976D2",
+              bgcolor: "#10B981",
               color: "#FFFFFF",
               fontWeight: 700,
               fontSize: "0.85rem",
-              boxShadow: "0 2px 6px rgba(25, 118, 210, 0.3)",
+              boxShadow: "0 2px 6px rgba(16, 185, 129, 0.3)",
             }}
           >
             {userInitials}

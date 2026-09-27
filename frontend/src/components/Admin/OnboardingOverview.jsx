@@ -9,7 +9,7 @@ export default function OnboardingOverview({ data, loading }) {
   const ob = data?.onboarding || {};
 
   const stats = [
-    { label: "Invitations Sent", value: ob.invitations_sent ?? 0, color: "#1976D2", bg: "#E3F2FD" },
+    { label: "Invitations Sent", value: ob.invitations_sent ?? 0, color: "#10B981", bg: "#ECFDF5" },
     { label: "Awaiting Activation", value: ob.awaiting_activation ?? 0, color: "#ED6C02", bg: "#FFF3E0" },
     { label: "Activated Total", value: ob.activated ?? 0, color: "#2E7D32", bg: "#E8F5E9" },
     { label: "Activated This Month", value: ob.activated_this_month ?? 0, color: "#00796B", bg: "#E0F2F1" },
@@ -89,9 +89,9 @@ export default function OnboardingOverview({ data, loading }) {
           endIcon={<ArrowForwardIcon />}
           onClick={() => navigate("/employees")}
           sx={{
-            borderColor: "#1976D2",
-            color: "#1976D2",
-            "&:hover": { bgcolor: "#E3F2FD", borderColor: "#1565C0" },
+            borderColor: "#10B981",
+            color: "#10B981",
+            "&:hover": { bgcolor: "#ECFDF5", borderColor: "#059669" },
             borderRadius: 2,
             textTransform: "none",
             fontWeight: 700,

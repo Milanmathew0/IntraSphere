@@ -401,7 +401,7 @@ export default function LandingPage() {
                     height: 44,
                     borderRadius: "14px",
                     bgcolor: "#E8F0FE",
-                    color: "#1D4ED8",
+                    color: "#047857",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -409,7 +409,7 @@ export default function LandingPage() {
                 >
                   <Lock size={22} />
                 </Box>
-                <Chip label="OAuth 2.0" size="small" sx={{ bgcolor: "#E8F0FE", color: "#1D4ED8", fontWeight: 700 }} />
+                <Chip label="OAuth 2.0" size="small" sx={{ bgcolor: "#E8F0FE", color: "#047857", fontWeight: 700 }} />
               </Box>
               <Typography variant="h3" fontWeight={800} color="#0F172A" mb={0.5}>
                 256-Bit
@@ -459,7 +459,7 @@ export default function LandingPage() {
             {
               title: "Role-Based Access Control",
               desc: "Dedicated user experience dashboards for Admins, Managers, Employees, and new Onboarding Users.",
-              icon: <ShieldCheck size={26} color="#1D4ED8" />,
+              icon: <ShieldCheck size={26} color="#047857" />,
               bg: "#E8F0FE",
             },
             {
@@ -471,7 +471,7 @@ export default function LandingPage() {
             {
               title: "Executive Analytics & Dashboard",
               desc: "Beautiful dark emerald theme, floating stat cards, and live metrics for complete workforce visibility.",
-              icon: <BarChart3 size={26} color="#0288D1" />,
+              icon: <BarChart3 size={26} color="#047857" />,
               bg: "#E0F2FE",
             },
           ].map((feature, idx) => (

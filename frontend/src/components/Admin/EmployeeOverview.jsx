@@ -38,8 +38,8 @@ export default function EmployeeOverview({ data, loading }) {
                 width: 36,
                 height: 36,
                 borderRadius: 2,
-                bgcolor: "#E3F2FD",
-                color: "#1976D2",
+                bgcolor: "#ECFDF5",
+                color: "#10B981",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -141,8 +141,8 @@ export default function EmployeeOverview({ data, loading }) {
           endIcon={<ArrowForwardIcon />}
           onClick={() => navigate("/employees")}
           sx={{
-            bgcolor: "#1976D2",
-            "&:hover": { bgcolor: "#1565C0" },
+            bgcolor: "#10B981",
+            "&:hover": { bgcolor: "#059669" },
             borderRadius: 2,
             textTransform: "none",
             fontWeight: 700,

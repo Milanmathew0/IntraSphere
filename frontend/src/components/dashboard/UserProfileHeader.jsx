@@ -59,10 +59,10 @@ export default function UserProfileHeader({
     if (role === "Facility Manager") {
       return {
         label: "Role: Facility Manager",
-        color: "#1976D2",
-        bgColor: "#E3F2FD",
+        color: "#10B981",
+        bgColor: "#ECFDF5",
         borderColor: "#90CAF9",
-        gradient: "linear-gradient(135deg, #1565C0 0%, #1976D2 100%)",
+        gradient: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
         pulse: false,
       };
     }

@@ -55,11 +55,11 @@ export function AuthLayout({ children }) {
               }}
             >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 21H21" stroke="#00ACC1" strokeWidth="2" strokeLinecap="round" />
+                <path d="M3 21H21" stroke="#10B981" strokeWidth="2" strokeLinecap="round" />
                 <path d="M5 21V7L13 3V21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M19 21V11L13 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M9 10H10" stroke="#00ACC1" strokeWidth="2" strokeLinecap="round" />
-                <path d="M9 14H10" stroke="#00ACC1" strokeWidth="2" strokeLinecap="round" />
+                <path d="M9 10H10" stroke="#10B981" strokeWidth="2" strokeLinecap="round" />
+                <path d="M9 14H10" stroke="#10B981" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </Box>
 

@@ -299,8 +299,8 @@ export default function UserDashboard() {
                   width: 48,
                   height: 48,
                   borderRadius: "14px",
-                  bgcolor: "rgba(37, 99, 235, 0.1)",
-                  color: "#1D4ED8",
+                  bgcolor: "rgba(16, 185, 129, 0.1)",
+                  color: "#047857",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -452,8 +452,8 @@ export default function UserDashboard() {
                     label={tech}
                     size="small"
                     sx={{
-                      bgcolor: "rgba(37, 99, 235, 0.1)",
-                      color: "#1D4ED8",
+                      bgcolor: "rgba(16, 185, 129, 0.1)",
+                      color: "#047857",
                       fontWeight: 600,
                     }}
                   />

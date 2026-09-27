@@ -12,7 +12,7 @@ export function PasswordStrengthIndicator({ password = "" }) {
 
     if (score <= 25) return { score: 25, label: "Weak", color: "#D32F2F" };
     if (score <= 50) return { score: 50, label: "Fair", color: "#ED6C02" };
-    if (score <= 75) return { score: 75, label: "Good", color: "#0288D1" };
+    if (score <= 75) return { score: 75, label: "Good", color: "#047857" };
     return { score: 100, label: "Strong", color: "#2E7D32" };
   };
 

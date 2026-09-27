@@ -79,7 +79,7 @@ export default function EmployeeCalendar({ bookings = [], events = [] }) {
       {/* Calendar Header */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Event sx={{ color: "#1976D2", fontSize: 22 }} />
+          <Event sx={{ color: "#10B981", fontSize: 22 }} />
           <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
             {monthNames[month]} {year}
           </Typography>
@@ -92,7 +92,7 @@ export default function EmployeeCalendar({ bookings = [], events = [] }) {
             sx={{
               fontSize: "0.75rem",
               fontWeight: 700,
-              color: "#1976D2",
+              color: "#10B981",
               minWidth: 46,
               px: 1,
               py: 0.3,
@@ -166,14 +166,14 @@ export default function EmployeeCalendar({ bookings = [], events = [] }) {
                   justifyContent: "center",
                   borderRadius: "10px",
                   cursor: "pointer",
-                  bgcolor: isTodayCell ? "#1976D2" : "transparent",
+                  bgcolor: isTodayCell ? "#10B981" : "transparent",
                   color: isTodayCell ? "#FFFFFF" : "#0F172A",
                   fontWeight: isTodayCell ? 700 : 500,
                   fontSize: "0.82rem",
                   position: "relative",
                   transition: "all 0.15s ease",
                   "&:hover": {
-                    bgcolor: isTodayCell ? "#1565C0" : "#F1F5F9",
+                    bgcolor: isTodayCell ? "#059669" : "#F1F5F9",
                   },
                 }}
               >
@@ -186,7 +186,7 @@ export default function EmployeeCalendar({ bookings = [], events = [] }) {
                       width: 4,
                       height: 4,
                       borderRadius: "50%",
-                      bgcolor: isTodayCell ? "#FFFFFF" : "#1976D2",
+                      bgcolor: isTodayCell ? "#FFFFFF" : "#10B981",
                       position: "absolute",
                       bottom: 4,
                     }}

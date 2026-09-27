@@ -110,8 +110,8 @@ export default function RoomCard({ room, onSelectRoom, onBookRoom }) {
         height: "100%",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: "0 12px 30px rgba(25, 118, 210, 0.12)",
-          borderColor: "#1976D2",
+          boxShadow: "0 12px 30px rgba(16, 185, 129, 0.12)",
+          borderColor: "#10B981",
         },
       }}
     >
@@ -129,7 +129,7 @@ export default function RoomCard({ room, onSelectRoom, onBookRoom }) {
           <Box
             sx={{
               height: "100%",
-              background: "linear-gradient(135deg, #1976D2 0%, #1565C0 100%)",
+              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -193,7 +193,7 @@ export default function RoomCard({ room, onSelectRoom, onBookRoom }) {
             my: 1.5,
           }}
         >
-          <Users size={16} color="#1976D2" />
+          <Users size={16} color="#10B981" />
           <Typography variant="body2" fontWeight={700} color="#1E293B">
             Capacity: {room.capacity} People
           </Typography>
@@ -212,12 +212,12 @@ export default function RoomCard({ room, onSelectRoom, onBookRoom }) {
                 label={fac}
                 size="small"
                 sx={{
-                  bgcolor: "#EFF6FF",
-                  color: "#1D4ED8",
+                  bgcolor: "#ECFDF5",
+                  color: "#047857",
                   fontWeight: 600,
                   fontSize: "0.7rem",
                   height: 22,
-                  "& .MuiChip-icon": { color: "#1D4ED8" },
+                  "& .MuiChip-icon": { color: "#047857" },
                 }}
               />
             ))}
@@ -262,11 +262,11 @@ export default function RoomCard({ room, onSelectRoom, onBookRoom }) {
               borderRadius: "10px",
               fontWeight: 700,
               textTransform: "none",
-              background: "linear-gradient(135deg, #1976D2 0%, #1565C0 100%)",
-              boxShadow: "0 4px 12px rgba(25, 118, 210, 0.25)",
+              background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)",
               "&:hover": {
-                background: "linear-gradient(135deg, #1E88E5 0%, #1976D2 100%)",
-                boxShadow: "0 6px 16px rgba(25, 118, 210, 0.35)",
+                background: "linear-gradient(135deg, #10B981 0%, #10B981 100%)",
+                boxShadow: "0 6px 16px rgba(16, 185, 129, 0.35)",
               },
             }}
           >

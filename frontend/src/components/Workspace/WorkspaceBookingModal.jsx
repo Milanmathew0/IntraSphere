@@ -155,7 +155,7 @@ export default function WorkspaceBookingModal({ open, onClose, desk, onBookingSu
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth paperProps={{ sx: { borderRadius: "20px" } }}>
       <DialogTitle sx={{ m: 0, p: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Sparkles size={22} color="#1976D2" />
+          <Sparkles size={22} color="#10B981" />
           <Typography variant="h6" fontWeight={800} color="#09090B">
             Reserve Workspace
           </Typography>
@@ -182,22 +182,22 @@ export default function WorkspaceBookingModal({ open, onClose, desk, onBookingSu
               sx={{
                 p: 2,
                 borderRadius: "14px",
-                bgcolor: "#EFF6FF",
-                border: "1px solid #BFDBFE",
+                bgcolor: "#ECFDF5",
+                border: "1px solid #A7F3D0",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
               <Box>
-                <Typography variant="subtitle2" fontWeight={800} color="#1E40AF">
+                <Typography variant="subtitle2" fontWeight={800} color="#065F46">
                   {desk.desk_name} ({desk.desk_code})
                 </Typography>
-                <Typography variant="caption" color="#1D4ED8">
+                <Typography variant="caption" color="#047857">
                   Floor {desk.floor} • {desk.zone} • {desk.building}
                 </Typography>
               </Box>
-              <Chip label={desk.workspace_type || "Hot Desk"} size="small" sx={{ bgcolor: "#DBEAFE", color: "#1E40AF", fontWeight: 700 }} />
+              <Chip label={desk.workspace_type || "Hot Desk"} size="small" sx={{ bgcolor: "#D1FAE5", color: "#047857", fontWeight: 700 }} />
             </Box>
 
             {/* Date Selection */}
@@ -255,7 +255,7 @@ export default function WorkspaceBookingModal({ open, onClose, desk, onBookingSu
             {/* Live Backend Availability Indicator */}
             {checkingAvailability ? (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 1.5, bgcolor: "#F4F4F5", borderRadius: "10px" }}>
-                <CircularProgress size={16} sx={{ color: "#1976D2" }} />
+                <CircularProgress size={16} sx={{ color: "#10B981" }} />
                 <Typography variant="caption" fontWeight={600} color="#52525B">
                   Checking availability with backend...
                 </Typography>
@@ -315,13 +315,13 @@ export default function WorkspaceBookingModal({ open, onClose, desk, onBookingSu
             disabled={submitting || (availability && !availability.available)}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <CheckCircle2 size={18} />}
             sx={{
-              bgcolor: "#1976D2",
+              bgcolor: "#10B981",
               color: "#FFFFFF",
               fontWeight: 700,
               textTransform: "none",
               borderRadius: "10px",
               boxShadow: "none",
-              "&:hover": { bgcolor: "#1565C0" },
+              "&:hover": { bgcolor: "#059669" },
             }}
           >
             {submitting ? "Confirming..." : "Confirm Reservation"}

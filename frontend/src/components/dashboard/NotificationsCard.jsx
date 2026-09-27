@@ -56,7 +56,7 @@ export default function NotificationsCard({ notifications = [] }) {
     } else if (title.includes("Confirmed")) {
       return <CheckCircle2 size={16} color="#10B981" />;
     }
-    return <Info size={16} color="#2563EB" />;
+    return <Info size={16} color="#10B981" />;
   };
 
   const getNotificationBg = (item) => {
@@ -66,7 +66,7 @@ export default function NotificationsCard({ notifications = [] }) {
     } else if (title.includes("Confirmed")) {
       return "#ECFDF5";
     }
-    return "#EFF6FF";
+    return "#ECFDF5";
   };
 
   return (

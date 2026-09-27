@@ -15,8 +15,8 @@ const cardItems = [
     getValue: (data) => data?.employees?.total ?? 0,
     getSubtitle: (data) => `+${data?.employees?.new_this_month ?? 0} this month`,
     icon: PeopleAltIcon,
-    color: "#1976D2",
-    bgColor: "#E3F2FD",
+    color: "#10B981",
+    bgColor: "#ECFDF5",
   },
   {
     key: "active_employees",
@@ -37,7 +37,7 @@ const cardItems = [
     getValue: (data) => `${data?.attendance?.present_today ?? 0} / ${data?.employees?.active ?? 0}`,
     getSubtitle: (data) => `${data?.attendance?.checked_in ?? 0} currently checked in`,
     icon: EventAvailableIcon,
-    color: "#0288D1",
+    color: "#047857",
     bgColor: "#E0F7FA",
   },
   {
@@ -95,7 +95,7 @@ export default function AdminSummaryCards({ data, loading }) {
                 transition: "transform 0.2s ease, box-shadow 0.2s ease",
                 "&:hover": {
                   transform: "translateY(-3px)",
-                  boxShadow: "0 10px 25px rgba(25, 118, 210, 0.08)",
+                  boxShadow: "0 10px 25px rgba(16, 185, 129, 0.08)",
                   borderColor: item.color,
                 },
               }}

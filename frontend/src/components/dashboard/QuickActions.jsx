@@ -19,7 +19,7 @@ export default function QuickActions({ onActionClick }) {
       id: "meeting-rooms",
       label: "Book Meeting Room",
       subtitle: "Reserve war room or call pod",
-      icon: <Groups sx={{ fontSize: 24, color: "#1976D2" }} />,
+      icon: <Groups sx={{ fontSize: 24, color: "#10B981" }} />,
       iconBg: "#E0F2FE",
       route: "/meeting-rooms",
     },
@@ -96,12 +96,12 @@ export default function QuickActions({ onActionClick }) {
                 alignItems: "center",
                 justifyContent: "space-between",
                 "&:hover": {
-                  borderColor: "#1976D2",
-                  boxShadow: "0 8px 24px rgba(25, 118, 210, 0.12)",
+                  borderColor: "#10B981",
+                  boxShadow: "0 8px 24px rgba(16, 185, 129, 0.12)",
                   transform: "translateY(-2px)",
                   "& .action-arrow": {
                     transform: "translateX(4px)",
-                    color: "#1976D2",
+                    color: "#10B981",
                   },
                 },
               }}

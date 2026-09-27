@@ -103,7 +103,7 @@ export default function UpcomingMeetings() {
           endIcon={<ArrowForward sx={{ fontSize: "14px !important" }} />}
           sx={{
             fontWeight: 700,
-            color: "#1976D2",
+            color: "#10B981",
             textTransform: "none",
             fontSize: "0.78rem",
           }}
@@ -135,7 +135,7 @@ export default function UpcomingMeetings() {
           <Button
             size="small"
             onClick={() => navigate("/meeting-rooms")}
-            sx={{ mt: 1, fontWeight: 700, color: "#1976D2", textTransform: "none" }}
+            sx={{ mt: 1, fontWeight: 700, color: "#10B981", textTransform: "none" }}
           >
             Book a Meeting Room
           </Button>
@@ -159,8 +159,8 @@ export default function UpcomingMeetings() {
                 justifyContent: "space-between",
                 "&:hover": {
                   bgcolor: "#FFFFFF",
-                  borderColor: "#1976D2",
-                  boxShadow: "0 4px 14px rgba(25, 118, 210, 0.1)",
+                  borderColor: "#10B981",
+                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.1)",
                 },
               }}
             >
@@ -176,7 +176,7 @@ export default function UpcomingMeetings() {
                   gap={0.6}
                   mt={0.3}
                 >
-                  <AccessTime sx={{ fontSize: 13, color: "#1976D2" }} />
+                  <AccessTime sx={{ fontSize: 13, color: "#10B981" }} />
                   {formatMeetingTime(m.start_time, m.end_time)}
                 </Typography>
               </Box>
@@ -213,7 +213,7 @@ export default function UpcomingMeetings() {
         <DialogContent dividers>
           {selectedMeeting && (
             <Stack spacing={1.5}>
-              <Typography variant="subtitle1" fontWeight={800} color="#1976D2">
+              <Typography variant="subtitle1" fontWeight={800} color="#10B981">
                 {selectedMeeting.title || "Meeting Booking"}
               </Typography>
               <Typography variant="body2" color="#475569">

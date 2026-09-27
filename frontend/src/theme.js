@@ -7,9 +7,9 @@ export const getAppTheme = (mode = "light") => {
     palette: {
       mode,
       primary: {
-        main: "#1976D2",
-        light: "#42A5F5",
-        dark: "#1565C0",
+        main: "#10B981", // Crisp Emerald Green
+        light: "#34D399",
+        dark: "#059669",
         contrastText: "#FFFFFF",
       },
       secondary: {
@@ -19,15 +19,15 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       success: {
-        main: "#16A34A",
-        light: "#4ADE80",
-        dark: "#15803D",
+        main: "#10B981",
+        light: "#34D399",
+        dark: "#059669",
         contrastText: "#FFFFFF",
       },
       warning: {
-        main: "#D97706",
-        light: "#FBBF24",
-        dark: "#B45309",
+        main: "#F59E0B",
+        light: "#FCD34D",
+        dark: "#D97706",
         contrastText: "#FFFFFF",
       },
       error: {
@@ -37,7 +37,7 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       background: {
-        default: isDark ? "#0F172A" : "#F5F8FC",
+        default: isDark ? "#0F172A" : "#F4F7F5",
         paper: isDark ? "#1E293B" : "#FFFFFF",
         subtle: isDark ? "#182234" : "#F8FAFC",
       },
@@ -83,7 +83,7 @@ export const getAppTheme = (mode = "light") => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: isDark ? "#0F172A" : "#F5F8FC",
+            backgroundColor: isDark ? "#0F172A" : "#F4F7F5",
             fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
           },
         },
@@ -119,16 +119,16 @@ export const getAppTheme = (mode = "light") => {
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               transform: "translateY(-1px)",
-              boxShadow: "0px 6px 16px rgba(25, 118, 210, 0.2)",
+              boxShadow: "0px 6px 16px rgba(16, 185, 129, 0.25)",
             },
             "&:active": {
               transform: "translateY(0)",
             },
           },
           containedPrimary: {
-            backgroundColor: "#1976D2",
+            backgroundColor: "#10B981",
             "&:hover": {
-              backgroundColor: "#1565C0",
+              backgroundColor: "#059669",
             },
           },
         },
@@ -143,12 +143,12 @@ export const getAppTheme = (mode = "light") => {
                 borderColor: isDark ? "rgba(255, 255, 255, 0.15)" : "#E2E8F0",
               },
               "&:hover fieldset": {
-                borderColor: "#1976D2",
+                borderColor: "#10B981",
               },
               "&.Mui-focused fieldset": {
                 borderWidth: 2,
-                borderColor: "#1976D2",
-                boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.12)",
+                borderColor: "#10B981",
+                boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
               },
             },
           },

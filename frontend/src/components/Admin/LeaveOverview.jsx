@@ -84,7 +84,7 @@ export default function LeaveOverview({ data, loading }) {
                   <Typography variant="caption" color="text.secondary" fontWeight={600}>
                     On Leave
                   </Typography>
-                  <Typography variant="h6" fontWeight={800} color="#0288D1">
+                  <Typography variant="h6" fontWeight={800} color="#047857">
                     {lv.currently_on_leave ?? 0}
                   </Typography>
                 </Paper>
@@ -145,8 +145,8 @@ export default function LeaveOverview({ data, loading }) {
           endIcon={<ArrowForwardIcon />}
           onClick={() => navigate("/leave")}
           sx={{
-            bgcolor: "#1976D2",
-            "&:hover": { bgcolor: "#1565C0" },
+            bgcolor: "#10B981",
+            "&:hover": { bgcolor: "#059669" },
             borderRadius: 2,
             textTransform: "none",
             fontWeight: 700,

@@ -222,7 +222,7 @@ export default function MeetingRoomManagement({ openAddSignal, onResetAddSignal,
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenAddModal}
-            sx={{ bgcolor: "#1976D2", color: "#FFFFFF", fontWeight: 700, borderRadius: "10px", textTransform: "none", px: 2.5 }}
+            sx={{ bgcolor: "#10B981", color: "#FFFFFF", fontWeight: 700, borderRadius: "10px", textTransform: "none", px: 2.5 }}
           >
             Add Meeting Room
           </Button>
@@ -262,7 +262,7 @@ export default function MeetingRoomManagement({ openAddSignal, onResetAddSignal,
       {/* Meeting Rooms Grid */}
       {loading ? (
         <Box textAlign="center" py={6}>
-          <CircularProgress sx={{ color: "#1976D2" }} />
+          <CircularProgress sx={{ color: "#10B981" }} />
         </Box>
       ) : rooms.length === 0 ? (
         <Paper elevation={0} sx={{ p: 5, textAlign: "center", borderRadius: 3, border: "1px dashed #CBD5E1", bgcolor: "#FFFFFF" }}>
@@ -293,7 +293,7 @@ export default function MeetingRoomManagement({ openAddSignal, onResetAddSignal,
                     transition: "all 0.2s ease",
                     "&:hover": {
                       boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
-                      borderColor: "#1976D2",
+                      borderColor: "#10B981",
                     },
                   }}
                 >
@@ -425,7 +425,7 @@ export default function MeetingRoomManagement({ openAddSignal, onResetAddSignal,
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setOpenRoomModal(false)} sx={{ textTransform: "none", color: "#64748B" }}>Cancel</Button>
-          <Button variant="contained" onClick={handleSaveRoom} sx={{ bgcolor: "#1976D2", fontWeight: 700, textTransform: "none", borderRadius: "8px" }}>Save Room</Button>
+          <Button variant="contained" onClick={handleSaveRoom} sx={{ bgcolor: "#10B981", fontWeight: 700, textTransform: "none", borderRadius: "8px" }}>Save Room</Button>
         </DialogActions>
       </Dialog>
 

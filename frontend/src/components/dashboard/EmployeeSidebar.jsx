@@ -133,11 +133,11 @@ export default function EmployeeSidebar({
                 width: 38,
                 height: 38,
                 borderRadius: "10px",
-                bgcolor: "#1976D2",
+                bgcolor: "#10B981",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 14px rgba(25, 118, 210, 0.4)",
+                boxShadow: "0 4px 14px rgba(16, 185, 129, 0.4)",
               }}
             >
               <SparklesIcon style={{ color: "#FFFFFF", fontSize: 22 }} />
@@ -200,12 +200,12 @@ export default function EmployeeSidebar({
                     borderRadius: "12px",
                     px: 1.8,
                     py: 1.1,
-                    bgcolor: active ? "#1976D2" : "transparent",
+                    bgcolor: active ? "#10B981" : "transparent",
                     color: active ? "#FFFFFF" : "#94A3B8",
-                    boxShadow: active ? "0 4px 12px rgba(25, 118, 210, 0.35)" : "none",
+                    boxShadow: active ? "0 4px 12px rgba(16, 185, 129, 0.35)" : "none",
                     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": {
-                      bgcolor: active ? "#1976D2" : "rgba(255, 255, 255, 0.08)",
+                      bgcolor: active ? "#10B981" : "rgba(255, 255, 255, 0.08)",
                       color: "#FFFFFF",
                       transform: "translateX(3px)",
                     },
@@ -263,7 +263,7 @@ export default function EmployeeSidebar({
               sx={{
                 width: 34,
                 height: 34,
-                bgcolor: "#1976D2",
+                bgcolor: "#10B981",
                 color: "#FFFFFF",
                 fontSize: "0.85rem",
                 fontWeight: 700,
@@ -288,8 +288,8 @@ export default function EmployeeSidebar({
                   height: 18,
                   fontSize: "0.62rem",
                   fontWeight: 700,
-                  bgcolor: "rgba(25, 118, 210, 0.25)",
-                  color: "#60A5FA",
+                  bgcolor: "rgba(16, 185, 129, 0.25)",
+                  color: "#34D399",
                   borderRadius: "4px",
                   "& .MuiChip-label": { px: 0.8 },
                 }}

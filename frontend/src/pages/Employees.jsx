@@ -57,7 +57,7 @@ export default function Employees() {
     return (
       <AppLayout activeTabOverride="employees">
         <Box display="flex" justifyContent="center" alignItems="center" py={12}>
-          <CircularProgress size={40} sx={{ color: "#1976D2" }} />
+          <CircularProgress size={40} sx={{ color: "#10B981" }} />
         </Box>
       </AppLayout>
     );
@@ -86,15 +86,15 @@ export default function Employees() {
 
           <Stack direction="row" spacing={2} alignItems="center">
             <Chip
-              icon={<Users size={16} color="#1976D2" />}
+              icon={<Users size={16} color="#10B981" />}
               label={`${employees.length} Active Staff`}
               sx={{
-                bgcolor: "#EFF6FF",
-                color: "#1E40AF",
+                bgcolor: "#ECFDF5",
+                color: "#047857",
                 fontWeight: 700,
                 fontSize: "0.82rem",
                 borderRadius: "8px",
-                border: "1px solid #DBEAFE",
+                border: "1px solid #A7F3D0",
                 py: 1.8,
               }}
             />
@@ -103,16 +103,16 @@ export default function Employees() {
               startIcon={<UserPlus size={18} />}
               onClick={() => setIsAddModalOpen(true)}
               sx={{
-                bgcolor: "#1976D2",
+                bgcolor: "#10B981",
                 color: "#FFFFFF",
                 fontWeight: 700,
                 borderRadius: "10px",
                 textTransform: "none",
                 px: 2.5,
                 py: 1,
-                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
                 "&:hover": {
-                  bgcolor: "#1565C0",
+                  bgcolor: "#059669",
                 },
               }}
             >

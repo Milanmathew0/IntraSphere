@@ -19,7 +19,7 @@ export function BrandLogo({ size = "medium", lightText = false }) {
           width: iconSize,
           height: iconSize,
           borderRadius: "10px",
-          backgroundColor: "#1976D2",
+          backgroundColor: "#10B981",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -48,7 +48,7 @@ export function BrandLogo({ size = "medium", lightText = false }) {
           color: lightText ? "#FFFFFF" : "#1E293B",
         }}
       >
-        Intra<span style={{ color: "#00ACC1" }}>Sphere</span>
+        Intra<span style={{ color: "#10B981" }}>Sphere</span>
       </Typography>
     </Box>
   );

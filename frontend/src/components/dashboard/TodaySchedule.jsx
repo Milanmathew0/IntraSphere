@@ -51,7 +51,7 @@ export default function TodaySchedule({ scheduleItems = [] }) {
               height: 36,
               borderRadius: "10px",
               bgcolor: "#F0F7FF",
-              color: "#1976D2",
+              color: "#10B981",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -98,7 +98,7 @@ export default function TodaySchedule({ scheduleItems = [] }) {
             sx={{
               mt: 1.5,
               fontWeight: 700,
-              color: "#1976D2",
+              color: "#10B981",
               textTransform: "none",
               fontSize: "0.8rem",
             }}
@@ -122,8 +122,8 @@ export default function TodaySchedule({ scheduleItems = [] }) {
                 transition: "all 0.2s ease",
                 "&:hover": {
                   bgcolor: "#FFFFFF",
-                  borderColor: "#1976D2",
-                  boxShadow: "0 4px 14px rgba(25, 118, 210, 0.1)",
+                  borderColor: "#10B981",
+                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.1)",
                   transform: "translateX(3px)",
                 },
               }}
@@ -166,7 +166,7 @@ export default function TodaySchedule({ scheduleItems = [] }) {
 
                 <Stack alignItems="flex-end" spacing={0.5}>
                   <Chip
-                    icon={<AccessTime sx={{ fontSize: "12px !important", color: "#1976D2" }} />}
+                    icon={<AccessTime sx={{ fontSize: "12px !important", color: "#10B981" }} />}
                     label={item.time}
                     size="small"
                     sx={{
@@ -197,7 +197,7 @@ export default function TodaySchedule({ scheduleItems = [] }) {
         <DialogContent dividers>
           {selectedItem && (
             <Stack spacing={1.5}>
-              <Typography variant="subtitle1" fontWeight={800} color="#1976D2">
+              <Typography variant="subtitle1" fontWeight={800} color="#10B981">
                 {selectedItem.title}
               </Typography>
               <Typography variant="body2" color="#475569">

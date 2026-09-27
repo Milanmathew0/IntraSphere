@@ -193,10 +193,10 @@ export default function WorkspaceReservation() {
                 textTransform: "none",
                 fontWeight: 700,
                 px: 2.5,
-                bgcolor: activeTab === 1 ? "#1976D2" : "transparent",
+                bgcolor: activeTab === 1 ? "#10B981" : "transparent",
                 borderColor: "#E2E8F0",
                 color: activeTab === 1 ? "#FFFFFF" : "#475569",
-                "&:hover": { bgcolor: activeTab === 1 ? "#1565C0" : "#F8FAFC" },
+                "&:hover": { bgcolor: activeTab === 1 ? "#059669" : "#F8FAFC" },
               }}
             >
               My Reservations ({stats.my_upcoming})
@@ -211,13 +211,13 @@ export default function WorkspaceReservation() {
               startIcon={<Plus size={18} />}
               sx={{
                 borderRadius: "10px",
-                bgcolor: "#1976D2",
+                bgcolor: "#10B981",
                 color: "#FFFFFF",
                 textTransform: "none",
                 fontWeight: 700,
                 px: 2.5,
-                boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
-                "&:hover": { bgcolor: "#1565C0" },
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                "&:hover": { bgcolor: "#059669" },
               }}
             >
               Reserve a Desk
@@ -270,10 +270,10 @@ export default function WorkspaceReservation() {
             <Typography variant="caption" fontWeight={700} color="#64748B">
               RESERVED TODAY
             </Typography>
-            <Typography variant="h4" fontWeight={800} color="#1976D2" sx={{ my: 0.5 }}>
+            <Typography variant="h4" fontWeight={800} color="#10B981" sx={{ my: 0.5 }}>
               {stats.reserved_today}
             </Typography>
-            <Typography variant="caption" color="#1976D2" fontWeight={600}>
+            <Typography variant="caption" color="#10B981" fontWeight={600}>
               Active confirmed bookings
             </Typography>
           </Paper>
@@ -290,10 +290,10 @@ export default function WorkspaceReservation() {
             <Typography variant="caption" fontWeight={700} color="#64748B">
               MY UPCOMING RESERVATIONS
             </Typography>
-            <Typography variant="h4" fontWeight={800} color="#9333EA" sx={{ my: 0.5 }}>
+            <Typography variant="h4" fontWeight={800} color="#059669" sx={{ my: 0.5 }}>
               {stats.my_upcoming}
             </Typography>
-            <Typography variant="caption" color="#9333EA" fontWeight={600}>
+            <Typography variant="caption" color="#059669" fontWeight={600}>
               Your personal bookings
             </Typography>
           </Paper>
@@ -337,7 +337,7 @@ export default function WorkspaceReservation() {
                 minHeight: 42,
                 color: "#64748B",
                 "&.Mui-selected": {
-                  color: "#1976D2",
+                  color: "#10B981",
                 },
               },
             }}
@@ -465,7 +465,7 @@ export default function WorkspaceReservation() {
             {/* DESK CARDS GRID */}
             {loading ? (
               <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-                <CircularProgress size={36} sx={{ color: "#1976D2" }} />
+                <CircularProgress size={36} sx={{ color: "#10B981" }} />
               </Box>
             ) : desks.length === 0 ? (
               <Paper
@@ -547,7 +547,7 @@ export default function WorkspaceReservation() {
 
             {loadingAllRes ? (
               <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
-                <CircularProgress size={32} sx={{ color: "#1976D2" }} />
+                <CircularProgress size={32} sx={{ color: "#10B981" }} />
               </Box>
             ) : allReservations.length === 0 ? (
               <Typography color="#64748B" textAlign="center" py={4}>
@@ -577,7 +577,7 @@ export default function WorkspaceReservation() {
                       <Chip label={res.status} size="small" color={res.status === "Confirmed" ? "success" : "default"} />
                     </Box>
 
-                    <Typography variant="body2" fontWeight={700} color="#1976D2">
+                    <Typography variant="body2" fontWeight={700} color="#10B981">
                       Employee: {res.employee_name} ({res.employee_email})
                     </Typography>
 

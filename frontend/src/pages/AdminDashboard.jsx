@@ -127,7 +127,7 @@ export default function AdminDashboard() {
                 <Typography variant="h4" fontWeight="900" color="#0F172A">
                   Admin Dashboard
                 </Typography>
-                <Chip label="Organization Control Center" sx={{ bgcolor: "#E3F2FD", color: "#1976D2", fontWeight: 700 }} />
+                <Chip label="Organization Control Center" sx={{ bgcolor: "#ECFDF5", color: "#10B981", fontWeight: 700 }} />
               </Stack>
               <Typography variant="body1" color="text.secondary">
                 Centralized management and monitoring of IntraSphere office automation operations.

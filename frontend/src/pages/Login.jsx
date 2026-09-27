@@ -254,219 +254,196 @@ export default function Login() {
         elevation={0}
         sx={{
           width: "100%",
-          borderRadius: "16px",
+          borderRadius: "20px",
           backgroundColor: "#FFFFFF",
           border: "1px solid #E2E8F0",
-          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.05)",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease",
-          "&:hover": {
-            boxShadow: "0px 14px 36px rgba(0, 0, 0, 0.08)",
-          },
+          boxShadow: "0px 10px 30px rgba(15, 23, 42, 0.05)",
+          p: { xs: 1, sm: 1.5 },
         }}
       >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-          {/* Header Avatar & Title */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
-            <Avatar
-              sx={{
-                bgcolor: "#F97316",
-                width: 52,
-                height: 52,
-                mb: 1.5,
-              }}
-            >
-              <LockOutlinedIcon fontSize="medium" />
-            </Avatar>
-
+          {/* Header Title */}
+          <Box sx={{ mb: 3.5 }}>
             <Typography
               variant="h5"
-              fontWeight="bold"
-              align="center"
-              color="#1E293B"
+              fontWeight={800}
+              color="#0F172A"
+              sx={{ letterSpacing: -0.5, mb: 0.8 }}
             >
-              Welcome Back
+              Sign In
             </Typography>
-
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              align="center"
-              sx={{ mt: 0.5 }}
-            >
-              Sign in to IntraSphere Smart Office System
+            <Typography variant="body2" color="#64748B" fontWeight={500}>
+              Enter your corporate credentials to access IntraSphere.
             </Typography>
           </Box>
 
           {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
-            <TextField
-              label="Email Address"
-              fullWidth
-              margin="normal"
-              value={email}
-              onChange={handleEmailChange}
-              onFocus={() => setFocusedField("email")}
-              onBlur={() => setFocusedField(null)}
-              error={!!(touched.email && errors.email)}
-              helperText={touched.email && errors.email ? errors.email : ""}
-              placeholder="name@company.com"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailOutlinedIcon
-                        color={
-                          touched.email && errors.email
-                            ? "error"
-                            : focusedField === "email"
-                            ? "primary"
-                            : "action"
-                        }
-                        fontSize="small"
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: email.length > 0 && (
-                    <InputAdornment position="end">
-                      {isEmailValid ? (
-                        <CheckCircleIcon color="success" fontSize="small" />
-                      ) : touched.email || errors.email ? (
-                        <ErrorIcon color="error" fontSize="small" />
-                      ) : null}
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+            <Stack spacing={2.2}>
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.8, display: "block" }}>
+                  Email Address
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="medium"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!(touched.email && errors.email)}
+                  helperText={touched.email && errors.email ? errors.email : ""}
+                  placeholder="name@company.com"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailOutlinedIcon sx={{ color: "#94A3B8", fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            <TextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              fullWidth
-              margin="normal"
-              value={password}
-              onChange={handlePasswordChange}
-              onFocus={() => setFocusedField("password")}
-              onBlur={() => setFocusedField(null)}
-              error={!!(touched.password && errors.password)}
-              helperText={touched.password && errors.password ? errors.password : ""}
-              placeholder="Enter your password"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon
-                        color={
-                          touched.password && errors.password
-                            ? "error"
-                            : focusedField === "password"
-                            ? "primary"
-                            : "action"
-                        }
-                        fontSize="small"
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {password.length > 0 && (
-                        isPasswordValid ? (
-                          <CheckCircleIcon color="success" fontSize="small" sx={{ mr: 0.5 }} />
-                        ) : touched.password || errors.password ? (
-                          <ErrorIcon color="error" fontSize="small" sx={{ mr: 0.5 }} />
-                        ) : null
-                      )}
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                        size="small"
-                      >
-                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+              <Box>
+                <Typography variant="caption" fontWeight={700} color="#334155" sx={{ mb: 0.8, display: "block" }}>
+                  Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="medium"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  error={!!(touched.password && errors.password)}
+                  helperText={touched.password && errors.password ? errors.password : ""}
+                  placeholder="••••••••"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
+                      bgcolor: "#F8FAFC",
+                      "& fieldset": { borderColor: "#E2E8F0" },
+                      "&:hover fieldset": { borderColor: "#CBD5E1" },
+                      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockOutlinedIcon sx={{ color: "#94A3B8", fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            size="small"
+                            sx={{ color: "#94A3B8" }}
+                          >
+                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
 
-            {/* Remember Me & Forgot Password Row */}
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ mt: 1, mb: 2 }}
-            >
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    color="primary"
-                    size="small"
-                  />
-                }
-                label={
-                  <Typography variant="body2" color="text.secondary">
-                    Remember Me
-                  </Typography>
-                }
-              />
+              {/* Remember Me & Forgot Password Row */}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ pt: 0.5 }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      sx={{
+                        color: "#CBD5E1",
+                        "&.Mui-checked": { color: "#F97316" },
+                      }}
+                      size="small"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2" color="#475569" fontWeight={500}>
+                      Remember me
+                    </Typography>
+                  }
+                />
 
-              <Link
-                component={RouterLink}
-                to="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSnackbar({
-                    open: true,
-                    message: "If an active account exists, password reset instructions have been sent.",
-                    severity: "info",
-                  });
-                }}
-                variant="body2"
-                color="primary"
+                <Link
+                  component={RouterLink}
+                  to="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSnackbar({
+                      open: true,
+                      message: "If an active account exists, password reset instructions have been sent.",
+                      severity: "info",
+                    });
+                  }}
+                  variant="body2"
+                  sx={{
+                    color: "#F97316",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  Forgot password?
+                </Link>
+              </Stack>
+
+              {/* Login Button */}
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                size="large"
                 sx={{
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  "&:hover": { textDecoration: "underline" },
+                  py: 1.4,
+                  borderRadius: "12px",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  textTransform: "none",
+                  backgroundColor: "#F97316",
+                  boxShadow: "0 4px 14px rgba(249, 115, 22, 0.35)",
+                  "&:hover": { backgroundColor: "#EA580C" },
                 }}
               >
-                Forgot Password?
-              </Link>
+                {loading ? <CircularProgress size={22} color="inherit" /> : "Sign In to Portal"}
+              </Button>
             </Stack>
 
-            {/* Login Button */}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={loading}
-              size="large"
-              sx={{
-                py: 1.3,
-                fontSize: "1rem",
-                fontWeight: 600,
-                backgroundColor: "#F97316",
-                "&:hover": { backgroundColor: "#EA580C" },
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
-            </Button>
-
             {/* Divider */}
-            <Divider sx={{ my: 2.5 }}>
+            <Divider sx={{ my: 3 }}>
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ px: 1, fontWeight: 600 }}
+                color="#94A3B8"
+                sx={{ px: 1, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}
               >
-                OR SIGN IN WITH
+                or continue with
               </Typography>
             </Divider>
 
             {/* Google Sign-In Button */}
-            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", my: 1 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", mb: 2 }}>
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => {
@@ -478,22 +455,22 @@ export default function Login() {
                 }}
                 theme="outline"
                 size="large"
-                shape="pill"
+                shape="rectangular"
                 width="100%"
                 text="signin_with"
               />
             </Box>
 
             {/* Register Link */}
-            <Box textAlign="center" mt={2.5}>
-              <Typography variant="body2" color="text.secondary">
+            <Box textAlign="center" mt={2}>
+              <Typography variant="body2" color="#64748B" fontWeight={500}>
                 Don't have an account?{" "}
                 <Link
                   component={RouterLink}
                   to="/register"
-                  color="primary"
                   sx={{
-                    fontWeight: 600,
+                    color: "#F97316",
+                    fontWeight: 700,
                     textDecoration: "none",
                     "&:hover": { textDecoration: "underline" },
                   }}

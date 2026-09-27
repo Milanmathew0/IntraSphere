@@ -1,5 +1,6 @@
-import { Box, Typography, Container, Paper } from "@mui/material";
-import { BrandLogo } from "./BrandLogo";
+import { Box, Typography, Container } from "@mui/material";
+import SparklesIcon from "@mui/icons-material/AutoAwesome";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 
 export function AuthLayout({ children }) {
   return (
@@ -8,7 +9,8 @@ export function AuthLayout({ children }) {
         minHeight: "100vh",
         width: "100%",
         display: "flex",
-        backgroundColor: "#FAFAFA",
+        bgcolor: "#F8FAFC",
+        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
       }}
     >
       <Box
@@ -19,94 +21,112 @@ export function AuthLayout({ children }) {
           flexDirection: { xs: "column", md: "row" },
         }}
       >
-        {/* Left Side: Minimal Black & White Hero */}
+        {/* Left Side: Modern Enterprise Slate Hero */}
         <Box
           sx={{
-            flex: { xs: "none", md: "1" },
-            bgcolor: "#09090B",
+            flex: { xs: "none", md: "1.1" },
+            bgcolor: "#0F172A",
             color: "#FFFFFF",
             p: { xs: 4, sm: 6, md: 8 },
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
             position: "relative",
+            overflow: "hidden",
           }}
         >
-          {/* Top Brand Logo */}
-          <Box>
-            <BrandLogo size="medium" lightText />
-          </Box>
+          {/* Background Gradient Accent */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: "-15%",
+              left: "-10%",
+              width: "450px",
+              height: "450px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(249, 115, 22, 0.18) 0%, rgba(15, 23, 42, 0) 70%)",
+              pointerEvents: "none",
+            }}
+          />
 
-          {/* Center Content: Title, Subtitle, Tagline, & Minimal Graphic */}
-          <Box sx={{ my: "auto", py: 4, maxWidth: 480 }}>
-            {/* Minimal SVG Graphic Icon */}
+          {/* Top Brand Logo */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, zIndex: 1 }}>
             <Box
               sx={{
-                width: 64,
-                height: 64,
-                borderRadius: "16px",
-                background: "rgba(255, 255, 255, 0.1)",
-                backdropFilter: "blur(10px)",
+                width: 42,
+                height: 42,
+                borderRadius: "12px",
+                bgcolor: "#F97316",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                mb: 3,
-                border: "1px solid rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 4px 14px rgba(249, 115, 22, 0.4)",
               }}
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 21H21" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
-                <path d="M5 21V7L13 3V21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M19 21V11L13 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M9 10H10" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
-                <path d="M9 14H10" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              <SparklesIcon sx={{ color: "#FFFFFF", fontSize: 24 }} />
             </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={800} color="#FFFFFF" sx={{ letterSpacing: -0.3, lineHeight: 1.2 }}>
+                IntraSphere
+              </Typography>
+              <Typography variant="caption" sx={{ color: "#94A3B8", fontWeight: 600 }}>
+                Enterprise Smart Office System
+              </Typography>
+            </Box>
+          </Box>
 
+          {/* Center Hero Showcase */}
+          <Box sx={{ my: "auto", py: 6, maxWidth: 480, zIndex: 1 }}>
             <Typography
               variant="h3"
               sx={{
-                fontWeight: 700,
-                mb: 1.5,
-                fontSize: { xs: "1.75rem", sm: "2.25rem", md: "2.5rem" },
-                letterSpacing: "-0.5px",
-                color: "#FFFFFF",
-              }}
-            >
-              IntraSphere
-            </Typography>
-
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                color: "#A1A1AA",
+                fontWeight: 800,
                 mb: 2,
-                fontSize: "1.1rem",
+                fontSize: { xs: "1.8rem", sm: "2.4rem", md: "2.75rem" },
+                letterSpacing: "-0.8px",
+                color: "#FFFFFF",
+                lineHeight: 1.2,
               }}
             >
-              Smart Office Management System
+              Intelligent Workspace & Office Automation
             </Typography>
 
             <Typography
               variant="body1"
               sx={{
-                color: "rgba(255, 255, 255, 0.75)",
-                fontSize: "0.95rem",
+                color: "#94A3B8",
+                fontSize: "1rem",
                 lineHeight: 1.6,
+                mb: 4,
               }}
             >
-              "Securely manage employees, workspaces, meetings and office operations."
+              Streamline desk bookings, meeting rooms, attendance tracking, and facility management in one unified platform.
             </Typography>
+
+            {/* Key Value Points */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.8 }}>
+              {[
+                "Smart Workspace & Desk Reservations",
+                "Instant Meeting Room Booking & Scheduling",
+                "Automated Attendance & Leave Management",
+              ].map((text, idx) => (
+                <Box key={idx} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <CheckCircleOutlinedIcon sx={{ color: "#F97316", fontSize: 20 }} />
+                  <Typography variant="body2" fontWeight={600} color="#E2E8F0">
+                    {text}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
 
-          {/* Bottom Footer Note */}
-          <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.4)" }}>
-            © 2026 IntraSphere. All rights reserved.
+          {/* Footer Copyright */}
+          <Typography variant="caption" sx={{ color: "#64748B", fontWeight: 500, zIndex: 1 }}>
+            © 2026 IntraSphere Inc. All rights reserved.
           </Typography>
         </Box>
 
-        {/* Right Side: Clean Login / Registration Card */}
+        {/* Right Side: Clean Professional Form Area */}
         <Box
           sx={{
             flex: { xs: "1", md: "1" },
@@ -115,7 +135,7 @@ export function AuthLayout({ children }) {
             justifyContent: "center",
             alignItems: "center",
             p: { xs: 3, sm: 6 },
-            backgroundColor: "#F5F7FA",
+            bgcolor: "#F8FAFC",
           }}
         >
           <Container maxWidth="xs" disableGutters sx={{ width: "100%" }}>
@@ -124,11 +144,11 @@ export function AuthLayout({ children }) {
 
           <Typography
             variant="caption"
-            color="text.secondary"
+            color="#94A3B8"
             align="center"
-            sx={{ mt: 4, display: { xs: "block", md: "none" } }}
+            sx={{ mt: 4, display: { xs: "block", md: "none" }, fontWeight: 500 }}
           >
-            © 2026 IntraSphere
+            © 2026 IntraSphere Smart Office
           </Typography>
         </Box>
       </Box>

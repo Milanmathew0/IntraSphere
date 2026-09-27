@@ -57,6 +57,11 @@ export default function EmployeeNotifications() {
         bgcolor: "#FFFFFF",
         border: "1px solid #E2E8F0",
         boxShadow: "0 4px 16px rgba(15, 23, 42, 0.03)",
+        height: "100%",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
       }}
     >
       {/* Header */}

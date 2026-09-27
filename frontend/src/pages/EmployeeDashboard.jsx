@@ -88,15 +88,12 @@ export default function EmployeeDashboard() {
         <Box sx={{ p: { xs: 2, sm: 3, md: 3.5 }, flexGrow: 1 }}>
           {activeTab === "dashboard" && (
             <Stack spacing={2.5}>
-              {/* TOP SECTION: Left (Banner + Summary Cards) & Right (Calendar) */}
-              <Grid container spacing={2.5}>
-                {/* Left + Middle Column Container (72% width) */}
+              {/* BLOCK 1: TOP SECTION (Banner + 4 Summary Cards on Left | Calendar on Right) */}
+              <Grid container spacing={2.5} alignItems="stretch">
+                {/* Left Area (72.5% width): Banner + 4 Summary Cards */}
                 <Grid xs={12} lg={8.7}>
-                  <Stack spacing={2.5}>
-                    {/* Welcome Banner */}
+                  <Stack spacing={2.5} sx={{ height: "100%", justifyContent: "space-between" }}>
                     <WelcomeBanner user={user} />
-
-                    {/* 4 Summary Cards */}
                     <EmployeeSummaryCards
                       user={user}
                       onNavigateTab={(tab) => setActiveTab(tab)}
@@ -104,40 +101,39 @@ export default function EmployeeDashboard() {
                   </Stack>
                 </Grid>
 
-                {/* Right Column Top (28% width): Calendar */}
+                {/* Right Area (27.5% width): Calendar */}
                 <Grid xs={12} lg={3.3}>
                   <EmployeeCalendar />
                 </Grid>
               </Grid>
 
-              {/* MIDDLE & BOTTOM 3-COLUMN GRID */}
-              <Grid container spacing={2.5}>
-                {/* Column 1 (Left): Today's Schedule & Attendance Overview */}
+              {/* BLOCK 2: MIDDLE ROW (Today's Schedule | Quick Actions | Upcoming Meetings) */}
+              <Grid container spacing={2.5} alignItems="stretch">
                 <Grid xs={12} md={6} lg={4.35}>
-                  <Stack spacing={2.5}>
-                    <TodaySchedule />
-                    <AttendanceOverview
-                      user={user}
-                      onAttendanceChange={handleAttendanceChange}
-                      showToast={showToast}
-                    />
-                  </Stack>
+                  <TodaySchedule />
                 </Grid>
-
-                {/* Column 2 (Middle): Quick Actions & Recent Announcements */}
                 <Grid xs={12} md={6} lg={4.35}>
-                  <Stack spacing={2.5}>
-                    <QuickActions onActionClick={(id) => setActiveTab(id)} />
-                    <RecentAnnouncements />
-                  </Stack>
+                  <QuickActions onActionClick={(id) => setActiveTab(id)} />
                 </Grid>
-
-                {/* Column 3 (Right): Upcoming Meetings & My Notifications */}
                 <Grid xs={12} lg={3.3}>
-                  <Stack spacing={2.5}>
-                    <UpcomingMeetings />
-                    <EmployeeNotifications />
-                  </Stack>
+                  <UpcomingMeetings />
+                </Grid>
+              </Grid>
+
+              {/* BLOCK 3: BOTTOM ROW (Attendance Overview | Recent Announcements | My Notifications) */}
+              <Grid container spacing={2.5} alignItems="stretch">
+                <Grid xs={12} md={6} lg={4.35}>
+                  <AttendanceOverview
+                    user={user}
+                    onAttendanceChange={handleAttendanceChange}
+                    showToast={showToast}
+                  />
+                </Grid>
+                <Grid xs={12} md={6} lg={4.35}>
+                  <RecentAnnouncements />
+                </Grid>
+                <Grid xs={12} lg={3.3}>
+                  <EmployeeNotifications />
                 </Grid>
               </Grid>
             </Stack>

@@ -14,7 +14,7 @@ export default function WelcomeBanner({ user }) {
   const employeeName = user?.username || user?.first_name || "Milan Mathew";
 
   const todayFormatted = new Date().toLocaleDateString("en-US", {
-    weekday: "Long",
+    weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",

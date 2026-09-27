@@ -7,9 +7,9 @@ export const getAppTheme = (mode = "light") => {
     palette: {
       mode,
       primary: {
-        main: "#10B981", // Crisp Emerald Green
-        light: "#34D399",
-        dark: "#059669",
+        main: "#F97316", // Warm Vibrant Orange
+        light: "#FB923C",
+        dark: "#EA580C",
         contrastText: "#FFFFFF",
       },
       secondary: {
@@ -19,9 +19,9 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       success: {
-        main: "#10B981",
-        light: "#34D399",
-        dark: "#059669",
+        main: "#F97316",
+        light: "#FB923C",
+        dark: "#EA580C",
         contrastText: "#FFFFFF",
       },
       warning: {
@@ -37,7 +37,7 @@ export const getAppTheme = (mode = "light") => {
         contrastText: "#FFFFFF",
       },
       background: {
-        default: isDark ? "#0F172A" : "#F4F7F5",
+        default: isDark ? "#0F172A" : "#FAF8F5",
         paper: isDark ? "#1E293B" : "#FFFFFF",
         subtle: isDark ? "#182234" : "#F8FAFC",
       },
@@ -83,7 +83,7 @@ export const getAppTheme = (mode = "light") => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: isDark ? "#0F172A" : "#F4F7F5",
+            backgroundColor: isDark ? "#0F172A" : "#FAF8F5",
             fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
           },
         },
@@ -119,16 +119,16 @@ export const getAppTheme = (mode = "light") => {
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               transform: "translateY(-1px)",
-              boxShadow: "0px 6px 16px rgba(16, 185, 129, 0.25)",
+              boxShadow: "0px 6px 16px rgba(249, 115, 22, 0.25)",
             },
             "&:active": {
               transform: "translateY(0)",
             },
           },
           containedPrimary: {
-            backgroundColor: "#10B981",
+            backgroundColor: "#F97316",
             "&:hover": {
-              backgroundColor: "#059669",
+              backgroundColor: "#EA580C",
             },
           },
         },
@@ -143,12 +143,12 @@ export const getAppTheme = (mode = "light") => {
                 borderColor: isDark ? "rgba(255, 255, 255, 0.15)" : "#E2E8F0",
               },
               "&:hover fieldset": {
-                borderColor: "#10B981",
+                borderColor: "#F97316",
               },
               "&.Mui-focused fieldset": {
                 borderWidth: 2,
-                borderColor: "#10B981",
-                boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
+                borderColor: "#F97316",
+                boxShadow: "0 0 0 3px rgba(249, 115, 22, 0.15)",
               },
             },
           },

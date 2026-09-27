@@ -17,15 +17,15 @@ export default function QuickActions({ onOpenAddEmployee, onOpenManageUsers, onO
   const navigate = useNavigate();
 
   const actions = [
-    { label: "+ Add Employee", icon: PersonAddIcon, color: "#10B981", bg: "#ECFDF5", onClick: onOpenAddEmployee },
+    { label: "+ Add Employee", icon: PersonAddIcon, color: "#F97316", bg: "#FFF7ED", onClick: onOpenAddEmployee },
     { label: "Manage Employees", icon: PeopleIcon, color: "#2E7D32", bg: "#E8F5E9", onClick: () => navigate("/employees") },
     { label: "Manage Users", icon: ManageAccountsIcon, color: "#7B1FA2", bg: "#F3E5F5", onClick: onOpenManageUsers },
     { label: "Manage Departments", icon: BusinessIcon, color: "#00796B", bg: "#E0F2F1", onClick: () => navigate("/employees") },
     { label: "Manage Designations", icon: BadgeIcon, color: "#ED6C02", bg: "#FFF3E0", onClick: () => navigate("/employees") },
     { label: "Manage Leave", icon: EventBusyIcon, color: "#D32F2F", bg: "#FFEBEE", onClick: () => navigate("/leave") },
-    { label: "Meeting Rooms", icon: MeetingRoomIcon, color: "#047857", bg: "#E0F7FA", onClick: () => navigate("/meeting-rooms") },
+    { label: "Meeting Rooms", icon: MeetingRoomIcon, color: "#C2410C", bg: "#E0F7FA", onClick: () => navigate("/meeting-rooms") },
     { label: "Manage Rooms", icon: MeetingRoomOutlinedIcon, color: "#C2185B", bg: "#FCE4EC", onClick: () => navigate("/meeting-rooms") },
-    { label: "View Attendance", icon: EventAvailableIcon, color: "#059669", bg: "#ECFDF5", onClick: () => navigate("/employees") },
+    { label: "View Attendance", icon: EventAvailableIcon, color: "#EA580C", bg: "#FFF7ED", onClick: () => navigate("/employees") },
     { label: "View Reports", icon: AssessmentIcon, color: "#455A64", bg: "#ECEFF1", onClick: onOpenReports },
   ];
 

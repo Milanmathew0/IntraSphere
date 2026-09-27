@@ -77,7 +77,7 @@ export default function LeaveApprovalDialog({ open, onClose, request, onSuccess 
             height: 40,
             borderRadius: "12px",
             bgcolor: "#E8F0FE",
-            color: "#047857",
+            color: "#C2410C",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

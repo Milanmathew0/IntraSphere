@@ -117,7 +117,7 @@ export default function MyWorkspaceReservations({ refreshKey, showToast }) {
       {/* Content */}
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-          <CircularProgress size={36} sx={{ color: "#10B981" }} />
+          <CircularProgress size={36} sx={{ color: "#F97316" }} />
         </Box>
       ) : currentList.length === 0 ? (
         <Paper
@@ -185,7 +185,7 @@ export default function MyWorkspaceReservations({ refreshKey, showToast }) {
 
                   {/* Timing & Date */}
                   <Stack spacing={1} sx={{ mb: 2 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#10B981" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#F97316" }}>
                       <Calendar size={16} />
                       <Typography variant="body2" fontWeight={700}>
                         {res.date}

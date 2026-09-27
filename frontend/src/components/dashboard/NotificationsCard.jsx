@@ -54,9 +54,9 @@ export default function NotificationsCard({ notifications = [] }) {
     if (title.includes("Cancelled")) {
       return <AlertTriangle size={16} color="#DC2626" />;
     } else if (title.includes("Confirmed")) {
-      return <CheckCircle2 size={16} color="#10B981" />;
+      return <CheckCircle2 size={16} color="#F97316" />;
     }
-    return <Info size={16} color="#10B981" />;
+    return <Info size={16} color="#F97316" />;
   };
 
   const getNotificationBg = (item) => {
@@ -64,9 +64,9 @@ export default function NotificationsCard({ notifications = [] }) {
     if (title.includes("Cancelled")) {
       return "#FEF2F2";
     } else if (title.includes("Confirmed")) {
-      return "#ECFDF5";
+      return "#FFF7ED";
     }
-    return "#ECFDF5";
+    return "#FFF7ED";
   };
 
   return (

@@ -158,7 +158,7 @@ export default function RoomCalendar({ rooms = [], onSlotClick, onSelectBooking,
         {/* Legend */}
         <Stack direction="row" spacing={1.5} alignItems="center">
           <Chip size="small" label="Available" sx={{ bgcolor: "#F8FAFC", border: "1px solid #E2E8F0", color: "#475569", fontWeight: 700 }} />
-          <Chip size="small" label="Booked" sx={{ bgcolor: "#ECFDF5", color: "#047857", border: "1px solid #A7F3D0", fontWeight: 700 }} />
+          <Chip size="small" label="Booked" sx={{ bgcolor: "#FFF7ED", color: "#C2410C", border: "1px solid #FFEDD5", fontWeight: 700 }} />
           <Chip size="small" label="Maintenance" sx={{ bgcolor: "#FEF3C7", color: "#D97706", border: "1px solid #FCD34D", fontWeight: 700 }} />
         </Stack>
       </Box>
@@ -308,7 +308,7 @@ export default function RoomCalendar({ rooms = [], onSlotClick, onSelectBooking,
                                       bgcolor: "#FFFFFF",
                                       border: "1px border #CBD5E1",
                                       boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                                      "&:hover": { bgcolor: "#10B981", color: "#FFFFFF" },
+                                      "&:hover": { bgcolor: "#F97316", color: "#FFFFFF" },
                                     }}
                                   >
                                     <Plus size={14} />
@@ -342,21 +342,21 @@ export default function RoomCalendar({ rooms = [], onSlotClick, onSelectBooking,
                                 bottom: 4,
                                 left: style.left,
                                 width: style.width,
-                                bgcolor: "#10B981",
+                                bgcolor: "#F97316",
                                 color: "#FFFFFF",
                                 borderRadius: "8px",
                                 px: 1.2,
                                 py: 0.5,
                                 zIndex: 10,
                                 cursor: "pointer",
-                                boxShadow: "0 2px 6px rgba(16, 185, 129, 0.25)",
+                                boxShadow: "0 2px 6px rgba(249, 115, 22, 0.25)",
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "center",
                                 overflow: "hidden",
                                 transition: "transform 0.15s ease, background-color 0.15s ease",
                                 "&:hover": {
-                                  bgcolor: "#059669",
+                                  bgcolor: "#EA580C",
                                   transform: "scaleY(1.04)",
                                 },
                               }}

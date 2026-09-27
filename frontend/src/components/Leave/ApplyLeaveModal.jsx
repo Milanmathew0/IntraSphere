@@ -264,7 +264,7 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
               width: 42,
               height: 42,
               borderRadius: "12px",
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               display: "flex",
               alignItems: "center",
@@ -303,7 +303,7 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
                 </Box>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Typography variant="caption" color="text.secondary" fontWeight={600}>WORKING DAYS</Typography>
-                  <Typography variant="body2" fontWeight={800} color="#10B981">
+                  <Typography variant="body2" fontWeight={800} color="#F97316">
                     {submittedData.workingDays} Day(s)
                   </Typography>
                 </Box>
@@ -321,10 +321,10 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
               sx={{
                 py: 1.2,
                 borderRadius: "12px",
-                bgcolor: "#10B981",
+                bgcolor: "#F97316",
                 fontWeight: 700,
                 textTransform: "none",
-                "&:hover": { bgcolor: "#059669" },
+                "&:hover": { bgcolor: "#EA580C" },
               }}
             >
               Done
@@ -532,7 +532,7 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
               {(selectedType?.requires_attachment || attachmentUrl) && (
                 <Paper elevation={0} sx={{ p: 2, bgcolor: "#F8FAFC", borderRadius: "12px", border: "1px dashed #CBD5E1" }}>
                   <Typography variant="body2" fontWeight={700} color="#1E293B" mb={1} display="flex" alignItems="center" gap={1}>
-                    <FileText size={16} color="#10B981" />
+                    <FileText size={16} color="#F97316" />
                     Medical Certificate / Supporting Document {selectedType?.requires_attachment && <span style={{ color: "#DC2626" }}>*</span>}
                   </Typography>
 
@@ -579,12 +579,12 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
                   borderRadius: "12px",
                   px: 3.5,
                   py: 1,
-                  bgcolor: "#10B981",
+                  bgcolor: "#F97316",
                   color: "#FFFFFF",
                   fontWeight: 700,
                   textTransform: "none",
                   boxShadow: "none",
-                  "&:hover": { bgcolor: "#059669", boxShadow: "none" },
+                  "&:hover": { bgcolor: "#EA580C", boxShadow: "none" },
                 }}
               >
                 {submitting ? <CircularProgress size={20} color="inherit" /> : "Submit Application"}
@@ -613,7 +613,7 @@ export default function ApplyLeaveModal({ open, onClose, onSuccess, leaveTypes =
             onClick={executeSubmit}
             variant="contained"
             disabled={submitting}
-            sx={{ bgcolor: "#10B981", borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
+            sx={{ bgcolor: "#F97316", borderRadius: "10px", textTransform: "none", fontWeight: 700 }}
           >
             {submitting ? <CircularProgress size={18} color="inherit" /> : "Confirm & Submit"}
           </Button>

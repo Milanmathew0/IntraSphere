@@ -583,13 +583,13 @@ export function EmployeeProfileSection() {
                         display: "flex",
                         alignItems: "center",
                         gap: 0.5,
-                        color: "#10B981",
+                        color: "#F97316",
                         fontWeight: 600,
                         fontSize: "0.82rem",
                       }}
                     >
-                      <CheckCircle2 size={16} color="#10B981" />
-                      <Typography variant="caption" fontWeight={600} color="#10B981">
+                      <CheckCircle2 size={16} color="#F97316" />
+                      <Typography variant="caption" fontWeight={600} color="#F97316">
                         Verified
                       </Typography>
                     </Box>

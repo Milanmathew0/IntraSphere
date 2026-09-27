@@ -189,7 +189,7 @@ export default function FacilityManagerDashboard() {
               <Box>
                 {loading ? (
                   <Box textAlign="center" py={8}>
-                    <CircularProgress sx={{ color: "#10B981" }} />
+                    <CircularProgress sx={{ color: "#F97316" }} />
                   </Box>
                 ) : (
                   <>

@@ -152,7 +152,7 @@ export default function TeamLeaveApprovalsWidget({ showToast }) {
             textAlign="center"
             sx={{ borderRadius: "12px", bgcolor: "#F8FAFC", border: "1px dashed #CBD5E1", my: "auto" }}
           >
-            <CheckCircle2 size={36} color="#10B981" style={{ marginBottom: 8 }} />
+            <CheckCircle2 size={36} color="#F97316" style={{ marginBottom: 8 }} />
             <Typography variant="subtitle2" fontWeight={700} color="#1E293B">
               No Pending Leave Requests
             </Typography>

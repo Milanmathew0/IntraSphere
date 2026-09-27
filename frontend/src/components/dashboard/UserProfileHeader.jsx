@@ -59,10 +59,10 @@ export default function UserProfileHeader({
     if (role === "Facility Manager") {
       return {
         label: "Role: Facility Manager",
-        color: "#10B981",
-        bgColor: "#ECFDF5",
+        color: "#F97316",
+        bgColor: "#FFF7ED",
         borderColor: "#90CAF9",
-        gradient: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
+        gradient: "linear-gradient(135deg, #EA580C 0%, #F97316 100%)",
         pulse: false,
       };
     }
@@ -192,9 +192,9 @@ export default function UserProfileHeader({
                 width: 10,
                 height: 10,
                 borderRadius: "50%",
-                bgcolor: "#10B981",
+                bgcolor: "#F97316",
                 border: "2px solid #FFFFFF",
-                boxShadow: "0 0 6px rgba(16, 185, 129, 0.8)",
+                boxShadow: "0 0 6px rgba(249, 115, 22, 0.8)",
               }}
             />
           </Box>

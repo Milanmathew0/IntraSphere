@@ -32,7 +32,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
         width: "100%",
         minHeight: 170,
         borderRadius: "20px",
-        background: "linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #10B981 100%)",
+        background: "linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #F97316 100%)",
         color: "#FFFFFF",
         p: { xs: 3, md: 4 },
         boxSizing: "border-box",
@@ -53,7 +53,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           width: 220,
           height: 220,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0) 70%)",
+          background: "radial-gradient(circle, rgba(249, 115, 22, 0.4) 0%, rgba(249, 115, 22, 0) 70%)",
           pointerEvents: "none",
         }}
       />
@@ -84,7 +84,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
           {/* Top Pill with Date */}
           <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 1 }}>
             <Chip
-              icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#34D399" }} />}
+              icon={<CalendarMonth sx={{ fontSize: "14px !important", color: "#FB923C" }} />}
               label={todayFormatted}
               size="small"
               sx={{
@@ -156,7 +156,7 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
             onClick={() => navigate("/workspaces")}
             startIcon={<SparklesIcon sx={{ fontSize: 18 }} />}
             sx={{
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               fontWeight: 700,
               px: 2.5,
@@ -164,10 +164,10 @@ export default function WelcomeBanner({ user, onQuickCheckIn }) {
               borderRadius: "12px",
               textTransform: "none",
               fontSize: "0.88rem",
-              boxShadow: "0 4px 14px rgba(16, 185, 129, 0.4)",
+              boxShadow: "0 4px 14px rgba(249, 115, 22, 0.4)",
               "&:hover": {
-                bgcolor: "#059669",
-                boxShadow: "0 6px 20px rgba(16, 185, 129, 0.6)",
+                bgcolor: "#EA580C",
+                boxShadow: "0 6px 20px rgba(249, 115, 22, 0.6)",
               },
             }}
           >

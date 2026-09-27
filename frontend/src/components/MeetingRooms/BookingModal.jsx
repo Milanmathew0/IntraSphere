@@ -333,8 +333,8 @@ export default function BookingModal({ open, onClose, selectedRoom, rooms = [], 
             sx={{
               borderRadius: "10px",
               fontWeight: 700,
-              bgcolor: "#10B981",
-              "&:hover": { bgcolor: "#059669" },
+              bgcolor: "#F97316",
+              "&:hover": { bgcolor: "#EA580C" },
               px: 3,
             }}
           >

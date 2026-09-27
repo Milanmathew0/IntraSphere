@@ -237,7 +237,7 @@ export default function WorkspaceManagement({ openAddSignal, onResetAddSignal, o
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenAddModal}
-            sx={{ bgcolor: "#047857", color: "#FFFFFF", fontWeight: 700, borderRadius: "10px", textTransform: "none", px: 2.5 }}
+            sx={{ bgcolor: "#C2410C", color: "#FFFFFF", fontWeight: 700, borderRadius: "10px", textTransform: "none", px: 2.5 }}
           >
             Add Workspace Desk
           </Button>
@@ -287,7 +287,7 @@ export default function WorkspaceManagement({ openAddSignal, onResetAddSignal, o
       {/* Workspace Desks Grid */}
       {loading ? (
         <Box textAlign="center" py={6}>
-          <CircularProgress sx={{ color: "#047857" }} />
+          <CircularProgress sx={{ color: "#C2410C" }} />
         </Box>
       ) : desks.length === 0 ? (
         <Paper elevation={0} sx={{ p: 5, textAlign: "center", borderRadius: 3, border: "1px dashed #CBD5E1", bgcolor: "#FFFFFF" }}>
@@ -318,7 +318,7 @@ export default function WorkspaceManagement({ openAddSignal, onResetAddSignal, o
                     transition: "all 0.2s ease",
                     "&:hover": {
                       boxShadow: "0 8px 24px rgba(15, 23, 42, 0.08)",
-                      borderColor: "#047857",
+                      borderColor: "#C2410C",
                     },
                   }}
                 >
@@ -372,7 +372,7 @@ export default function WorkspaceManagement({ openAddSignal, onResetAddSignal, o
                       {desk.desk_code}
                     </Typography>
                     {desk.is_accessible && (
-                      <Chip icon={<WheelchairPickupIcon sx={{ fontSize: "14px !important" }} />} label="Accessible" size="small" sx={{ height: 20, fontSize: "0.68rem", bgcolor: "#ECFDF5", color: "#047857" }} />
+                      <Chip icon={<WheelchairPickupIcon sx={{ fontSize: "14px !important" }} />} label="Accessible" size="small" sx={{ height: 20, fontSize: "0.68rem", bgcolor: "#FFF7ED", color: "#C2410C" }} />
                     )}
                   </Stack>
 
@@ -441,7 +441,7 @@ export default function WorkspaceManagement({ openAddSignal, onResetAddSignal, o
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setOpenDeskModal(false)} sx={{ textTransform: "none", color: "#64748B" }}>Cancel</Button>
-          <Button variant="contained" onClick={handleSaveDesk} sx={{ bgcolor: "#047857", fontWeight: 700, textTransform: "none", borderRadius: "8px" }}>Save Desk</Button>
+          <Button variant="contained" onClick={handleSaveDesk} sx={{ bgcolor: "#C2410C", fontWeight: 700, textTransform: "none", borderRadius: "8px" }}>Save Desk</Button>
         </DialogActions>
       </Dialog>
 

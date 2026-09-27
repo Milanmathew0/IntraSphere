@@ -82,7 +82,7 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
         "&:hover": {
           boxShadow: "0 12px 24px -4px rgba(0, 0, 0, 0.08)",
           transform: "translateY(-3px)",
-          borderColor: "#10B981",
+          borderColor: "#F97316",
         },
       }}
     >
@@ -117,10 +117,10 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
           {is_accessible && (
             <Tooltip title="Wheelchair Accessible Desk">
               <Chip
-                icon={<Accessibility size={14} color="#10B981" />}
+                icon={<Accessibility size={14} color="#F97316" />}
                 label="Accessible"
                 size="small"
-                sx={{ bgcolor: "#ECFDF5", color: "#10B981", fontWeight: 700 }}
+                sx={{ bgcolor: "#FFF7ED", color: "#F97316", fontWeight: 700 }}
               />
             </Tooltip>
           )}
@@ -137,7 +137,7 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
         {/* Location & Floor Info */}
         <Stack spacing={0.75} sx={{ mb: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#52525B" }}>
-            <Layers size={15} color="#10B981" />
+            <Layers size={15} color="#F97316" />
             <Typography variant="body2" fontWeight={600}>
               Floor {floor} • {zone}
             </Typography>
@@ -158,8 +158,8 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
             size="small"
             variant="outlined"
             sx={{
-              borderColor: "#10B981",
-              color: "#10B981",
+              borderColor: "#F97316",
+              color: "#F97316",
               fontWeight: 700,
               fontSize: "11px",
             }}
@@ -215,7 +215,7 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
               color: "#27272A",
               textTransform: "none",
               fontWeight: 700,
-              "&:hover": { borderColor: "#10B981", bgcolor: "#F4F4F5" },
+              "&:hover": { borderColor: "#F97316", bgcolor: "#F4F4F5" },
             }}
           >
             Details
@@ -232,12 +232,12 @@ export default function DeskCard({ desk, onSelectDetails, onSelectReserve, onSel
                 aria-label={`Reserve Desk ${desk_code}`}
                 sx={{
                   borderRadius: "10px",
-                  bgcolor: "#10B981",
+                  bgcolor: "#F97316",
                   color: "#FFFFFF",
                   textTransform: "none",
                   fontWeight: 700,
                   boxShadow: "none",
-                  "&:hover": { bgcolor: "#059669" },
+                  "&:hover": { bgcolor: "#EA580C" },
                   "&.Mui-disabled": { bgcolor: "#E4E4E7", color: "#A1A1AA" },
                 }}
               >

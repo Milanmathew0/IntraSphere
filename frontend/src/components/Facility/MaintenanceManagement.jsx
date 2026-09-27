@@ -283,7 +283,7 @@ export default function MaintenanceManagement({ openAddSignal, onResetAddSignal,
                       <Chip
                         label={m.resource_type === "meeting_room" ? "Meeting Room" : "Workspace Desk"}
                         size="small"
-                        sx={{ height: 22, fontSize: "0.7rem", fontWeight: 600, bgcolor: m.resource_type === "meeting_room" ? "#ECFDF5" : "#ECFDF5", color: m.resource_type === "meeting_room" ? "#059669" : "#047857" }}
+                        sx={{ height: 22, fontSize: "0.7rem", fontWeight: 600, bgcolor: m.resource_type === "meeting_room" ? "#FFF7ED" : "#FFF7ED", color: m.resource_type === "meeting_room" ? "#EA580C" : "#C2410C" }}
                       />
                     </TableCell>
 
@@ -319,8 +319,8 @@ export default function MaintenanceManagement({ openAddSignal, onResetAddSignal,
                           height: 24,
                           fontWeight: 700,
                           fontSize: "0.72rem",
-                          borderColor: m.status === "In Progress" ? "#047857" : m.status === "Completed" ? "#2E7D32" : "#ED6C02",
-                          color: m.status === "In Progress" ? "#047857" : m.status === "Completed" ? "#2E7D32" : "#ED6C02",
+                          borderColor: m.status === "In Progress" ? "#C2410C" : m.status === "Completed" ? "#2E7D32" : "#ED6C02",
+                          color: m.status === "In Progress" ? "#C2410C" : m.status === "Completed" ? "#2E7D32" : "#ED6C02",
                         }}
                       />
                     </TableCell>
@@ -338,7 +338,7 @@ export default function MaintenanceManagement({ openAddSignal, onResetAddSignal,
                             </Button>
                           )}
                           {(m.status === "Open" || m.status === "Scheduled") && (
-                            <Button size="small" variant="contained" startIcon={<PlayArrowIcon fontSize="small" />} onClick={() => handleUpdateStatus(m.id, "In Progress")} sx={{ textTransform: "none", fontSize: "0.75rem", bgcolor: "#047857" }}>
+                            <Button size="small" variant="contained" startIcon={<PlayArrowIcon fontSize="small" />} onClick={() => handleUpdateStatus(m.id, "In Progress")} sx={{ textTransform: "none", fontSize: "0.75rem", bgcolor: "#C2410C" }}>
                               Start Work
                             </Button>
                           )}

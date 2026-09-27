@@ -58,8 +58,8 @@ export default function FacilityAnalytics() {
                 width: 42,
                 height: 42,
                 borderRadius: 2.5,
-                bgcolor: "#ECFDF5",
-                color: "#10B981",
+                bgcolor: "#FFF7ED",
+                color: "#F97316",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -91,7 +91,7 @@ export default function FacilityAnalytics() {
 
       {loading ? (
         <Box textAlign="center" py={8}>
-          <CircularProgress sx={{ color: "#10B981" }} />
+          <CircularProgress sx={{ color: "#F97316" }} />
         </Box>
       ) : (
         <Grid container spacing={3}>
@@ -99,7 +99,7 @@ export default function FacilityAnalytics() {
           <Grid item xs={12} md={6}>
             <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: "1px solid #E2E8F0", bgcolor: "#FFFFFF", height: "100%" }}>
               <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-                <MeetingRoomIcon sx={{ color: "#10B981" }} />
+                <MeetingRoomIcon sx={{ color: "#F97316" }} />
                 <Typography variant="h6" fontWeight={700} color="#0F172A">
                   Meeting Room Utilization
                 </Typography>
@@ -109,7 +109,7 @@ export default function FacilityAnalytics() {
                 <Grid item xs={6}>
                   <Box p={2} borderRadius={2} bgcolor="#F8FAFC" border="1px solid #F1F5F9">
                     <Typography variant="caption" color="text.secondary" fontWeight={600}>Total Bookings</Typography>
-                    <Typography variant="h5" fontWeight={800} color="#10B981">{roomsData.total_bookings ?? 0}</Typography>
+                    <Typography variant="h5" fontWeight={800} color="#F97316">{roomsData.total_bookings ?? 0}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
@@ -131,11 +131,11 @@ export default function FacilityAnalytics() {
                       <Typography variant="body2" fontWeight={600} color="#1E293B">
                         {rm.room_name}
                       </Typography>
-                      <Typography variant="caption" fontWeight={700} color="#10B981">
+                      <Typography variant="caption" fontWeight={700} color="#F97316">
                         {rm.booking_count} bookings
                       </Typography>
                     </Stack>
-                    <LinearProgress variant="determinate" value={Math.min((rm.booking_count / (roomsData.total_bookings || 1)) * 100, 100)} sx={{ height: 8, borderRadius: 4, bgcolor: "#ECFDF5", "& .MuiLinearProgress-bar": { bgcolor: "#10B981" } }} />
+                    <LinearProgress variant="determinate" value={Math.min((rm.booking_count / (roomsData.total_bookings || 1)) * 100, 100)} sx={{ height: 8, borderRadius: 4, bgcolor: "#FFF7ED", "& .MuiLinearProgress-bar": { bgcolor: "#F97316" } }} />
                   </Box>
                 ))}
               </Stack>
@@ -146,7 +146,7 @@ export default function FacilityAnalytics() {
           <Grid item xs={12} md={6}>
             <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: "1px solid #E2E8F0", bgcolor: "#FFFFFF", height: "100%" }}>
               <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-                <DesktopWindowsIcon sx={{ color: "#047857" }} />
+                <DesktopWindowsIcon sx={{ color: "#C2410C" }} />
                 <Typography variant="h6" fontWeight={700} color="#0F172A">
                   Workspace & Desk Utilization
                 </Typography>
@@ -156,7 +156,7 @@ export default function FacilityAnalytics() {
                 <Grid item xs={6}>
                   <Box p={2} borderRadius={2} bgcolor="#F8FAFC" border="1px solid #F1F5F9">
                     <Typography variant="caption" color="text.secondary" fontWeight={600}>Total Reservations</Typography>
-                    <Typography variant="h5" fontWeight={800} color="#047857">{deskData.total_reservations ?? 0}</Typography>
+                    <Typography variant="h5" fontWeight={800} color="#C2410C">{deskData.total_reservations ?? 0}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
@@ -178,11 +178,11 @@ export default function FacilityAnalytics() {
                       <Typography variant="body2" fontWeight={600} color="#1E293B">
                         Desk {dk.desk_code}
                       </Typography>
-                      <Typography variant="caption" fontWeight={700} color="#047857">
+                      <Typography variant="caption" fontWeight={700} color="#C2410C">
                         {dk.reservation_count} reservations
                       </Typography>
                     </Stack>
-                    <LinearProgress variant="determinate" value={Math.min((dk.reservation_count / (deskData.total_reservations || 1)) * 100, 100)} sx={{ height: 8, borderRadius: 4, bgcolor: "#ECFDF5", "& .MuiLinearProgress-bar": { bgcolor: "#047857" } }} />
+                    <LinearProgress variant="determinate" value={Math.min((dk.reservation_count / (deskData.total_reservations || 1)) * 100, 100)} sx={{ height: 8, borderRadius: 4, bgcolor: "#FFF7ED", "& .MuiLinearProgress-bar": { bgcolor: "#C2410C" } }} />
                   </Box>
                 ))}
               </Stack>
@@ -219,9 +219,9 @@ export default function FacilityAnalytics() {
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Box p={2.5} borderRadius={2.5} bgcolor="#ECFDF5" border="1px solid #BBDEFB">
+                  <Box p={2.5} borderRadius={2.5} bgcolor="#FFF7ED" border="1px solid #BBDEFB">
                     <Typography variant="caption" color="#0D47A1" fontWeight={700}>Avg Resolution Time</Typography>
-                    <Typography variant="h4" fontWeight={800} color="#10B981">{maintData.avg_resolution_hours ?? 4.5} hrs</Typography>
+                    <Typography variant="h4" fontWeight={800} color="#F97316">{maintData.avg_resolution_hours ?? 4.5} hrs</Typography>
                   </Box>
                 </Grid>
               </Grid>

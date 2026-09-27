@@ -316,9 +316,9 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
 
     return {
       ...baseInputStyle,
-      borderColor: hasError ? "#EF4444" : isValid ? "#10B981" : "#D1D5DB",
+      borderColor: hasError ? "#EF4444" : isValid ? "#F97316" : "#D1D5DB",
       backgroundColor: hasError ? "#FEF2F2" : isValid ? "#F0FDF4" : "#FFFFFF",
-      boxShadow: hasError ? "0 0 0 3px rgba(239, 68, 68, 0.12)" : isValid ? "0 0 0 3px rgba(16, 185, 129, 0.12)" : "none"
+      boxShadow: hasError ? "0 0 0 3px rgba(239, 68, 68, 0.12)" : isValid ? "0 0 0 3px rgba(249, 115, 22, 0.12)" : "none"
     };
   };
 
@@ -414,7 +414,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       width: 22,
                       height: 22,
                       borderRadius: "50%",
-                      bgcolor: "#10B981",
+                      bgcolor: "#F97316",
                       color: "#FFFFFF",
                       display: "flex",
                       alignItems: "center",
@@ -454,7 +454,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                       left: 0,
                       right: 0,
                       height: "3px",
-                      bgcolor: "#10B981",
+                      bgcolor: "#F97316",
                       borderRadius: "3px 3px 0 0"
                     }}
                   />
@@ -469,17 +469,17 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
       <DialogContent sx={{ p: 4, py: 3.5, bgcolor: "#FFFFFF" }}>
         {fetching ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="250px">
-            <CircularProgress size={36} sx={{ color: "#10B981" }} />
+            <CircularProgress size={36} sx={{ color: "#F97316" }} />
           </Box>
         ) : activationData ? (
           <Box textAlign="center" py={3} px={2}>
-            <CheckCircle2 size={64} color="#10B981" style={{ margin: "0 auto", marginBottom: 16 }} />
+            <CheckCircle2 size={64} color="#F97316" style={{ margin: "0 auto", marginBottom: 16 }} />
             
             <Typography variant="h5" fontWeight={700} color="#1E293B" gutterBottom>
               {activationData.first_name} {activationData.last_name}
             </Typography>
 
-            <Typography variant="body1" color="#10B981" fontWeight={600} mb={2}>
+            <Typography variant="body1" color="#F97316" fontWeight={600} mb={2}>
               {activationData.email}
             </Typography>
 
@@ -828,8 +828,8 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
               onClose();
             }}
             sx={{
-              bgcolor: "#10B981",
-              "&:hover": { bgcolor: "#059669" },
+              bgcolor: "#F97316",
+              "&:hover": { bgcolor: "#EA580C" },
               borderRadius: "6px",
               px: 3,
               py: 1,
@@ -864,7 +864,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
               form="add-employee-form"
               disabled={loading || fetching}
               sx={{
-                bgcolor: "#10B981",
+                bgcolor: "#F97316",
                 color: "#FFFFFF",
                 borderRadius: "6px",
                 px: 3,
@@ -876,7 +876,7 @@ export default function AddEmployeeModal({ open, onClose, onSuccess }) {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 1,
-                "&:hover": { bgcolor: "#059669", boxShadow: "none" }
+                "&:hover": { bgcolor: "#EA580C", boxShadow: "none" }
               }}
             >
               {loading ? (

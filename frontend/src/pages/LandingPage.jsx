@@ -45,7 +45,7 @@ export default function LandingPage() {
       {/* 1. TOP NAVBAR */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #047857 100%)",
+          background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #C2410C 100%)",
           color: "#FFFFFF",
           py: 2,
           px: { xs: 2, sm: 4, md: 6 },
@@ -65,11 +65,11 @@ export default function LandingPage() {
                   width: 40,
                   height: 40,
                   borderRadius: "12px",
-                  background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.4)",
+                  boxShadow: "0 4px 14px rgba(249, 115, 22, 0.4)",
                 }}
               >
                 <ShieldCheck size={24} color="#FFFFFF" />
@@ -141,7 +141,7 @@ export default function LandingPage() {
       {/* 2. HERO SECTION */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #022C22 0%, #064E3B 55%, #047857 100%)",
+          background: "linear-gradient(135deg, #022C22 0%, #064E3B 55%, #C2410C 100%)",
           color: "#FFFFFF",
           pt: { xs: 8, md: 10 },
           pb: { xs: 14, md: 16 },
@@ -152,7 +152,7 @@ export default function LandingPage() {
         <Container maxWidth="lg" sx={{ textAlign: "center", position: "relative", zIndex: 2 }}>
           {/* Announcement Pill */}
           <Chip
-            icon={<Sparkles size={16} color="#10B981" />}
+            icon={<Sparkles size={16} color="#F97316" />}
             label="IntraSphere • AI-Powered Smart Office & HR Intelligence"
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.12)",
@@ -247,7 +247,7 @@ export default function LandingPage() {
           <Stack direction="row" spacing={3} justifyContent="center" flexWrap="wrap" sx={{ opacity: 0.9 }}>
             {["Role-Based Security", "Live MongoDB Sync", "Google OAuth 2.0"].map((badge) => (
               <Box key={badge} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CheckCircle2 size={16} color="#10B981" />
+                <CheckCircle2 size={16} color="#F97316" />
                 <Typography variant="caption" fontWeight={600} color="#FFFFFF">
                   {badge}
                 </Typography>
@@ -281,7 +281,7 @@ export default function LandingPage() {
                     height: 44,
                     borderRadius: "14px",
                     bgcolor: "#E6F4EA",
-                    color: "#059669",
+                    color: "#EA580C",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -401,7 +401,7 @@ export default function LandingPage() {
                     height: 44,
                     borderRadius: "14px",
                     bgcolor: "#E8F0FE",
-                    color: "#047857",
+                    color: "#C2410C",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -409,7 +409,7 @@ export default function LandingPage() {
                 >
                   <Lock size={22} />
                 </Box>
-                <Chip label="OAuth 2.0" size="small" sx={{ bgcolor: "#E8F0FE", color: "#047857", fontWeight: 700 }} />
+                <Chip label="OAuth 2.0" size="small" sx={{ bgcolor: "#E8F0FE", color: "#C2410C", fontWeight: 700 }} />
               </Box>
               <Typography variant="h3" fontWeight={800} color="#0F172A" mb={0.5}>
                 256-Bit
@@ -425,7 +425,7 @@ export default function LandingPage() {
       {/* 4. PLATFORM FEATURES SECTION */}
       <Container maxWidth="lg" sx={{ mb: 10 }}>
         <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography variant="caption" fontWeight={800} color="#059669" letterSpacing={1.2} display="block" mb={1}>
+          <Typography variant="caption" fontWeight={800} color="#EA580C" letterSpacing={1.2} display="block" mb={1}>
             PLATFORM CAPABILITIES
           </Typography>
           <Typography variant="h3" fontWeight={800} color="#0F172A" letterSpacing={-0.5} mb={2}>
@@ -441,7 +441,7 @@ export default function LandingPage() {
             {
               title: "Live Database Employee Directory",
               desc: "Instant search and filter across all employee records in MongoDB with department chips and designation tags.",
-              icon: <Users size={26} color="#059669" />,
+              icon: <Users size={26} color="#EA580C" />,
               bg: "#E6F4EA",
             },
             {
@@ -459,7 +459,7 @@ export default function LandingPage() {
             {
               title: "Role-Based Access Control",
               desc: "Dedicated user experience dashboards for Admins, Managers, Employees, and new Onboarding Users.",
-              icon: <ShieldCheck size={26} color="#047857" />,
+              icon: <ShieldCheck size={26} color="#C2410C" />,
               bg: "#E8F0FE",
             },
             {
@@ -471,7 +471,7 @@ export default function LandingPage() {
             {
               title: "Executive Analytics & Dashboard",
               desc: "Beautiful dark emerald theme, floating stat cards, and live metrics for complete workforce visibility.",
-              icon: <BarChart3 size={26} color="#047857" />,
+              icon: <BarChart3 size={26} color="#C2410C" />,
               bg: "#E0F2FE",
             },
           ].map((feature, idx) => (
@@ -527,7 +527,7 @@ export default function LandingPage() {
           sx={{
             p: { xs: 4, sm: 6 },
             borderRadius: "32px",
-            background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #047857 100%)",
+            background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #C2410C 100%)",
             color: "#FFFFFF",
             textAlign: "center",
             boxShadow: "0 20px 40px rgba(2, 44, 34, 0.3)",
@@ -594,7 +594,7 @@ export default function LandingPage() {
         <Container maxWidth="lg">
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <ShieldCheck size={20} color="#059669" />
+              <ShieldCheck size={20} color="#EA580C" />
               <Typography variant="subtitle2" fontWeight={800} color="#0F172A">
                 IntraSphere
               </Typography>
@@ -603,10 +603,10 @@ export default function LandingPage() {
               © 2026 IntraSphere Smart Office & Operations System. All rights reserved.
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Typography variant="caption" color="text.secondary" sx={{ cursor: "pointer", "&:hover": { color: "#059669" } }}>
+              <Typography variant="caption" color="text.secondary" sx={{ cursor: "pointer", "&:hover": { color: "#EA580C" } }}>
                 Privacy Policy
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ cursor: "pointer", "&:hover": { color: "#059669" } }}>
+              <Typography variant="caption" color="text.secondary" sx={{ cursor: "pointer", "&:hover": { color: "#EA580C" } }}>
                 Terms of Service
               </Typography>
             </Stack>

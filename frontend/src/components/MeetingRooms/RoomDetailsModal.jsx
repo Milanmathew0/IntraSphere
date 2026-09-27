@@ -146,7 +146,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
 
         {loading ? (
           <Box display="flex" justifyContent="center" py={5}>
-            <CircularProgress size={32} sx={{ color: "#10B981" }} />
+            <CircularProgress size={32} sx={{ color: "#F97316" }} />
           </Box>
         ) : activeBooking ? (
           /* Specific Booking Details View */
@@ -158,19 +158,19 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                 </Typography>
                 <Stack spacing={1.5}>
                   <Box display="flex" alignItems="center" gap={1.5}>
-                    <Calendar size={18} color="#10B981" />
+                    <Calendar size={18} color="#F97316" />
                     <Typography variant="body2" fontWeight={700} color="#1E293B">
                       {new Date(activeBooking.start_time).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
                     </Typography>
                   </Box>
                   <Box display="flex" alignItems="center" gap={1.5}>
-                    <Clock size={18} color="#10B981" />
+                    <Clock size={18} color="#F97316" />
                     <Typography variant="body2" fontWeight={700} color="#1E293B">
                       {new Date(activeBooking.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – {new Date(activeBooking.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </Typography>
                   </Box>
                   <Box display="flex" alignItems="center" gap={1.5}>
-                    <Users size={18} color="#10B981" />
+                    <Users size={18} color="#F97316" />
                     <Typography variant="body2" color="#475569">
                       Host: <strong>{activeBooking.organizer_name}</strong>
                     </Typography>
@@ -196,7 +196,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                   ATTENDEES ({activeBooking.attendee_count || 1})
                 </Typography>
                 <Stack spacing={1} sx={{ maxHeight: 180, overflowY: "auto" }}>
-                  <Typography variant="caption" fontWeight={700} color="#10B981">
+                  <Typography variant="caption" fontWeight={700} color="#F97316">
                     • {activeBooking.organizer_name} (Organizer)
                   </Typography>
                   {(activeBooking.attendees || []).map((att, idx) => (
@@ -219,13 +219,13 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                 </Typography>
                 <Stack spacing={1.2}>
                   <Box display="flex" alignItems="center" gap={1.2}>
-                    <Users size={18} color="#10B981" />
+                    <Users size={18} color="#F97316" />
                     <Typography variant="body2" fontWeight={700} color="#1E293B">
                       Capacity: {activeRoom.capacity} People
                     </Typography>
                   </Box>
                   <Box display="flex" alignItems="center" gap={1.2}>
-                    <MapPin size={18} color="#10B981" />
+                    <MapPin size={18} color="#F97316" />
                     <Typography variant="body2" color="#475569">
                       Floor {activeRoom.floor}, {activeRoom.location}
                     </Typography>
@@ -260,7 +260,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                       key={idx}
                       icon={getFacilityIcon(fac)}
                       label={fac}
-                      sx={{ bgcolor: "#ECFDF5", color: "#047857", fontWeight: 700, borderRadius: "8px" }}
+                      sx={{ bgcolor: "#FFF7ED", color: "#C2410C", fontWeight: 700, borderRadius: "8px" }}
                     />
                   ))}
                 </Box>
@@ -280,7 +280,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                 }}
               >
                 <Typography variant="subtitle2" fontWeight={800} color="#1E293B" mb={1.5} display="flex" alignItems="center" gap={1}>
-                  <Calendar size={16} color="#10B981" /> Today's Schedule
+                  <Calendar size={16} color="#F97316" /> Today's Schedule
                 </Typography>
 
                 {(!activeRoom.today_schedule || activeRoom.today_schedule.length === 0) ? (
@@ -304,7 +304,7 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
                         <Typography variant="subtitle2" fontWeight={800} color="#1E293B">
                           {slot.title}
                         </Typography>
-                        <Typography variant="caption" color="#10B981" fontWeight={700} display="block" my={0.3}>
+                        <Typography variant="caption" color="#F97316" fontWeight={700} display="block" my={0.3}>
                           {new Date(slot.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – {new Date(slot.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </Typography>
                         <Typography variant="caption" color="#64748B">
@@ -349,8 +349,8 @@ export default function RoomDetailsModal({ room, booking, open, onClose, onBookR
             sx={{
               borderRadius: "10px",
               fontWeight: 700,
-              bgcolor: "#10B981",
-              "&:hover": { bgcolor: "#059669" },
+              bgcolor: "#F97316",
+              "&:hover": { bgcolor: "#EA580C" },
               px: 3,
             }}
           >

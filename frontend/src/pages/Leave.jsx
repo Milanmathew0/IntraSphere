@@ -279,13 +279,13 @@ export default function Leave() {
               borderRadius: "10px",
               px: 2.5,
               py: 1,
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               textTransform: "none",
               fontWeight: 700,
               fontSize: "0.88rem",
-              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-              "&:hover": { bgcolor: "#059669" },
+              boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
+              "&:hover": { bgcolor: "#EA580C" },
             }}
           >
             Apply for Leave
@@ -317,7 +317,7 @@ export default function Leave() {
                 minHeight: 42,
                 color: "#64748B",
                 "&.Mui-selected": {
-                  color: "#10B981",
+                  color: "#F97316",
                 },
               },
             }}
@@ -388,8 +388,8 @@ export default function Leave() {
                         boxShadow: "0 4px 16px rgba(0, 0, 0, 0.02)",
                         transition: "all 0.2s ease",
                         "&:hover": {
-                          borderColor: "#10B981",
-                          boxShadow: "0 6px 20px rgba(16, 185, 129, 0.08)",
+                          borderColor: "#F97316",
+                          boxShadow: "0 6px 20px rgba(249, 115, 22, 0.08)",
                         },
                       }}
                     >
@@ -406,9 +406,9 @@ export default function Leave() {
                           label={`FY ${b.year}`}
                           size="small"
                           sx={{
-                            bgcolor: "#ECFDF5",
-                            color: "#047857",
-                            border: "1px solid #A7F3D0",
+                            bgcolor: "#FFF7ED",
+                            color: "#C2410C",
+                            border: "1px solid #FFEDD5",
                             fontWeight: 700,
                             fontSize: "0.72rem",
                           }}
@@ -430,7 +430,7 @@ export default function Leave() {
                           borderRadius: 3,
                           bgcolor: "#F1F5F9",
                           "& .MuiLinearProgress-bar": {
-                            bgcolor: percent > 25 ? "#10B981" : "#EF4444",
+                            bgcolor: percent > 25 ? "#F97316" : "#EF4444",
                             borderRadius: 3,
                           },
                         }}
@@ -460,12 +460,12 @@ export default function Leave() {
                         fontWeight: 700,
                         textTransform: "none",
                         fontSize: "0.82rem",
-                        bgcolor: isSelected ? "#10B981" : "#F8FAFC",
+                        bgcolor: isSelected ? "#F97316" : "#F8FAFC",
                         color: isSelected ? "#FFFFFF" : "#475569",
-                        border: isSelected ? "1px solid #10B981" : "1px solid #E2E8F0",
-                        boxShadow: isSelected ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                        border: isSelected ? "1px solid #F97316" : "1px solid #E2E8F0",
+                        boxShadow: isSelected ? "0 4px 12px rgba(249, 115, 22, 0.3)" : "none",
                         "&:hover": {
-                          bgcolor: isSelected ? "#059669" : "#F1F5F9",
+                          bgcolor: isSelected ? "#EA580C" : "#F1F5F9",
                         },
                       }}
                     >
@@ -479,7 +479,7 @@ export default function Leave() {
             {/* LEAVE CARDS GROUPED BY MONTH */}
             {loading ? (
               <Box display="flex" justifyContent="center" py={6}>
-                <CircularProgress size={36} sx={{ color: "#10B981" }} />
+                <CircularProgress size={36} sx={{ color: "#F97316" }} />
               </Box>
             ) : Object.keys(groupedRequests).length === 0 ? (
               <Paper elevation={0} sx={{ p: 6, textAlign: "center", borderRadius: "16px", border: "1px solid #E2E8F0", bgcolor: "#FFFFFF" }}>
@@ -514,8 +514,8 @@ export default function Leave() {
                             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.02)",
                             transition: "all 0.2s ease",
                             "&:hover": {
-                              borderColor: "#10B981",
-                              boxShadow: "0 4px 20px rgba(16, 185, 129, 0.08)",
+                              borderColor: "#F97316",
+                              boxShadow: "0 4px 20px rgba(249, 115, 22, 0.08)",
                             },
                           }}
                         >
@@ -541,12 +541,12 @@ export default function Leave() {
                                   label={req.leave_type_name}
                                   size="small"
                                   sx={{
-                                    bgcolor: "#ECFDF5",
-                                    color: "#047857",
+                                    bgcolor: "#FFF7ED",
+                                    color: "#C2410C",
                                     fontWeight: 700,
                                     fontSize: "0.75rem",
                                     height: 22,
-                                    border: "1px solid #A7F3D0",
+                                    border: "1px solid #FFEDD5",
                                   }}
                                 />
                                 {req.is_half_day && (
@@ -589,7 +589,7 @@ export default function Leave() {
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  color: "#10B981",
+                                  color: "#F97316",
                                 }}
                               >
                                 <ChevronRight size={18} />
@@ -635,9 +635,9 @@ export default function Leave() {
               <Chip
                 label={`${pendingApprovals.length} Pending`}
                 sx={{
-                  bgcolor: "#ECFDF5",
-                  color: "#047857",
-                  border: "1px solid #A7F3D0",
+                  bgcolor: "#FFF7ED",
+                  color: "#C2410C",
+                  border: "1px solid #FFEDD5",
                   fontWeight: 800,
                 }}
               />
@@ -645,7 +645,7 @@ export default function Leave() {
 
             {pendingApprovals.length === 0 ? (
               <Box textAlign="center" py={6}>
-                <CheckCircle2 size={40} color="#10B981" style={{ marginBottom: 12 }} />
+                <CheckCircle2 size={40} color="#F97316" style={{ marginBottom: 12 }} />
                 <Typography variant="h6" fontWeight={700} color="#0F172A">
                   No pending approvals
                 </Typography>
@@ -712,9 +712,9 @@ export default function Leave() {
                             borderRadius: "8px",
                             textTransform: "none",
                             fontWeight: 700,
-                            bgcolor: "#10B981",
+                            bgcolor: "#F97316",
                             color: "#FFFFFF",
-                            "&:hover": { bgcolor: "#059669" },
+                            "&:hover": { bgcolor: "#EA580C" },
                           }}
                         >
                           Review Request

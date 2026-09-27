@@ -26,8 +26,8 @@ export default function AdminAnalytics({ data, loading }) {
             width: 36,
             height: 36,
             borderRadius: 2,
-            bgcolor: "#ECFDF5",
-            color: "#10B981",
+            bgcolor: "#FFF7ED",
+            color: "#F97316",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -68,14 +68,14 @@ export default function AdminAnalytics({ data, loading }) {
                         <Typography variant="body2" fontWeight={600} color="#1E293B">
                           {d.department}
                         </Typography>
-                        <Typography variant="body2" fontWeight={700} color="#10B981">
+                        <Typography variant="body2" fontWeight={700} color="#F97316">
                           {d.count} employees
                         </Typography>
                       </Box>
                       <LinearProgress
                         variant="determinate"
                         value={pct}
-                        sx={{ height: 8, borderRadius: 4, bgcolor: "#F1F5F9", "& .MuiLinearProgress-bar": { bgcolor: "#10B981" } }}
+                        sx={{ height: 8, borderRadius: 4, bgcolor: "#F1F5F9", "& .MuiLinearProgress-bar": { bgcolor: "#F97316" } }}
                       />
                     </Box>
                   );
@@ -147,7 +147,7 @@ export default function AdminAnalytics({ data, loading }) {
                     <Typography variant="body2" fontWeight={700} color="#1E293B">
                       {lt.name}
                     </Typography>
-                    <Typography variant="subtitle2" fontWeight={800} color="#047857">
+                    <Typography variant="subtitle2" fontWeight={800} color="#C2410C">
                       {lt.count} requests
                     </Typography>
                   </Paper>

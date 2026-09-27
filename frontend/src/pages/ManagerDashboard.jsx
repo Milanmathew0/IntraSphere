@@ -181,13 +181,13 @@ export default function ManagerDashboard() {
               borderRadius: "10px",
               px: 2.5,
               py: 1,
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               textTransform: "none",
               fontWeight: 700,
               fontSize: "0.88rem",
-              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-              "&:hover": { bgcolor: "#059669" },
+              boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
+              "&:hover": { bgcolor: "#EA580C" },
             }}
           >
             Add Employee

@@ -116,7 +116,7 @@ export default function EmployeeNotifications({ onUnreadCountChange }) {
               sx={{
                 fontWeight: 700,
                 fontSize: "0.75rem",
-                color: "#10B981",
+                color: "#F97316",
                 textTransform: "none",
               }}
             >
@@ -159,7 +159,7 @@ export default function EmployeeNotifications({ onUnreadCountChange }) {
                   p: 1.8,
                   borderRadius: "14px",
                   bgcolor: isRead ? "#FFFFFF" : "#F0F7FF",
-                  border: isRead ? "1px solid #E2E8F0" : "1px solid #A7F3D0",
+                  border: isRead ? "1px solid #E2E8F0" : "1px solid #FFEDD5",
                   transition: "all 0.2s ease",
                   display: "flex",
                   alignItems: "flex-start",
@@ -184,7 +184,7 @@ export default function EmployeeNotifications({ onUnreadCountChange }) {
                           height: 18,
                           fontSize: "0.62rem",
                           fontWeight: 800,
-                          bgcolor: "#10B981",
+                          bgcolor: "#F97316",
                           color: "#FFFFFF",
                           borderRadius: "4px",
                           "& .MuiChip-label": { px: 0.6 },
@@ -214,7 +214,7 @@ export default function EmployeeNotifications({ onUnreadCountChange }) {
                     <IconButton
                       size="small"
                       onClick={() => handleMarkAsRead(item._id || item.id)}
-                      sx={{ color: "#10B981", p: 0.5 }}
+                      sx={{ color: "#F97316", p: 0.5 }}
                     >
                       <MarkEmailRead fontSize="small" />
                     </IconButton>

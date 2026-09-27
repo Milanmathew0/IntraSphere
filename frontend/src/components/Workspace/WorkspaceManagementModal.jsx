@@ -147,7 +147,7 @@ export default function WorkspaceManagementModal({ open, onClose, deskToEdit, on
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth paperProps={{ sx: { borderRadius: "20px" } }}>
       <DialogTitle sx={{ m: 0, p: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Wrench size={22} color="#10B981" />
+          <Wrench size={22} color="#F97316" />
           <Typography variant="h6" fontWeight={800} color="#09090B">
             {isEdit ? `Edit Desk ${deskToEdit.desk_code}` : "Add New Workspace Desk"}
           </Typography>
@@ -320,13 +320,13 @@ export default function WorkspaceManagementModal({ open, onClose, deskToEdit, on
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <CheckCircle2 size={18} />}
             sx={{
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               fontWeight: 700,
               textTransform: "none",
               borderRadius: "10px",
               boxShadow: "none",
-              "&:hover": { bgcolor: "#059669" },
+              "&:hover": { bgcolor: "#EA580C" },
             }}
           >
             {submitting ? "Saving..." : isEdit ? "Update Desk" : "Create Desk"}

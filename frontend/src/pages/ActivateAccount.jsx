@@ -136,8 +136,8 @@ export default function ActivateAccount() {
           sx={{
             width: 64,
             height: 64,
-            bgcolor: success ? "#E6F4EA" : "#ECFDF5",
-            color: success ? "#10B981" : "#10B981",
+            bgcolor: success ? "#E6F4EA" : "#FFF7ED",
+            color: success ? "#F97316" : "#F97316",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
@@ -210,11 +210,11 @@ export default function ActivateAccount() {
               sx={{
                 py: 1.5,
                 borderRadius: "12px",
-                bgcolor: "#10B981",
+                bgcolor: "#F97316",
                 fontWeight: 700,
                 fontSize: "1rem",
                 textTransform: "none",
-                "&:hover": { bgcolor: "#059669" }
+                "&:hover": { bgcolor: "#EA580C" }
               }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Activate My Account"}
@@ -267,11 +267,11 @@ export default function ActivateAccount() {
                 sx={{
                   py: 1.25,
                   borderRadius: "10px",
-                  borderColor: "#10B981",
-                  color: "#10B981",
+                  borderColor: "#F97316",
+                  color: "#F97316",
                   fontWeight: 600,
                   textTransform: "none",
-                  "&:hover": { bgcolor: "#ECFDF5", borderColor: "#059669" }
+                  "&:hover": { bgcolor: "#FFF7ED", borderColor: "#EA580C" }
                 }}
               >
                 {resendLoading ? "Sending..." : "Resend Activation Email"}

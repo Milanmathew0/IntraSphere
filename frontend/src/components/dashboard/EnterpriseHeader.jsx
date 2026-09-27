@@ -141,7 +141,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
         position="static"
         elevation={0}
         sx={{
-          background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #047857 100%)",
+          background: "linear-gradient(135deg, #022C22 0%, #064E3B 60%, #C2410C 100%)",
           color: "#FFFFFF",
           py: 0.5,
           boxShadow: "0 6px 22px rgba(2, 44, 34, 0.2)",
@@ -156,11 +156,11 @@ export default function EnterpriseHeader({ user, onLogout }) {
                   width: 38,
                   height: 38,
                   borderRadius: "12px",
-                  background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+                  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.4)",
+                  boxShadow: "0 4px 12px rgba(249, 115, 22, 0.4)",
                 }}
               >
                 <ShieldCheck size={22} color="#FFFFFF" />
@@ -188,7 +188,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
                   backdropFilter: "blur(8px)",
                 }}
               >
-                <Clock size={16} color="#10B981" />
+                <Clock size={16} color="#F97316" />
                 <Typography variant="body2" fontWeight={700} color="#FFFFFF">
                   {currentTimeStr}
                 </Typography>
@@ -269,7 +269,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
               size="small"
               sx={{
                 bgcolor: unreadCount > 0 ? "#FFEBEE" : "#E6F4EA",
-                color: unreadCount > 0 ? "#C62828" : "#059669",
+                color: unreadCount > 0 ? "#C62828" : "#EA580C",
                 fontWeight: 700,
                 height: 20,
                 fontSize: "0.68rem",
@@ -310,9 +310,9 @@ export default function EnterpriseHeader({ user, onLogout }) {
                     {item.title?.includes("Cancelled") ? (
                       <AlertTriangle size={18} color="#DC2626" />
                     ) : item.title?.includes("Confirmed") ? (
-                      <CheckCircle2 size={18} color="#10B981" />
+                      <CheckCircle2 size={18} color="#F97316" />
                     ) : (
-                      <Info size={18} color="#059669" />
+                      <Info size={18} color="#EA580C" />
                     )}
                   </ListItemIcon>
                   <ListItemText
@@ -403,7 +403,7 @@ export default function EnterpriseHeader({ user, onLogout }) {
                       {item.title?.includes("Cancelled") ? (
                         <AlertTriangle size={20} color="#DC2626" />
                       ) : (
-                        <Info size={20} color="#10B981" />
+                        <Info size={20} color="#F97316" />
                       )}
                     </Box>
                     <Box flexGrow={1}>

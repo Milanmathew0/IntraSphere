@@ -76,7 +76,7 @@ export default function DeskDetailsModal({ open, onClose, desk, onReserve }) {
       <DialogContent sx={{ p: 3 }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
-            <CircularProgress size={36} sx={{ color: "#10B981" }} />
+            <CircularProgress size={36} sx={{ color: "#F97316" }} />
           </Box>
         ) : (
           <Stack spacing={3}>
@@ -128,7 +128,7 @@ export default function DeskDetailsModal({ open, onClose, desk, onReserve }) {
                   activeData.facilities.map((fac, i) => (
                     <Grid item xs={6} key={i}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <CheckCircle2 size={16} color="#10B981" />
+                        <CheckCircle2 size={16} color="#F97316" />
                         <Typography variant="body2" fontWeight={600} color="#27272A">
                           {fac}
                         </Typography>
@@ -146,8 +146,8 @@ export default function DeskDetailsModal({ open, onClose, desk, onReserve }) {
                 {activeData.is_accessible && (
                   <Grid item xs={6}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Accessibility size={16} color="#10B981" />
-                      <Typography variant="body2" fontWeight={700} color="#10B981">
+                      <Accessibility size={16} color="#F97316" />
+                      <Typography variant="body2" fontWeight={700} color="#F97316">
                         Wheelchair Accessible
                       </Typography>
                     </Box>
@@ -172,22 +172,22 @@ export default function DeskDetailsModal({ open, onClose, desk, onReserve }) {
                       sx={{
                         p: 1.5,
                         borderRadius: "10px",
-                        bgcolor: "#ECFDF5",
-                        border: "1px solid #A7F3D0",
+                        bgcolor: "#FFF7ED",
+                        border: "1px solid #FFEDD5",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                       }}
                     >
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Clock size={16} color="#047857" />
-                        <Typography variant="body2" fontWeight={700} color="#047857">
+                        <Clock size={16} color="#C2410C" />
+                        <Typography variant="body2" fontWeight={700} color="#C2410C">
                           {new Date(sched.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           {" - "}
                           {new Date(sched.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </Typography>
                       </Box>
-                      <Chip label={sched.purpose || "Reserved"} size="small" sx={{ bgcolor: "#A7F3D0", color: "#047857", fontWeight: 700 }} />
+                      <Chip label={sched.purpose || "Reserved"} size="small" sx={{ bgcolor: "#FFEDD5", color: "#C2410C", fontWeight: 700 }} />
                     </Box>
                   ))}
                 </Stack>
@@ -229,13 +229,13 @@ export default function DeskDetailsModal({ open, onClose, desk, onReserve }) {
           }}
           startIcon={<CalendarCheck size={18} />}
           sx={{
-            bgcolor: "#10B981",
+            bgcolor: "#F97316",
             color: "#FFFFFF",
             fontWeight: 700,
             textTransform: "none",
             borderRadius: "10px",
             boxShadow: "none",
-            "&:hover": { bgcolor: "#059669" },
+            "&:hover": { bgcolor: "#EA580C" },
           }}
         >
           Reserve Desk

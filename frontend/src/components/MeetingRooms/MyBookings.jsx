@@ -83,7 +83,7 @@ export default function MyBookings({ showToast }) {
   const getStatusChip = (st) => {
     switch (st) {
       case "Confirmed":
-        return <Chip size="small" label="Confirmed" sx={{ bgcolor: "#ECFDF5", color: "#047857", fontWeight: 700 }} />;
+        return <Chip size="small" label="Confirmed" sx={{ bgcolor: "#FFF7ED", color: "#C2410C", fontWeight: 700 }} />;
       case "Completed":
         return <Chip size="small" label="Completed" sx={{ bgcolor: "rgba(46, 125, 50, 0.1)", color: "#2E7D32", fontWeight: 700 }} />;
       case "Cancelled":
@@ -119,7 +119,7 @@ export default function MyBookings({ showToast }) {
 
       {loading ? (
         <Box display="flex" justifyContent="center" py={5}>
-          <CircularProgress size={32} sx={{ color: "#10B981" }} />
+          <CircularProgress size={32} sx={{ color: "#F97316" }} />
         </Box>
       ) : filteredBookings.length === 0 ? (
         <Box textAlign="center" py={6}>
@@ -169,7 +169,7 @@ export default function MyBookings({ showToast }) {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={700} color="#10B981">
+                    <Typography variant="body2" fontWeight={700} color="#F97316">
                       {startDt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </Typography>
                     <Typography variant="caption" color="#64748B">

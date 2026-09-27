@@ -134,13 +134,13 @@ export default function MeetingRooms() {
               borderRadius: "10px",
               px: 2.5,
               py: 1,
-              bgcolor: "#10B981",
+              bgcolor: "#F97316",
               color: "#FFFFFF",
               textTransform: "none",
               fontWeight: 700,
               fontSize: "0.88rem",
-              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
-              "&:hover": { bgcolor: "#059669" },
+              boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
+              "&:hover": { bgcolor: "#EA580C" },
             }}
           >
             Book a Room
@@ -182,7 +182,7 @@ export default function MeetingRooms() {
               <Typography variant="caption" fontWeight={700} color="#64748B">
                 BOOKED TODAY
               </Typography>
-              <Clock size={16} color="#10B981" />
+              <Clock size={16} color="#F97316" />
             </Box>
             <Typography variant="h4" fontWeight={800} color="#0F172A">
               {stats.booked_today}
@@ -198,7 +198,7 @@ export default function MeetingRooms() {
               <Typography variant="caption" fontWeight={700} color="#64748B">
                 MY UPCOMING
               </Typography>
-              <Calendar size={16} color="#10B981" />
+              <Calendar size={16} color="#F97316" />
             </Box>
             <Typography variant="h4" fontWeight={800} color="#0F172A">
               {stats.my_upcoming}
@@ -214,7 +214,7 @@ export default function MeetingRooms() {
               <Typography variant="caption" fontWeight={700} color="#64748B">
                 TOTAL ROOMS
               </Typography>
-              <Building size={16} color="#10B981" />
+              <Building size={16} color="#F97316" />
             </Box>
             <Typography variant="h4" fontWeight={800} color="#0F172A">
               {stats.total_rooms}
@@ -243,7 +243,7 @@ export default function MeetingRooms() {
                 minHeight: 42,
                 color: "#64748B",
                 "&.Mui-selected": {
-                  color: "#10B981",
+                  color: "#F97316",
                 },
               },
             }}
@@ -348,7 +348,7 @@ export default function MeetingRooms() {
             {/* Room Cards Grid */}
             {loading ? (
               <Box display="flex" justifyContent="center" py={8}>
-                <CircularProgress size={40} sx={{ color: "#10B981" }} />
+                <CircularProgress size={40} sx={{ color: "#F97316" }} />
               </Box>
             ) : rooms.length === 0 ? (
               <Box textAlign="center" py={8}>
@@ -424,7 +424,7 @@ export default function MeetingRooms() {
                 variant="contained"
                 startIcon={<Plus size={16} />}
                 onClick={() => setRoomMgmtModal({ open: true, room: null })}
-                sx={{ borderRadius: "10px", fontWeight: 700, bgcolor: "#10B981", color: "#FFFFFF", "&:hover": { bgcolor: "#059669" } }}
+                sx={{ borderRadius: "10px", fontWeight: 700, bgcolor: "#F97316", color: "#FFFFFF", "&:hover": { bgcolor: "#EA580C" } }}
               >
                 Add New Room
               </Button>

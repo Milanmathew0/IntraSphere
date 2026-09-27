@@ -62,7 +62,7 @@ export function LeaveApplicationCard() {
       endDate: "12/12/2026",
       duration: "14 hours",
       status: "Approved",
-      statusColor: "#10B981",
+      statusColor: "#F97316",
     },
     {
       id: "2",
@@ -80,7 +80,7 @@ export function LeaveApplicationCard() {
       endDate: "07/02/2027",
       duration: "5 hours",
       status: "Approved",
-      statusColor: "#10B981",
+      statusColor: "#F97316",
     },
   ]);
 
@@ -103,12 +103,12 @@ export function LeaveApplicationCard() {
   const getStatusColor = (status) => {
     switch (status) {
       case "Approved":
-        return "#10B981"; // Green
+        return "#F97316"; // Green
       case "Pending":
         return "#F59E0B"; // Amber
       case "Declined":
       case "Rejected":
-        return "#059669"; // Blue/Red
+        return "#EA580C"; // Blue/Red
       case "Cancelled":
         return "#71717A"; // Gray
       default:

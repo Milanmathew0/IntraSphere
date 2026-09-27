@@ -20,7 +20,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #F4F7F5;
+  background-color: #FAF8F5;
   color: #0F172A;
   overflow-x: hidden;
   font-family: var(--font-sans);
@@ -35,7 +35,7 @@ html, body {
 
 /* Custom Text Selection Highlight */
 ::selection {
-  background-color: rgba(16, 185, 129, 0.25);
+  background-color: rgba(249, 115, 22, 0.25);
   color: #0F172A;
 }
 

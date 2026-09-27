@@ -108,8 +108,8 @@ export default function RecentAnnouncements() {
               transition: "all 0.2s ease",
               "&:hover": {
                 bgcolor: "#FFFFFF",
-                borderColor: "#10B981",
-                boxShadow: "0 4px 14px rgba(16, 185, 129, 0.1)",
+                borderColor: "#F97316",
+                boxShadow: "0 4px 14px rgba(249, 115, 22, 0.1)",
               },
             }}
           >

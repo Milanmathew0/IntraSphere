@@ -91,11 +91,11 @@ export default function MeetingRoomOverview({ data, loading }) {
                 </Paper>
               </Grid>
               <Grid item xs={2.4}>
-                <Paper elevation={0} sx={{ p: 1, textAlign: "center", bgcolor: "#ECFDF5", borderRadius: 2 }}>
+                <Paper elevation={0} sx={{ p: 1, textAlign: "center", bgcolor: "#FFF7ED", borderRadius: 2 }}>
                   <Typography variant="caption" color="text.secondary" fontWeight={600}>
                     Bookings
                   </Typography>
-                  <Typography variant="subtitle1" fontWeight={800} color="#10B981">
+                  <Typography variant="subtitle1" fontWeight={800} color="#F97316">
                     {mr.bookings_today ?? 0}
                   </Typography>
                 </Paper>
@@ -157,8 +157,8 @@ export default function MeetingRoomOverview({ data, loading }) {
             endIcon={<ArrowForwardIcon />}
             onClick={() => navigate("/meeting-rooms")}
             sx={{
-              bgcolor: "#10B981",
-              "&:hover": { bgcolor: "#059669" },
+              bgcolor: "#F97316",
+              "&:hover": { bgcolor: "#EA580C" },
               borderRadius: 2,
               textTransform: "none",
               fontWeight: 700,

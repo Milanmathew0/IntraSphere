@@ -136,7 +136,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                 borderRadius: "12px",
                 textTransform: "none",
                 fontWeight: 700,
-                color: "#059669",
+                color: "#EA580C",
                 borderColor: "rgba(59, 130, 246, 0.4)",
                 "&:hover": { bgcolor: "rgba(59, 130, 246, 0.08)" },
               }}
@@ -152,8 +152,8 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                 borderRadius: "12px",
                 textTransform: "none",
                 fontWeight: 700,
-                background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                background: "linear-gradient(135deg, #EA580C 0%, #C2410C 100%)",
+                boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
                 color: "#FFFFFF",
               }}
             >
@@ -183,8 +183,8 @@ export default function EmployeeDirectoryWidget({ showToast }) {
             "& .MuiOutlinedInput-root": {
               borderRadius: "14px",
               bgcolor: "#FFFFFF",
-              "&:hover fieldset": { borderColor: "#059669" },
-              "&.Mui-focused fieldset": { borderColor: "#047857" },
+              "&:hover fieldset": { borderColor: "#EA580C" },
+              "&.Mui-focused fieldset": { borderColor: "#C2410C" },
             },
           }}
         />
@@ -192,7 +192,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
         {/* Body Content */}
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 6 }}>
-            <CircularProgress size={32} sx={{ color: "#059669" }} />
+            <CircularProgress size={32} sx={{ color: "#EA580C" }} />
           </Box>
         ) : error ? (
           <Alert severity="error" sx={{ borderRadius: "14px" }}>
@@ -235,7 +235,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                       transition: "all 0.25s ease",
                       "&:hover": {
                         transform: "translateY(-3px)",
-                        boxShadow: "0 8px 22px rgba(16, 185, 129, 0.12)",
+                        boxShadow: "0 8px 22px rgba(249, 115, 22, 0.12)",
                         borderColor: "#93C5FD",
                       },
                     }}
@@ -246,11 +246,11 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                           sx={{
                             width: 42,
                             height: 42,
-                            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                            background: "linear-gradient(135deg, #EA580C 0%, #C2410C 100%)",
                             color: "#FFFFFF",
                             fontWeight: 800,
                             fontSize: "1rem",
-                            boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)",
+                            boxShadow: "0 4px 12px rgba(249, 115, 22, 0.25)",
                           }}
                         >
                           {initial}
@@ -270,7 +270,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
                         size="small"
                         sx={{
                           bgcolor: emp.employment_status === "Inactive" ? "#FEE2E2" : "#E6F4EA",
-                          color: emp.employment_status === "Inactive" ? "#DC2626" : "#059669",
+                          color: emp.employment_status === "Inactive" ? "#DC2626" : "#EA580C",
                           fontWeight: 700,
                           fontSize: "0.68rem",
                           height: 22,
@@ -282,7 +282,7 @@ export default function EmployeeDirectoryWidget({ showToast }) {
 
                     <Stack spacing={1}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Briefcase size={14} color="#059669" />
+                        <Briefcase size={14} color="#EA580C" />
                         <Typography variant="caption" color="#334155" fontWeight={600}>
                           {emp.designation || emp.role || "Staff Member"}
                         </Typography>

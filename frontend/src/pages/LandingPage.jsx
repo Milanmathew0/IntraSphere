@@ -640,8 +640,8 @@ export default function LandingPage() {
         </Grid>
       </Container>
 
-      {/* 4. PLATFORM FEATURES SECTION */}
-      <Container maxWidth="lg" sx={{ mb: 10 }}>
+      {/* 4. PLATFORM FEATURES SECTION (3x3 CARDS GRID) */}
+      <Container maxWidth="xl" sx={{ mb: 10 }}>
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography variant="caption" fontWeight={800} color="#F97316" letterSpacing={1.2} display="block" mb={1}>
             PLATFORM CAPABILITIES
@@ -649,12 +649,12 @@ export default function LandingPage() {
           <Typography variant="h3" fontWeight={800} color="#0F172A" letterSpacing={-0.5} mb={2}>
             Built for Modern Smart Workplaces
           </Typography>
-          <Typography variant="body1" color="#64748B" sx={{ maxWidth: 600, mx: "auto" }}>
-            Everything you need to reserve desks, manage meeting rooms, track attendance, and oversee office operations.
+          <Typography variant="body1" color="#64748B" sx={{ maxWidth: 650, mx: "auto" }}>
+            Comprehensive enterprise tools to reserve desks, manage meeting rooms, track attendance, and oversee office operations.
           </Typography>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3.5}>
           {[
             {
               title: "Smart Workspace & Desk Reservation",
@@ -692,25 +692,46 @@ export default function LandingPage() {
               icon: <BarChart3 size={26} color="#00796B" />,
               bg: "#E0F2F1",
             },
+            {
+              title: "Employee Directory & Department Tags",
+              desc: "Centralized workforce search across engineering, product, HR, sales, and executive management teams.",
+              icon: <Layers size={26} color="#2563EB" />,
+              bg: "#EFF6FF",
+            },
+            {
+              title: "Real-time Facility Analytics & Floor Maps",
+              desc: "Comprehensive facility utilization reports, active booth statuses, and maintenance ticketing.",
+              icon: <MonitorCheck size={26} color="#059669" />,
+              bg: "#ECFDF5",
+            },
+            {
+              title: "Role-Based Portal Access Control",
+              desc: "Tailored user experiences for Employees, Managers, HR Specialists, Facility Managers, and Administrators.",
+              icon: <Lock size={26} color="#D97706" />,
+              bg: "#FEF3C7",
+            },
           ].map((feature, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
               <Card
                 elevation={0}
                 sx={{
                   height: "100%",
-                  borderRadius: "18px",
-                  p: 1,
+                  borderRadius: "20px",
+                  p: 0.5,
                   bgcolor: "#FFFFFF",
                   border: "1px solid #E2E8F0",
-                  transition: "all 0.25s ease",
+                  transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                   "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+                    transform: "translateY(-5px)",
+                    boxShadow: "0 14px 32px rgba(15, 23, 42, 0.08)",
                     borderColor: "#CBD5E1",
                   },
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 3, flexGrow: 1 }}>
                   <Box
                     sx={{
                       width: 52,
@@ -725,7 +746,7 @@ export default function LandingPage() {
                   >
                     {feature.icon}
                   </Box>
-                  <Typography variant="h6" fontWeight={800} color="#0F172A" mb={1}>
+                  <Typography variant="h6" fontWeight={800} color="#0F172A" mb={1} sx={{ fontSize: "1.05rem" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="#64748B" sx={{ lineHeight: 1.6 }}>

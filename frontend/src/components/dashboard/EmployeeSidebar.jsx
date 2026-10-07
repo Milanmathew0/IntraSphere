@@ -18,6 +18,7 @@ import {
 import {
   Home,
   EventAvailable,
+  TrendingUp,
   FlightTakeoff,
   Groups,
   Desk,
@@ -45,7 +46,7 @@ export default function EmployeeSidebar({
   const { user, logout } = useAuth();
 
   const employeeName = user?.username || user?.email?.split("@")[0] || "Employee";
-  const employeeRole = user?.role || "Employee";
+  const employeeRole = user?.role || localStorage.getItem("role") || "Employee";
   const userInitials = employeeName
     .split(" ")
     .map((n) => n[0])
@@ -53,21 +54,94 @@ export default function EmployeeSidebar({
     .substring(0, 2)
     .toUpperCase();
 
-  const baseSections = [
-    { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
-    { label: "My Attendance", route: "/attendance", icon: <EventAvailable fontSize="small" />, tabId: "attendance" },
-    { label: "Leave Application", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
-    { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
-    { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
-    { label: "Employee Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" },
-    { label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" },
-    { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
-    { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
-    { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
-    { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" }
-  ];
+  const getRoleSidebarSections = (role) => {
+    switch (role) {
+      case "Admin":
+        return {
+          portalLabel: "Admin Portal",
+          sections: [
+            { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
+            { label: "Employee Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" },
+            { label: "Performance & Punctuality", route: "/performance-overview", icon: <TrendingUp fontSize="small" />, tabId: "performance" },
+            { label: "Leave Management", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
+            { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
+            { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+            { label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" },
+            { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
+            { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+            { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
+          ],
+        };
 
-  const sidebarSections = baseSections;
+      case "Manager":
+        return {
+          portalLabel: "Manager Portal",
+          sections: [
+            { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
+            { label: "Team Attendance", route: "/attendance", icon: <EventAvailable fontSize="small" />, tabId: "attendance" },
+            { label: "Performance & Punctuality", route: "/performance-overview", icon: <TrendingUp fontSize="small" />, tabId: "performance" },
+            { label: "Leave Approvals", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
+            { label: "Staff Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" },
+            { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
+            { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+            { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
+            { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
+            { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+            { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
+          ],
+        };
+
+      case "Facility Manager":
+        return {
+          portalLabel: "Facility Portal",
+          sections: [
+            { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
+            { label: "Facility Management", route: "/facility-management", icon: <Desk fontSize="small" />, tabId: "facility" },
+            { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
+            { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+            { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
+            { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
+            { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+            { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
+          ],
+        };
+
+      case "User":
+        return {
+          portalLabel: "User Portal",
+          sections: [
+            { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
+            { label: "Company Directory", route: "/employees", icon: <Groups fontSize="small" />, tabId: "employees" },
+            { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
+            { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+            { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
+            { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
+            { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+            { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
+          ],
+        };
+
+      case "Employee":
+      case "HR":
+      default:
+        return {
+          portalLabel: role === "HR" ? "HR Portal" : "Employee Portal",
+          sections: [
+            { label: "Dashboard", route: "/dashboard", icon: <Home fontSize="small" />, tabId: "dashboard" },
+            { label: "My Attendance", route: "/attendance", icon: <EventAvailable fontSize="small" />, tabId: "attendance" },
+            { label: "Leave Application", route: "/leave", icon: <FlightTakeoff fontSize="small" />, tabId: "leave" },
+            { label: "Meeting Rooms", route: "/meeting-rooms", icon: <Groups fontSize="small" />, tabId: "meeting-rooms" },
+            { label: "Workspace Booking", route: "/workspaces", icon: <Desk fontSize="small" />, tabId: "workspaces" },
+            { label: "My Bookings", route: "/my-bookings", icon: <Bookmark fontSize="small" />, tabId: "my-bookings" },
+            { label: "Announcements", route: "/announcements", icon: <Campaign fontSize="small" />, tabId: "announcements" },
+            { label: "Notifications", route: "/notifications", icon: <Notifications fontSize="small" />, tabId: "notifications" },
+            { label: "My Profile", route: "/profile", icon: <PersonOutlined fontSize="small" />, tabId: "profile" },
+          ],
+        };
+    }
+  };
+
+  const { portalLabel, sections: sidebarSections } = getRoleSidebarSections(employeeRole);
 
   const handleNavClick = (item) => {
     if (onTabChange) {
@@ -84,7 +158,7 @@ export default function EmployeeSidebar({
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const isItemActive = (item) => {
@@ -178,7 +252,7 @@ export default function EmployeeSidebar({
             textTransform: "uppercase",
           }}
         >
-          Employee Portal
+          {portalLabel}
         </Typography>
 
         {/* Navigation Menu List */}

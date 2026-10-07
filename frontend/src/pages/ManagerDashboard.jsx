@@ -26,7 +26,8 @@ import {
   ChevronDown,
   Search,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  TrendingUp
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
@@ -38,6 +39,8 @@ import TeamLeaveApprovalsWidget from "../components/dashboard/TeamLeaveApprovals
 import EmployeeDirectoryWidget from "../components/dashboard/EmployeeDirectoryWidget";
 import AddEmployeeModal from "../components/Employee/AddEmployeeModal";
 import UserProfileHeader from "../components/dashboard/UserProfileHeader";
+import EmployeePerformanceOverview from "../components/Admin/EmployeePerformanceOverview";
+import PunctualityReportTable from "../components/Admin/PunctualityReportTable";
 import api from "../api/axios";
 
 export default function ManagerDashboard() {
@@ -78,6 +81,12 @@ export default function ManagerDashboard() {
     },
     {
       id: 4,
+      label: "Performance & Punctuality",
+      subtitle: "Attendance trends, punctuality scores & management evaluation reports.",
+      icon: TrendingUp
+    },
+    {
+      id: 5,
       label: "Manager Profile",
       subtitle: "Manage personal profile settings and account credentials.",
       icon: Settings
@@ -385,8 +394,16 @@ export default function ManagerDashboard() {
               </Box>
             )}
 
-            {/* Tab 4: Manager Profile */}
+            {/* Tab 4: Performance & Punctuality */}
             {activeTab === 4 && (
+              <Stack spacing={3.5} sx={{ width: "100%" }}>
+                <EmployeePerformanceOverview />
+                <PunctualityReportTable />
+              </Stack>
+            )}
+
+            {/* Tab 5: Manager Profile */}
+            {activeTab === 5 && (
               <Box sx={{ width: "100%" }}>
                 <EmployeeProfileSection />
               </Box>

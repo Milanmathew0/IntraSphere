@@ -68,3 +68,11 @@ class ResourceMaintenanceStatus(BaseModel):
 
 class ReservationCancelRequest(BaseModel):
     cancellation_reason: str = Field("Cancelled by Facility Policy", min_length=3)
+
+
+class ReservationStatusUpdate(BaseModel):
+    status: str = Field(..., description="Confirmed, Pending, Cancelled, Completed")
+    purpose: Optional[str] = None
+    notes: Optional[str] = None
+    cancellation_reason: Optional[str] = None
+

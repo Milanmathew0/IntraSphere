@@ -294,6 +294,18 @@ async def update_maintenance_status(record_id: str, status_val: str, resolution_
 # MASTER UNIFIED RESERVATIONS SERVICE
 # ==========================================
 
+def format_iso_utc(dt) -> Optional[str]:
+    if dt is None:
+        return None
+    if isinstance(dt, datetime):
+        s = dt.isoformat()
+    else:
+        s = str(dt)
+    if not s.endswith("Z"):
+        s += "Z"
+    return s
+
+
 async def get_facility_reservations(
     resource_type: Optional[str] = None,
     status_filter: Optional[str] = None,
@@ -308,13 +320,8 @@ async def get_facility_reservations(
         q = {}
         if status_filter and status_filter != "All":
             q["status"] = status_filter
-        if search:
-            q["$or"] = [
-                {"title": {"$regex": search, "$options": "i"}},
-                {"organizer_name": {"$regex": search, "$options": "i"}},
-                {"organizer_email": {"$regex": search, "$options": "i"}}
-            ]
-        cursor = meeting_bookings_collection.find(q).sort("start_time", -1).limit(100)
+
+        cursor = meeting_bookings_collection.find(q).sort("start_time", -1).limit(200)
         async for b in cursor:
             # Get room details
             room = None
@@ -351,6 +358,12 @@ async def get_facility_reservations(
                 emp_dept = b.get("department", "General")
 
             res_name = (room.get("room_name") or room.get("name") if room else None) or b.get("room_name") or "Meeting Room"
+            purpose = b.get("title") or b.get("purpose") or "Team Meeting"
+
+            if search:
+                s_lower = search.lower()
+                if not (s_lower in emp_name.lower() or s_lower in emp_email.lower() or s_lower in res_name.lower() or s_lower in purpose.lower()):
+                    continue
 
             reservations.append({
                 "id": str(b["_id"]),
@@ -362,11 +375,13 @@ async def get_facility_reservations(
                 "department": emp_dept,
                 "floor": room.get("floor", 1) if room else 1,
                 "building": room.get("building") or room.get("location") or "Main Building" if room else "Main Building",
-                "start_time": b.get("start_time").isoformat() if b.get("start_time") else None,
-                "end_time": b.get("end_time").isoformat() if b.get("end_time") else None,
-                "purpose": b.get("title") or b.get("purpose") or "Team Meeting",
+                "start_time": format_iso_utc(b.get("start_time")),
+                "end_time": format_iso_utc(b.get("end_time")),
+                "purpose": purpose,
+                "notes": b.get("description") or b.get("notes") or "",
+                "cancellation_reason": b.get("cancellation_reason") or "",
                 "status": b.get("status", "Confirmed"),
-                "created_at": b.get("created_at").isoformat() if b.get("created_at") else None,
+                "created_at": format_iso_utc(b.get("created_at")),
             })
 
     # 2. Fetch Workspace Desk Reservations
@@ -374,13 +389,8 @@ async def get_facility_reservations(
         q = {}
         if status_filter and status_filter != "All":
             q["status"] = status_filter
-        if search:
-            q["$or"] = [
-                {"purpose": {"$regex": search, "$options": "i"}},
-                {"employee_name": {"$regex": search, "$options": "i"}},
-                {"employee_email": {"$regex": search, "$options": "i"}}
-            ]
-        cursor = workspace_reservations_collection.find(q).sort("start_time", -1).limit(100)
+
+        cursor = workspace_reservations_collection.find(q).sort("start_time", -1).limit(200)
         async for r in cursor:
             desk = None
             if r.get("desk_id"):
@@ -415,6 +425,12 @@ async def get_facility_reservations(
                 emp_dept = r.get("department", "General")
 
             desk_title = (desk.get("desk_code") or desk.get("name") if desk else None) or r.get("desk_code") or r.get("desk_name") or "Workspace Desk"
+            purpose = r.get("purpose") or "Daily Desk Work"
+
+            if search:
+                s_lower = search.lower()
+                if not (s_lower in emp_name.lower() or s_lower in emp_email.lower() or s_lower in desk_title.lower() or s_lower in purpose.lower()):
+                    continue
 
             reservations.append({
                 "id": str(r["_id"]),
@@ -426,11 +442,13 @@ async def get_facility_reservations(
                 "department": emp_dept,
                 "floor": desk.get("floor", 1) if desk else 1,
                 "building": desk.get("building") or desk.get("location") or "Main Building" if desk else "Main Building",
-                "start_time": r.get("start_time").isoformat() if r.get("start_time") else None,
-                "end_time": r.get("end_time").isoformat() if r.get("end_time") else None,
-                "purpose": r.get("purpose") or "Daily Desk Work",
+                "start_time": format_iso_utc(r.get("start_time")),
+                "end_time": format_iso_utc(r.get("end_time")),
+                "purpose": purpose,
+                "notes": r.get("notes") or "",
+                "cancellation_reason": r.get("cancellation_reason") or "",
                 "status": r.get("status", "Confirmed"),
-                "created_at": r.get("created_at").isoformat() if r.get("created_at") else None,
+                "created_at": format_iso_utc(r.get("created_at")),
             })
 
     # Sort all by start_time descending
@@ -522,6 +540,107 @@ async def cancel_facility_reservation(reservation_id: str, resource_type: str, c
             )
 
     return {"message": "Reservation cancelled successfully and user notified."}
+
+
+async def update_facility_reservation(reservation_id: str, resource_type: str, update_data, current_user: dict):
+    now = datetime.utcnow()
+    user_email = current_user.get("sub")
+    fm_user = await users_collection.find_one({"email": user_email})
+    sender_id = fm_user["_id"] if fm_user else None
+
+    try:
+        obj_id = ObjectId(reservation_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid reservation ID")
+
+    if resource_type == "meeting_room":
+        res = await meeting_bookings_collection.find_one({"_id": obj_id})
+        if not res:
+            raise HTTPException(status_code=404, detail="Meeting booking not found")
+
+        update_fields = {"status": update_data.status, "updated_at": now}
+        if update_data.purpose is not None:
+            update_fields["title"] = update_data.purpose
+            update_fields["purpose"] = update_data.purpose
+        if update_data.notes is not None:
+            update_fields["description"] = update_data.notes
+            update_fields["notes"] = update_data.notes
+        if update_data.cancellation_reason is not None:
+            update_fields["cancellation_reason"] = update_data.cancellation_reason
+
+        await meeting_bookings_collection.update_one({"_id": obj_id}, {"$set": update_fields})
+
+        recipient_user_id = res.get("organizer_user_id") or res.get("user_id")
+        if not recipient_user_id and res.get("organizer_employee_id"):
+            emp = await employees_collection.find_one({"_id": res["organizer_employee_id"]})
+            if emp:
+                recipient_user_id = emp.get("user_id")
+
+        if recipient_user_id:
+            await create_notification(
+                recipient_id=recipient_user_id,
+                title=f"Meeting Booking Status Updated ({update_data.status})",
+                message=f"Your meeting room reservation status has been updated to '{update_data.status}' by Facility Management.",
+                notification_type="MEETING_BOOKING",
+                sender_id=sender_id,
+                related_entity_id=obj_id
+            )
+
+    elif resource_type == "workspace":
+        res = await workspace_reservations_collection.find_one({"_id": obj_id})
+        if not res:
+            raise HTTPException(status_code=404, detail="Desk reservation not found")
+
+        update_fields = {"status": update_data.status, "updated_at": now}
+        if update_data.purpose is not None:
+            update_fields["purpose"] = update_data.purpose
+        if update_data.notes is not None:
+            update_fields["notes"] = update_data.notes
+        if update_data.cancellation_reason is not None:
+            update_fields["cancellation_reason"] = update_data.cancellation_reason
+
+        await workspace_reservations_collection.update_one({"_id": obj_id}, {"$set": update_fields})
+
+        recipient_user_id = res.get("user_id")
+        if not recipient_user_id and res.get("employee_id"):
+            emp = await employees_collection.find_one({"_id": res["employee_id"]})
+            if emp:
+                recipient_user_id = emp.get("user_id")
+
+        if recipient_user_id:
+            await create_notification(
+                recipient_id=recipient_user_id,
+                title=f"Workspace Reservation Status Updated ({update_data.status})",
+                message=f"Your workspace desk reservation status has been updated to '{update_data.status}' by Facility Management.",
+                notification_type="WORKSPACE_RESERVATION",
+                sender_id=sender_id,
+                related_entity_id=obj_id
+            )
+    else:
+        raise HTTPException(status_code=400, detail="Invalid resource_type")
+
+    return {"message": f"Reservation updated to {update_data.status}."}
+
+
+async def delete_facility_reservation(reservation_id: str, resource_type: str, current_user: dict):
+    try:
+        obj_id = ObjectId(reservation_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid reservation ID")
+
+    if resource_type == "meeting_room":
+        res = await meeting_bookings_collection.delete_one({"_id": obj_id})
+        if res.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Meeting booking not found")
+    elif resource_type == "workspace":
+        res = await workspace_reservations_collection.delete_one({"_id": obj_id})
+        if res.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Desk reservation not found")
+    else:
+        raise HTTPException(status_code=400, detail="Invalid resource_type")
+
+    return {"message": "Reservation record deleted successfully."}
+
 
 
 # ==========================================

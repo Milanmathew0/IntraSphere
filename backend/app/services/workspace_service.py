@@ -168,12 +168,8 @@ def format_iso_utc(dt) -> Optional[str]:
     if dt is None:
         return None
     if isinstance(dt, datetime):
-        s = dt.isoformat()
-    else:
-        s = str(dt)
-    if not s.endswith("Z"):
-        s += "Z"
-    return s
+        return dt.isoformat()
+    return str(dt)
 
 
 async def get_employee_from_user(user_payload: dict):
@@ -390,6 +386,13 @@ async def check_desk_availability(desk_id_str: str, start_time: datetime, end_ti
 
     if start_time >= end_time:
         raise HTTPException(status_code=400, detail="Start time must be strictly before end time.")
+
+    if start_time.time() < dtime(OFFICE_START_HOUR, 0) or end_time.time() > dtime(OFFICE_END_HOUR, 0):
+        return {
+            "available": False,
+            "reason": f"Reservation must be within office working hours ({OFFICE_START_HOUR:02d}:00 to {OFFICE_END_HOUR:02d}:00).",
+            "conflicts": []
+        }
 
     try:
         d_id = ObjectId(desk_id_str)

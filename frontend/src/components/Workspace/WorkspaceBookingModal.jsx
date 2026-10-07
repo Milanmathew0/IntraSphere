@@ -64,7 +64,7 @@ export default function WorkspaceBookingModal({ open, onClose, desk, onBookingSu
   }, [open, desk, date, startTime, endTime]);
 
   const getCombinedISO = (dateStr, timeStr) => {
-    return new Date(`${dateStr}T${timeStr}:00`).toISOString();
+    return `${dateStr}T${timeStr}:00`;
   };
 
   const checkLiveAvailability = async () => {

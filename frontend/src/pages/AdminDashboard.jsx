@@ -40,6 +40,8 @@ import RecentActivity from "../components/Admin/RecentActivity";
 import AdminAnalytics from "../components/Admin/AdminAnalytics";
 import QuickActions from "../components/Admin/QuickActions";
 import SystemHealth from "../components/Admin/SystemHealth";
+import EmployeePerformanceOverview from "../components/Admin/EmployeePerformanceOverview";
+import PunctualityReportTable from "../components/Admin/PunctualityReportTable";
 
 // Modals
 import ManageUsersModal from "../components/Admin/ManageUsersModal";
@@ -253,6 +255,15 @@ export default function AdminDashboard() {
             <LeaveOverview data={dashboardData} loading={loading} />
           </Grid>
         </Grid>
+
+        {/* EMPLOYEE PERFORMANCE OVERVIEW & PUNCTUALITY EVALUATION */}
+        <Box sx={{ mb: 4 }}>
+          <EmployeePerformanceOverview />
+        </Box>
+
+        <Box sx={{ mb: 4 }}>
+          <PunctualityReportTable />
+        </Box>
 
         <Grid container spacing={3.5} sx={{ mb: 4 }}>
           <Grid item xs={12} md={6}>

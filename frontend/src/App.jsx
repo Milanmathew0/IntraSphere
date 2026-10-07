@@ -19,6 +19,11 @@ import WorkspaceReservation from "./pages/WorkspaceReservation";
 import FacilityManagerDashboard from "./pages/FacilityManagerDashboard";
 import FacilityManagement from "./pages/FacilityManagement";
 import ProfilePage from "./pages/ProfilePage";
+import PerformancePage from "./pages/PerformancePage";
+import AttendancePage from "./pages/AttendancePage";
+import MyBookingsPage from "./pages/MyBookingsPage";
+import AnnouncementsPage from "./pages/AnnouncementsPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 function App() {
   return (
@@ -29,9 +34,9 @@ function App() {
             {/* Landing Page Route */}
             <Route path="/" element={<LandingPage />} />
 
-            {/* Authentication Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* Authentication Routes - Redirect to Landing Page with integrated Auth modal */}
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/register" element={<Navigate to="/" replace />} />
             <Route path="/activate-account" element={<ActivateAccount />} />
 
             {/* Unified & Role-specific Dashboard Routes */}
@@ -168,12 +173,30 @@ function App() {
               }
             />
 
-            {/* Additional Employee Portal Direct Routes */}
+            {/* Performance & Punctuality Routes */}
+            <Route
+              path="/performance-overview"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <PerformancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/performance"
+              element={
+                <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
+                  <PerformancePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dedicated Feature Portal Direct Routes */}
             <Route
               path="/attendance"
               element={
                 <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
-                  <EmployeeDashboard />
+                  <AttendancePage />
                 </ProtectedRoute>
               }
             />
@@ -181,7 +204,7 @@ function App() {
               path="/my-bookings"
               element={
                 <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
-                  <EmployeeDashboard />
+                  <MyBookingsPage />
                 </ProtectedRoute>
               }
             />
@@ -189,7 +212,7 @@ function App() {
               path="/announcements"
               element={
                 <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
-                  <EmployeeDashboard />
+                  <AnnouncementsPage />
                 </ProtectedRoute>
               }
             />
@@ -197,13 +220,13 @@ function App() {
               path="/notifications"
               element={
                 <ProtectedRoute allowedRoles={["User", "Employee", "Manager", "HR", "Facility Manager", "Admin"]}>
-                  <EmployeeDashboard />
+                  <NotificationsPage />
                 </ProtectedRoute>
               }
             />
 
             {/* Fallback Catch-all Route */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

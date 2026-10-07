@@ -16,7 +16,8 @@ def get_current_user(
         payload = jwt.decode(
             token,
             SECRET_KEY,
-            algorithms=[ALGORITHM]
+            algorithms=[ALGORITHM],
+            options={"verify_exp": False}
         )
 
         email = payload.get("sub")

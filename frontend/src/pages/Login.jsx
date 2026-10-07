@@ -59,9 +59,8 @@ export default function Login() {
 
   const passwordRules = {
     notEmpty: password.length > 0,
-    minLength: password.length >= 6,
   };
-  const isPasswordValid = passwordRules.notEmpty && passwordRules.minLength;
+  const isPasswordValid = passwordRules.notEmpty;
 
   const parseJwt = (token) => {
     try {
@@ -92,7 +91,6 @@ export default function Login() {
 
   const validatePassword = (val) => {
     if (!val) return "Password is required";
-    if (val.length < 6) return "Password must be at least 6 characters long";
     return "";
   };
 

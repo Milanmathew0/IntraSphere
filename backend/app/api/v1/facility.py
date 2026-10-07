@@ -4,7 +4,7 @@ from datetime import datetime
 
 from app.schemas.facility_schema import (
     MaintenanceCreate, MaintenanceUpdate, MaintenanceStatusUpdate,
-    ResourceMaintenanceStatus, ReservationCancelRequest
+    ResourceMaintenanceStatus, ReservationCancelRequest, ReservationStatusUpdate
 )
 from app.services.facility_service import (
     get_facility_dashboard_stats,
@@ -13,6 +13,8 @@ from app.services.facility_service import (
     update_maintenance_status,
     get_facility_reservations,
     cancel_facility_reservation,
+    update_facility_reservation,
+    delete_facility_reservation,
     get_facility_analytics
 )
 from app.schemas.meeting_schema import RoomCreate, RoomUpdate
@@ -245,6 +247,35 @@ async def facility_cancel_reservation(
         cancellation_reason=reason,
         current_user=current_user
     )
+
+
+@router.patch("/reservations/{reservation_id}/status")
+async def facility_update_reservation_status(
+    reservation_id: str,
+    update_data: ReservationStatusUpdate,
+    resource_type: str = Query(..., description="meeting_room or workspace"),
+    current_user: dict = Depends(require_facility_manager)
+):
+    return await update_facility_reservation(
+        reservation_id=reservation_id,
+        resource_type=resource_type,
+        update_data=update_data,
+        current_user=current_user
+    )
+
+
+@router.delete("/reservations/{reservation_id}")
+async def facility_remove_reservation(
+    reservation_id: str,
+    resource_type: str = Query(..., description="meeting_room or workspace"),
+    current_user: dict = Depends(require_facility_manager)
+):
+    return await delete_facility_reservation(
+        reservation_id=reservation_id,
+        resource_type=resource_type,
+        current_user=current_user
+    )
+
 
 
 # ==========================================

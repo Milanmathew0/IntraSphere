@@ -57,7 +57,7 @@ export default function EmployeeHeader({
   const handleLogout = () => {
     handleMenuClose();
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleProfileClick = () => {

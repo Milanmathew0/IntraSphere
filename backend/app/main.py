@@ -34,15 +34,14 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup_event():
-    await init_leave_system()
-    await init_departments()
-    await init_designations()
-    await init_meeting_rooms()
-    await init_workspace_desks()
-    await init_facility_manager()
-
-    # Create collection indexes
     try:
+        await init_leave_system()
+        await init_departments()
+        await init_designations()
+        await init_meeting_rooms()
+        await init_workspace_desks()
+        await init_facility_manager()
+
         await db["users"].create_index("email", unique=True)
         await db["users"].create_index("activation_token_hash")
         await db["employees"].create_index("employee_id", unique=True)
@@ -53,7 +52,7 @@ async def startup_event():
         await db["facility_maintenance"].create_index("created_at")
         await db["facility_maintenance"].create_index("scheduled_date")
     except Exception as e:
-        pass
+        print(f"[STARTUP ERROR] Error during database initialization: {e}")
 
 
 # Mount Static Uploads Directory

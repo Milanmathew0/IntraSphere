@@ -18,6 +18,7 @@ from app.api.v1.workspaces import router as workspaces_router
 from app.api.v1.admin import router as admin_router
 from app.api.v1.facility import router as facility_router
 from app.api.v1.notifications import router as notifications_router
+from app.api.v1.reports import router as reports_router
 from app.api.v1.health import router as health_router
 from app.services.leave_service import init_leave_system
 from app.services.department_service import init_departments
@@ -93,6 +94,7 @@ app.include_router(workspaces_router, prefix="/api/v1")
 app.include_router(facility_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(reports_router, prefix="/api/v1")
 app.include_router(health_router, prefix="/api/v1")
 
 @app.get("/")

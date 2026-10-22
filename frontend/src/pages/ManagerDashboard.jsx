@@ -369,7 +369,7 @@ export default function ManagerDashboard() {
             {activeTab === 0 && (
               <Stack spacing={3.5} sx={{ width: "100%" }}>
                 <TeamPresenceWidget />
-                <TeamLeaveApprovalsWidget showToast={showToast} />
+                <TeamLeaveApprovalsWidget showToast={showToast} onAction={fetchDashboardMetrics} />
               </Stack>
             )}
 
@@ -383,7 +383,7 @@ export default function ManagerDashboard() {
             {/* Tab 2: Leave Requests */}
             {activeTab === 2 && (
               <Box sx={{ width: "100%" }}>
-                <TeamLeaveApprovalsWidget showToast={showToast} />
+                <TeamLeaveApprovalsWidget showToast={showToast} onAction={fetchDashboardMetrics} />
               </Box>
             )}
 

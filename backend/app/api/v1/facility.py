@@ -40,8 +40,8 @@ router = APIRouter(
     tags=["Facility Management"]
 )
 
-# Helper dependency to enforce Admin or Facility Manager role
-require_facility_manager = require_roles(["Admin", "Facility Manager"])
+# Helper dependency to enforce Admin, Facility Manager, or Manager role
+require_facility_manager = require_roles(["Admin", "Facility Manager", "Manager"])
 
 
 # ==========================================
@@ -344,3 +344,76 @@ async def facility_get_analytics(
     current_user: dict = Depends(require_facility_manager)
 ):
     return await get_facility_analytics(period=period)
+
+
+# ==========================================
+# 7. RESOURCE UTILIZATION REPORTS
+# ==========================================
+
+@router.get("/reports/utilization")
+@router.get("/reports/utilization/")
+async def facility_resource_utilization_report(
+    start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
+    floor: Optional[int] = Query(None, description="Floor number"),
+    zone: Optional[str] = Query(None, description="Zone name"),
+    resource_type: Optional[str] = Query(None, description="rooms, workspaces, all"),
+    current_user: dict = Depends(require_facility_manager)
+):
+    from app.services.report_service import get_resource_utilization_report_data
+    return await get_resource_utilization_report_data(
+        start_date_str=start_date,
+        end_date_str=end_date,
+        floor=floor,
+        zone=zone,
+        resource_type=resource_type
+    )
+
+
+@router.get("/reports/export")
+@router.get("/reports/export/")
+async def facility_export_resource_utilization(
+    format: str = Query("excel", description="excel or pdf"),
+    start_date: Optional[str] = Query(None, description="Start date (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="End date (YYYY-MM-DD)"),
+    floor: Optional[int] = Query(None, description="Floor number"),
+    zone: Optional[str] = Query(None, description="Zone name"),
+    resource_type: Optional[str] = Query(None, description="rooms, workspaces, all"),
+    current_user: dict = Depends(require_facility_manager)
+):
+    from fastapi import Response
+    from app.services.report_service import (
+        get_resource_utilization_report_data,
+        generate_resource_utilization_excel,
+        generate_resource_utilization_pdf
+    )
+    data = await get_resource_utilization_report_data(
+        start_date_str=start_date,
+        end_date_str=end_date,
+        floor=floor,
+        zone=zone,
+        resource_type=resource_type
+    )
+    fmt = format.lower().strip()
+    s_date = data["metadata"]["start_date"]
+    e_date = data["metadata"]["end_date"]
+
+    if fmt in ("excel", "xlsx"):
+        buffer = generate_resource_utilization_excel(data)
+        filename = f"IntraSphere_Resource_Utilization_Report_{s_date}_to_{e_date}.xlsx"
+        return Response(
+            content=buffer.getvalue(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    elif fmt == "pdf":
+        buffer = generate_resource_utilization_pdf(data)
+        filename = f"IntraSphere_Resource_Utilization_Report_{s_date}_to_{e_date}.pdf"
+        return Response(
+            content=buffer.getvalue(),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Supported formats: 'excel' or 'pdf'")
+

@@ -108,15 +108,45 @@ async def punctuality_reports_api(
 
 
 # =====================================================
-# Export Punctuality Reports CSV
+# Export Attendance & Punctuality Reports (Excel, PDF, CSV)
 # =====================================================
 @router.get("/punctuality-reports/export")
-async def export_punctuality_reports_api(
+@router.get("/export")
+async def export_attendance_reports_api(
+    format: str = Query("excel", description="excel, pdf, or csv"),
     start_date: Optional[str] = Query(None),
     end_date: Optional[str] = Query(None),
     department: Optional[str] = Query(None),
     search: Optional[str] = Query(None)
 ):
+    fmt = format.lower().strip()
+    if fmt in ("excel", "xlsx", "pdf"):
+        from app.services.report_service import (
+            get_attendance_report_data,
+            generate_attendance_excel,
+            generate_attendance_pdf
+        )
+        data = await get_attendance_report_data(start_date, end_date, department, search)
+        s_date = data["metadata"]["start_date"]
+        e_date = data["metadata"]["end_date"]
+
+        if fmt in ("excel", "xlsx"):
+            buffer = generate_attendance_excel(data)
+            filename = f"IntraSphere_Attendance_Report_{s_date}_to_{e_date}.xlsx"
+            return Response(
+                content=buffer.getvalue(),
+                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+            )
+        else:
+            buffer = generate_attendance_pdf(data)
+            filename = f"IntraSphere_Attendance_Report_{s_date}_to_{e_date}.pdf"
+            return Response(
+                content=buffer.getvalue(),
+                media_type="application/pdf",
+                headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+            )
+
     reports = await get_punctuality_reports(start_date, end_date, department, search)
 
     output = io.StringIO()
@@ -141,6 +171,7 @@ async def export_punctuality_reports_api(
             "Content-Disposition": "attachment; filename=punctuality_report.csv"
         }
     )
+
 
 
 # =====================================================

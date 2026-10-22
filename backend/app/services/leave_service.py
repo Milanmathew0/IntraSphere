@@ -372,14 +372,20 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
         if target_bal["remaining"] < total_days:
             return {"error": f"Insufficient {leave_type['name']} balance. You have {target_bal['remaining']} day(s) remaining.", "status_code": 400}
 
-    # 14. Determine Reporting Manager (or fallback to HR/Admin)
+    # 14. Determine Reporting Manager (or fallback to Manager/HR/Admin)
     reporting_manager_id = employee.get("reporting_manager_id")
     if not reporting_manager_id:
-        hr_admin = await users_collection.find_one({"role": {"$in": ["Admin", "HR"]}, "is_active": True})
-        if hr_admin:
-            admin_emp = await employees_collection.find_one({"user_id": hr_admin["_id"]})
-            if admin_emp:
-                reporting_manager_id = admin_emp["_id"]
+        manager_user = await users_collection.find_one({"role": "Manager", "is_active": True})
+        if manager_user:
+            mgr_emp = await employees_collection.find_one({"user_id": manager_user["_id"]})
+            if mgr_emp:
+                reporting_manager_id = mgr_emp["_id"]
+        if not reporting_manager_id:
+            hr_admin = await users_collection.find_one({"role": {"$in": ["Admin", "HR"]}, "is_active": True})
+            if hr_admin:
+                admin_emp = await employees_collection.find_one({"user_id": hr_admin["_id"]})
+                if admin_emp:
+                    reporting_manager_id = admin_emp["_id"]
 
     # 15. Construct Leave Request Document
     leave_doc = {
@@ -419,19 +425,27 @@ async def submit_leave_request(user_payload: dict, req_data: dict):
             {"$set": {"pending": new_pending, "remaining": new_remaining, "updated_at": datetime.utcnow()}}
         )
 
-    # 12. Create Notification for Reporting Manager (if assigned)
+    # 12. Create Notification for Reporting Manager and Management Team
     emp_name = f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip() or user.get("username", "Employee")
+    notify_recipients = set()
     if reporting_manager_id:
         manager_emp = await employees_collection.find_one({"_id": reporting_manager_id})
         if manager_emp and manager_emp.get("user_id"):
-            await create_notification(
-                recipient_id=manager_emp["user_id"],
-                title="New Leave Request Pending Approval",
-                message=f"{emp_name} requested {total_days} day(s) of {leave_type['name']} from {start_date} to {end_date}.",
-                notification_type="LEAVE_REQUEST",
-                sender_id=user["_id"],
-                related_entity_id=request_id
-            )
+            notify_recipients.add(manager_emp["user_id"])
+
+    async for m_user in users_collection.find({"role": {"$in": ["Manager", "Admin", "HR"]}, "is_active": True}):
+        if str(m_user["_id"]) != str(user["_id"]):
+            notify_recipients.add(m_user["_id"])
+
+    for recipient_id in notify_recipients:
+        await create_notification(
+            recipient_id=recipient_id,
+            title="New Leave Request Pending Approval",
+            message=f"{emp_name} requested {total_days} day(s) of {leave_type['name']} from {start_date} to {end_date}.",
+            notification_type="LEAVE_REQUEST",
+            sender_id=user["_id"],
+            related_entity_id=request_id
+        )
 
     # 13. Create Audit Log
     await create_audit_log(
@@ -816,7 +830,7 @@ async def get_pending_approvals_for_user(user_payload: dict):
             continue
 
         can_see = False
-        if role in ("Admin", "HR"):
+        if role in ("Admin", "HR", "Manager"):
             can_see = True
         elif manager_emp:
             req_mgr = str(req["reporting_manager_id"]) if req.get("reporting_manager_id") else None

@@ -36,6 +36,7 @@ import WorkspaceManagement from "../components/Facility/WorkspaceManagement";
 import MaintenanceManagement from "../components/Facility/MaintenanceManagement";
 import FacilityReservations from "../components/Facility/FacilityReservations";
 import FacilityAnalytics from "../components/Facility/FacilityAnalytics";
+import ResourceUtilizationReports from "../components/Facility/ResourceUtilizationReports";
 
 export default function FacilityManagerDashboard() {
   const navigate = useNavigate();
@@ -83,8 +84,8 @@ export default function FacilityManagerDashboard() {
     },
     {
       id: 5,
-      label: "Facility Analytics",
-      subtitle: "In-depth insights into room utilization, desk occupancy, and facility trends.",
+      label: "Resource Utilization Reports",
+      subtitle: "Generate reports showing room occupancy rates and workspace utilization.",
       icon: BarChart3,
     },
     {
@@ -247,8 +248,8 @@ export default function FacilityManagerDashboard() {
               />
             )}
 
-            {/* TAB 5: ANALYTICS */}
-            {activeTab === 5 && <FacilityAnalytics />}
+            {/* TAB 5: RESOURCE UTILIZATION REPORTS */}
+            {activeTab === 5 && <ResourceUtilizationReports />}
 
             {/* TAB 6: PROFILE MANAGEMENT */}
             {activeTab === 6 && <EmployeeProfileSection />}

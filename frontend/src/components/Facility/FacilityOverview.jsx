@@ -34,7 +34,7 @@ export default function FacilityOverview({ stats, onNavigateTab, onOpenAddRoom, 
     { label: "Manage Meeting Rooms", icon: MeetingRoomIcon, color: "#2E7D32", onClick: () => onNavigateTab(1) },
     { label: "Manage Workspace Desks", icon: DesktopWindowsIcon, color: "#00796B", onClick: () => onNavigateTab(2) },
     { label: "View Maintenance Queue", icon: BuildIcon, color: "#D32F2F", onClick: () => onNavigateTab(4) },
-    { label: "View Facility Analytics", icon: InsightsIcon, color: "#EA580C", onClick: () => onNavigateTab(5) },
+    { label: "Resource Utilization Reports", icon: InsightsIcon, color: "#EA580C", onClick: () => onNavigateTab(5) },
   ];
 
   return (

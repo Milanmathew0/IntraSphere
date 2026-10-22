@@ -2,7 +2,7 @@ import os
 import secrets
 from datetime import date
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Query
 from bson import ObjectId
 
 from app.utils.dependencies import get_current_user, require_roles
@@ -227,6 +227,62 @@ async def get_all_requests(
         leave_type_id_str=leave_type_id,
         status_filter=status
     )
+
+
+# =====================================================
+# HR / ADMIN - EXPORT LEAVE REPORTS (Excel, PDF)
+# =====================================================
+
+@router.get("/export")
+async def export_leave_reports_api(
+    format: str = Query("excel", description="excel or pdf"),
+    department: Optional[str] = None,
+    status: Optional[str] = None,
+    leave_type: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    from fastapi import Response
+    from app.services.report_service import (
+        get_leave_report_data,
+        generate_leave_excel,
+        generate_leave_pdf
+    )
+    user_role = current_user.get("role", "")
+    search = current_user.get("sub") if user_role in ["Employee", "User"] else None
+
+    data = await get_leave_report_data(
+        start_date_str=start_date,
+        end_date_str=end_date,
+        department=department,
+        status_filter=status,
+        leave_type_id=leave_type,
+        search=search
+    )
+
+    fmt = format.lower().strip()
+    s_date = data["metadata"]["start_date"]
+    e_date = data["metadata"]["end_date"]
+
+    if fmt in ("excel", "xlsx"):
+        buffer = generate_leave_excel(data)
+        filename = f"IntraSphere_Leave_Report_{s_date}_to_{e_date}.xlsx"
+        return Response(
+            content=buffer.getvalue(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    elif fmt == "pdf":
+        buffer = generate_leave_pdf(data)
+        filename = f"IntraSphere_Leave_Report_{s_date}_to_{e_date}.pdf"
+        return Response(
+            content=buffer.getvalue(),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Supported formats: 'excel' or 'pdf'")
 
 
 # =====================================================

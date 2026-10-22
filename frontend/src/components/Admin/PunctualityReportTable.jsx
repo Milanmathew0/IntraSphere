@@ -26,7 +26,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import TableViewIcon from "@mui/icons-material/TableView";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import api from "../../api/axios";
+import { exportAttendanceReport } from "../../utils/reportExport";
 
 export default function PunctualityReportTable() {
   const [loading, setLoading] = useState(true);
@@ -69,8 +72,8 @@ export default function PunctualityReportTable() {
     return () => clearTimeout(handler);
   }, [search, department, dateRange]);
 
-  const handleExportCSV = async () => {
-    setExporting(true);
+  const handleExport = async (format) => {
+    setExporting(format);
     try {
       const days = parseInt(dateRange, 10) || 30;
       const endDate = new Date().toISOString().split("T")[0];
@@ -78,25 +81,35 @@ export default function PunctualityReportTable() {
       startDateObj.setDate(startDateObj.getDate() - days);
       const startDate = startDateObj.toISOString().split("T")[0];
 
-      const response = await api.get("/api/v1/attendance/punctuality-reports/export", {
-        params: {
-          start_date: startDate,
-          end_date: endDate,
+      if (format === "excel" || format === "pdf") {
+        await exportAttendanceReport({
+          format,
+          startDate,
+          endDate,
           department: department === "All" ? "" : department,
           search: search.trim(),
-        },
-        responseType: "blob",
-      });
+        });
+      } else {
+        const response = await api.get("/api/v1/attendance/punctuality-reports/export", {
+          params: {
+            start_date: startDate,
+            end_date: endDate,
+            department: department === "All" ? "" : department,
+            search: search.trim(),
+          },
+          responseType: "blob",
+        });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `IntraSphere_Punctuality_Report_${new Date().toISOString().split("T")[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `IntraSphere_Punctuality_Report_${new Date().toISOString().split("T")[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
     } catch (err) {
-      console.error("Failed to export CSV report", err);
+      console.error("Failed to export report", err);
     } finally {
       setExporting(false);
     }
@@ -168,24 +181,67 @@ export default function PunctualityReportTable() {
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={exporting ? <CircularProgress size={18} color="inherit" /> : <FileDownloadIcon />}
-          onClick={handleExportCSV}
-          disabled={exporting}
-          sx={{
-            bgcolor: "#F97316",
-            color: "#FFFFFF",
-            fontWeight: 700,
-            borderRadius: "10px",
-            textTransform: "none",
-            px: 2.5,
-            py: 1,
-            "&:hover": { bgcolor: "#EA580C" },
-          }}
-        >
-          {exporting ? "Generating CSV..." : "Export Evaluation Report"}
-        </Button>
+        <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={exporting === "excel" ? <CircularProgress size={16} color="inherit" /> : <TableViewIcon />}
+            onClick={() => handleExport("excel")}
+            disabled={!!exporting}
+            sx={{
+              bgcolor: "#16A34A",
+              color: "#FFFFFF",
+              fontWeight: 700,
+              borderRadius: "10px",
+              textTransform: "none",
+              px: 2,
+              py: 0.8,
+              "&:hover": { bgcolor: "#15803D" },
+            }}
+          >
+            {exporting === "excel" ? "Exporting..." : "Excel (.xlsx)"}
+          </Button>
+
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={exporting === "pdf" ? <CircularProgress size={16} color="inherit" /> : <PictureAsPdfIcon />}
+            onClick={() => handleExport("pdf")}
+            disabled={!!exporting}
+            sx={{
+              bgcolor: "#DC2626",
+              color: "#FFFFFF",
+              fontWeight: 700,
+              borderRadius: "10px",
+              textTransform: "none",
+              px: 2,
+              py: 0.8,
+              "&:hover": { bgcolor: "#B91C1C" },
+            }}
+          >
+            {exporting === "pdf" ? "Exporting..." : "PDF (.pdf)"}
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={exporting === "csv" ? <CircularProgress size={16} color="inherit" /> : <FileDownloadIcon />}
+            onClick={() => handleExport("csv")}
+            disabled={!!exporting}
+            sx={{
+              color: "#475569",
+              borderColor: "#CBD5E1",
+              fontWeight: 700,
+              borderRadius: "10px",
+              textTransform: "none",
+              px: 1.8,
+              py: 0.8,
+              "&:hover": { bgcolor: "#F8FAFC", borderColor: "#94A3B8" },
+            }}
+          >
+            CSV
+          </Button>
+        </Stack>
       </Stack>
 
       {/* Filter Toolbar */}

@@ -46,6 +46,8 @@ import PunctualityReportTable from "../components/Admin/PunctualityReportTable";
 // Modals
 import ManageUsersModal from "../components/Admin/ManageUsersModal";
 import AuditLogsModal from "../components/Admin/AuditLogsModal";
+import ExportReportsModal from "../components/Admin/ExportReportsModal";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -61,6 +63,8 @@ export default function AdminDashboard() {
   // Modal States
   const [manageUsersOpen, setManageUsersOpen] = useState(false);
   const [auditLogsOpen, setAuditLogsOpen] = useState(false);
+  const [exportReportsOpen, setExportReportsOpen] = useState(false);
+  const [exportReportsDefaultType, setExportReportsDefaultType] = useState("attendance");
 
   // Toast Notification State
   const [toast, setToast] = useState({
@@ -217,6 +221,24 @@ export default function AdminDashboard() {
               >
                 Refresh Data
               </Button>
+              <Button
+                variant="contained"
+                startIcon={<AssessmentIcon />}
+                onClick={() => {
+                  setExportReportsDefaultType("attendance");
+                  setExportReportsOpen(true);
+                }}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  bgcolor: "#F97316",
+                  "&:hover": { bgcolor: "#EA580C" },
+                  boxShadow: "0 4px 12px rgba(249, 115, 22, 0.25)",
+                }}
+              >
+                Export Reports (Excel/PDF)
+              </Button>
             </Stack>
           </Stack>
         </Paper>
@@ -298,7 +320,10 @@ export default function AdminDashboard() {
         <QuickActions
           onOpenAddEmployee={() => navigate("/employees")}
           onOpenManageUsers={() => setManageUsersOpen(true)}
-          onOpenReports={() => showToast("Reports exported to system downloads folder.", "info")}
+          onOpenReports={() => {
+            setExportReportsDefaultType("attendance");
+            setExportReportsOpen(true);
+          }}
         />
 
         {/* 5. SYSTEM HEALTH */}
@@ -331,6 +356,13 @@ export default function AdminDashboard() {
       <AuditLogsModal
         open={auditLogsOpen}
         onClose={() => setAuditLogsOpen(false)}
+      />
+
+      <ExportReportsModal
+        open={exportReportsOpen}
+        onClose={() => setExportReportsOpen(false)}
+        defaultType={exportReportsDefaultType}
+        onShowToast={showToast}
       />
 
       {/* FEEDBACK TOAST */}

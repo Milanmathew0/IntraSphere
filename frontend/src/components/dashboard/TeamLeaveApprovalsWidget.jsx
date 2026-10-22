@@ -22,7 +22,7 @@ import { IconButton } from "@mui/material";
 
 import api from "../../api/axios";
 
-export default function TeamLeaveApprovalsWidget({ showToast }) {
+export default function TeamLeaveApprovalsWidget({ showToast, onAction }) {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,6 +54,7 @@ export default function TeamLeaveApprovalsWidget({ showToast }) {
       if (showToast) {
         showToast("Employee leave application approved!", "success");
       }
+      if (onAction) onAction();
     } catch (err) {
       if (showToast) {
         showToast(err.response?.data?.detail || "Approval failed", "error");
@@ -71,6 +72,7 @@ export default function TeamLeaveApprovalsWidget({ showToast }) {
       if (showToast) {
         showToast("Leave application rejected.", "info");
       }
+      if (onAction) onAction();
     } catch (err) {
       if (showToast) {
         showToast(err.response?.data?.detail || "Rejection failed", "error");

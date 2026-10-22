@@ -28,6 +28,7 @@ import {
   Settings,
   UserCheck,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -35,6 +36,7 @@ import api from "../api/axios";
 import AppLayout from "../components/layout/AppLayout";
 import ApplyLeaveModal from "../components/Leave/ApplyLeaveModal";
 import LeaveApprovalDialog from "../components/Leave/LeaveApprovalDialog";
+import { exportLeaveReport } from "../utils/reportExport";
 
 export default function Leave() {
   const navigate = useNavigate();
@@ -756,7 +758,7 @@ export default function Leave() {
                 </Typography>
               </Box>
 
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={1.5} alignItems="center">
                 <TextField
                   select
                   size="small"
@@ -770,6 +772,56 @@ export default function Leave() {
                   <MenuItem value="Pending">Pending</MenuItem>
                   <MenuItem value="Rejected">Rejected</MenuItem>
                 </TextField>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<Download size={16} />}
+                  onClick={async () => {
+                    try {
+                      showToast("Generating Leave Report (Excel)...", "info");
+                      await exportLeaveReport({ format: "excel", status: filterStatus });
+                      showToast("Leave Report (Excel) downloaded!", "success");
+                    } catch (e) {
+                      showToast("Export failed", "error");
+                    }
+                  }}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 700,
+                    borderColor: "#16A34A",
+                    color: "#16A34A",
+                    "&:hover": { bgcolor: "#F0FDF4", borderColor: "#15803D" },
+                  }}
+                >
+                  Excel
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<Download size={16} />}
+                  onClick={async () => {
+                    try {
+                      showToast("Generating Leave Report (PDF)...", "info");
+                      await exportLeaveReport({ format: "pdf", status: filterStatus });
+                      showToast("Leave Report (PDF) downloaded!", "success");
+                    } catch (e) {
+                      showToast("Export failed", "error");
+                    }
+                  }}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 700,
+                    borderColor: "#DC2626",
+                    color: "#DC2626",
+                    "&:hover": { bgcolor: "#FEF2F2", borderColor: "#B91C1C" },
+                  }}
+                >
+                  PDF
+                </Button>
               </Stack>
             </Box>
 
